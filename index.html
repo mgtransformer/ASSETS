@@ -21,10 +21,10 @@
             --bg-color: #f0f2f5;
             
             /* Animation Specific Colors */
-            --metal-black: #1a2530;   /* Bluish Black for Tank */
-            --metal-detail: #34495e;  /* Lighter grey-blue for fins */
-            --elec-violet: #9b59b6;   /* Violet for Flux */
-            --elec-yellow: #f1c40f;   /* Yellow for Current */
+            --metal-black: #1a2530;
+            --metal-detail: #34495e;
+            --elec-violet: #9b59b6;
+            --elec-yellow: #f1c40f;
         }
 
         * {
@@ -36,7 +36,6 @@
         body {
             font-family: 'Nunito', sans-serif;
             background-color: var(--bg-color);
-            /* Technical Dot Grid Background */
             background-image: radial-gradient(#cbd5e0 1px, transparent 1px);
             background-size: 20px 20px;
             color: var(--dark-text);
@@ -92,12 +91,23 @@
         /* --- ELECTRICAL ANIMATION CONTAINER --- */
         .electrical-animation {
             margin: 10px 0 30px 0;
-            height: 200px; /* Increased height to avoid clipping when scaled */
+            height: 220px; /* Ample space */
             width: 100%;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
+        }
+
+        /* NEW: The Anchor Wrapper */
+        /* This ensures the rings are centered EXACTLY on the transformer */
+        .animation-wrapper {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Scale the whole assembly here */
+            transform: scale(1.1);
             transition: transform 0.3s ease;
         }
 
@@ -109,8 +119,6 @@
             flex-direction: column;
             align-items: center;
             filter: drop-shadow(0 8px 10px rgba(0,0,0,0.25));
-            /* Base scale for mobile */
-            transform: scale(1.1); 
         }
 
         /* 1. Bushings */
@@ -207,31 +215,33 @@
         /* Shared styles for rings */
         .flux-ring {
             position: absolute;
-            border-radius: 50%;
-            border: 2px dashed rgba(155, 89, 182, 0.5); 
             top: 50%;
             left: 50%;
-            /* REMOVED: transform: translate(-50%, -50%) which caused shifting */
             z-index: 1;
+            /* Performance Optimization */
+            will-change: transform;
         }
 
-        /* Inner Ring: Fixed centering with Margins */
+        /* Inner Ring */
         .ring-inner { 
             width: 140px; 
             height: 140px; 
-            margin-top: -70px; /* Half of height */
-            margin-left: -70px; /* Half of width */
+            margin-top: -70px;
+            margin-left: -70px;
+            border: 2px dashed rgba(155, 89, 182, 0.5); 
+            border-radius: 50%;
             border-color: rgba(155, 89, 182, 0.7); 
             animation: spin 10s linear infinite; 
         }
 
-        /* Outer Ring: Fixed centering with Margins */
+        /* Outer Ring */
         .ring-outer { 
             width: 180px; 
             height: 180px; 
             margin-top: -90px;
             margin-left: -90px;
-            border-width: 1px; 
+            border: 1px dashed rgba(155, 89, 182, 0.5); 
+            border-radius: 50%;
             opacity: 0.5;
             animation: spin-reverse 15s linear infinite; 
         }
@@ -246,12 +256,12 @@
             border-right-color: rgba(241, 196, 15, 0.3); 
             top: 50%;
             left: 50%;
-            /* Fixed centering with Margins */
             margin-top: -80px; 
             margin-left: -80px;
             animation: spin-arc 1.5s linear infinite; 
             z-index: 0;
             box-shadow: 0 0 10px rgba(241, 196, 15, 0.3); 
+            will-change: transform;
         }
 
         .electron {
@@ -264,11 +274,12 @@
             margin-top: -4px;
             margin-left: -4px;
             animation: orbit 3s linear infinite;
+            will-change: transform;
         }
         .e-yellow { background-color: var(--elec-yellow); box-shadow: 0 0 8px var(--elec-yellow); }
         .e-violet { background-color: var(--elec-violet); box-shadow: 0 0 8px var(--elec-violet); animation-delay: -1.5s; animation-duration: 3s; }
 
-        /* SIMPLIFIED ANIMATIONS (No translation needed now) */
+        /* Animations */
         @keyframes spin { 
             0% { transform: rotate(0deg); } 
             100% { transform: rotate(360deg); } 
@@ -371,13 +382,16 @@
         @media (min-width: 768px) {
             .card-container {
                 padding: 20px 40px 0 40px;
-                max-width: 900px; /* Allow wider container */
+                max-width: 900px; 
             }
             
-            /* Make Animation Bigger on Desktop */
+            /* Scale the wrapper instead of the container for better stability */
+            .animation-wrapper {
+                transform: scale(1.5); 
+            }
+            
             .electrical-animation {
-                transform: scale(1.5); /* Expands 1.5x for Landscape/Desktop */
-                height: 250px; /* Add height room for scaling */
+                height: 250px; 
                 margin-bottom: 50px;
             }
             
@@ -412,22 +426,28 @@
         
         <!-- Animation Area -->
         <div class="electrical-animation">
-            <div class="flux-ring ring-inner"></div>
-            <div class="flux-ring ring-outer"></div>
-            <div class="electric-arc"></div>
-            <div class="electron e-yellow"></div> 
-            <div class="electron e-violet"></div>
-            
-            <div class="transformer-assembly">
-                <div class="bushings">
-                    <div class="bushing"></div><div class="bushing"></div><div class="bushing"></div>
-                </div>
-                <div class="conservator-tank"></div>
-                <div class="conservator-pipe"></div>
-                <div class="tank-body">
-                    <div class="fins-left"><div class="fin-vertical"></div><div class="fin"></div><div class="fin"></div><div class="fin"></div></div>
-                    <div class="fins-right"><div class="fin-vertical"></div><div class="fin"></div><div class="fin"></div><div class="fin"></div></div>
-                    <i class="fas fa-bolt voltage-symbol"></i>
+            <!-- NEW WRAPPER TO LOCK CENTERS -->
+            <div class="animation-wrapper">
+                
+                <!-- Rings & Effects are now absolutely positioned relative to this wrapper -->
+                <div class="flux-ring ring-inner"></div>
+                <div class="flux-ring ring-outer"></div>
+                <div class="electric-arc"></div>
+                <div class="electron e-yellow"></div> 
+                <div class="electron e-violet"></div>
+                
+                <!-- Transformer sits in the flow of the wrapper, defining its center -->
+                <div class="transformer-assembly">
+                    <div class="bushings">
+                        <div class="bushing"></div><div class="bushing"></div><div class="bushing"></div>
+                    </div>
+                    <div class="conservator-tank"></div>
+                    <div class="conservator-pipe"></div>
+                    <div class="tank-body">
+                        <div class="fins-left"><div class="fin-vertical"></div><div class="fin"></div><div class="fin"></div><div class="fin"></div></div>
+                        <div class="fins-right"><div class="fin-vertical"></div><div class="fin"></div><div class="fin"></div><div class="fin"></div></div>
+                        <i class="fas fa-bolt voltage-symbol"></i>
+                    </div>
                 </div>
             </div>
         </div>
