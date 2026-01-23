@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MG Transformer Services & Supplies</title>
+    <!-- Google Fonts: Fredoka (Headings) and Nunito (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* Branding Colors */
+            --primary-orange: #D9531E;
+            --light-orange: #fff0e6;
+            --dark-text: #333333;
+            --bg-color: #f0f2f5;
+            
+            /* Animation Specific Colors */
+            --metal-black: #1a2530;   /* Bluish Black for Tank */
+            --metal-detail: #34495e;  /* Lighter grey-blue for fins */
+            --elec-violet: #9b59b6;   /* Violet for Flux */
+            --elec-yellow: #f1c40f;   /* Yellow for Current */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--bg-color);
+            /* Subtle grid pattern for professional desktop look */
+            background-image: radial-gradient(#D9531E 0.5px, transparent 0.5px), radial-gradient(#D9531E 0.5px, var(--bg-color) 0.5px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            color: var(--dark-text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .card-container {
+            background-color: white;
+            width: 100%;
+            max-width: 480px; 
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            text-align: center;
+            border-top: 8px solid var(--primary-orange);
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+
+        .header {
+            background-color: white;
+            padding: 40px 25px 20px;
+            position: relative;
+        }
+
+        /* --- LOGO SECTION --- */
+        .logo-container {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* --- TYPOGRAPHY UPDATES --- */
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--primary-orange);
+            font-size: 28px;
+            margin-bottom: 8px;
+            line-height: 1.2;
+            font-weight: 600;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        /* --- ELECTRICAL ANIMATION SECTION --- */
+        .electrical-animation {
+            margin: 20px 0 45px 0;
+            height: 120px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* === TRANSFORMER ASSEMBLY CONSTRUCTION === */
+        .transformer-assembly {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            /* Filter to give a slight shadow to the whole assembly */
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
+        }
+
+        /* 1. Bushings (Top Insulators) */
+        .bushings {
+            display: flex;
+            gap: 10px;
+            margin-bottom: -3px; 
+            z-index: 2;
+        }
+        .bushing {
+            width: 8px;
+            height: 18px;
+            /* Brown/Grey insulator look */
+            background: repeating-linear-gradient(
+                to bottom,
+                #8d6e63,
+                #8d6e63 3px,
+                #5d4037 3px,
+                #5d4037 4px
+            );
+            border-radius: 2px;
+        }
+
+        /* 2. Conservator (Oil Tank on Top) */
+        .conservator-tank {
+            position: absolute;
+            top: 6px;
+            right: -18px; /* Adjusted position */
+            width: 38px;
+            height: 14px;
+            background-color: var(--metal-black);
+            border-radius: 4px;
+            border-left: 1px solid rgba(255,255,255,0.2); /* Highlight for 3D effect */
+            z-index: 1;
+        }
+        
+        .conservator-pipe {
+            position: absolute;
+            top: 12px;
+            right: 5px;
+            width: 6px;
+            height: 8px;
+            background-color: var(--metal-detail);
+            z-index: 0;
+            transform: skewX(-10deg); /* Slight angle */
+        }
+
+        /* 3. Main Tank Body */
+        .tank-body {
+            width: 70px;
+            height: 65px;
+            background: var(--metal-black);
+            background: linear-gradient(135deg, #2c3e50, #1a2530); /* Metallic gradient */
+            border-radius: 4px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 5;
+            border: 1px solid #34495e;
+        }
+
+        /* 4. Radiator Fins (Side Cooling) */
+        .fins-left, .fins-right {
+            position: absolute;
+            top: 6px;
+            bottom: 6px;
+            width: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-evenly;
+        }
+        .fins-left { left: -10px; }
+        .fins-right { right: -10px; }
+        
+        .fin {
+            width: 100%;
+            height: 2px;
+            background-color: var(--metal-detail);
+            margin: 2px 0;
+            border-radius: 1px;
+        }
+        .fin-vertical {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: var(--metal-detail);
+        }
+        .fins-left .fin-vertical { right: 0; }
+        .fins-right .fin-vertical { left: 0; }
+
+        /* Symbol on Tank - Keeping Orange for Brand Identity */
+        .voltage-symbol {
+            font-size: 22px;
+            color: var(--primary-orange); 
+            /* Text shadow to make it glow against black */
+            text-shadow: 0 0 5px rgba(217, 83, 30, 0.5);
+            animation: pulse-bolt 2s ease-in-out infinite;
+        }
+
+        /* === FIELD EFFECTS (Around the Assembly) === */
+        
+        /* Magnetic Flux Rings (Violet) */
+        .flux-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px dashed rgba(155, 89, 182, 0.4); /* Violet dashed */
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1;
+        }
+
+        .ring-inner {
+            width: 120px;
+            height: 120px;
+            animation: spin 10s linear infinite;
+            border-color: rgba(155, 89, 182, 0.6); /* Stronger violet */
+        }
+
+        .ring-outer {
+            width: 150px;
+            height: 150px;
+            animation: spin-reverse 15s linear infinite;
+            border-width: 1px;
+            opacity: 0.5;
+            border-color: rgba(142, 68, 173, 0.5); /* Darker violet */
+        }
+
+        /* Electric Arc (Yellow/Gold) */
+        .electric-arc {
+            position: absolute;
+            width: 135px;
+            height: 135px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            border-top-color: var(--elec-yellow); /* Bright Yellow */
+            border-right-color: rgba(241, 196, 15, 0.3); /* Fading yellow tail */
+            top: 50%;
+            left: 50%;
+            margin-top: -67.5px; 
+            margin-left: -67.5px;
+            animation: spin 1.5s linear infinite; /* Faster spin for electricity */
+            z-index: 0;
+            box-shadow: 0 0 8px rgba(241, 196, 15, 0.2); /* Glow */
+        }
+
+        /* Sparks */
+        .electron {
+            position: absolute;
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            margin-top: -3.5px;
+            margin-left: -3.5px;
+            animation: orbit 3s linear infinite;
+        }
+        
+        /* Electron 1: Yellow */
+        .e-yellow {
+            background-color: var(--elec-yellow);
+            box-shadow: 0 0 6px var(--elec-yellow);
+        }
+        
+        /* Electron 2: Violet */
+        .e-violet {
+            background-color: var(--elec-violet);
+            box-shadow: 0 0 6px var(--elec-violet);
+            animation-delay: -1.5s;
+            animation-duration: 3s;
+        }
+
+        @keyframes spin { 
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); } 
+        }
+        @keyframes spin-reverse { 
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(-360deg); }
+        }
+        
+        @keyframes spin-arc { 
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); } 
+        }
+
+        .electric-arc { animation: spin-arc 1.5s linear infinite; }
+        
+        @keyframes pulse-bolt {
+            0% { opacity: 0.7; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 10px rgba(217, 83, 30, 0.8); }
+            100% { opacity: 0.7; transform: scale(0.95); }
+        }
+
+        @keyframes orbit {
+            from { transform: rotate(0deg) translateX(70px) rotate(0deg); }
+            to   { transform: rotate(360deg) translateX(70px) rotate(-360deg); }
+        }
+
+        /* --- STATUS BADGE --- */
+        .status-badge {
+            background-color: #fff3e0;
+            color: #e65100;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px; 
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid #ffe0b2;
+            animation: pulse-border 2s infinite;
+        }
+
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(217, 83, 30, 0.4); }
+            70% { box-shadow: 0 0 0 6px rgba(217, 83, 30, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(217, 83, 30, 0); }
+        }
+
+        /* --- CONTACT LIST --- */
+        .divider {
+            height: 1px;
+            background: #eee;
+            margin: 10px 40px;
+        }
+
+        .contact-list {
+            list-style: none;
+            text-align: left;
+            padding: 10px 30px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        @media (min-width: 768px) {
+            .contact-item:hover {
+                background-color: var(--light-orange);
+                border-color: #ffdcc8;
+                transform: translateX(5px);
+            }
+        }
+
+        .icon-box {
+            width: 42px;
+            height: 42px;
+            background-color: var(--light-orange);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: var(--primary-orange);
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+
+        .info-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-label {
+            font-size: 11px;
+            color: #888;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 16px;
+            color: var(--dark-text);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* --- BUTTONS --- */
+        .action-buttons {
+            padding: 10px 30px 40px;
+            display: grid;
+            gap: 15px;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 16px;
+            border-radius: 14px;
+            text-decoration: none;
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 500;
+            font-size: 17px;
+            transition: transform 0.2s;
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-orange);
+            color: white;
+            box-shadow: 0 8px 20px rgba(217, 83, 30, 0.25);
+        }
+
+        .btn-secondary {
+            background-color: white;
+            color: var(--primary-orange);
+            border: 2px solid var(--primary-orange);
+        }
+        
+        .btn-whatsapp {
+            background-color: #25D366;
+            color: white;
+            box-shadow: 0 8px 20px rgba(37, 211, 102, 0.25);
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 20px;
+            font-size: 13px;
+            color: #999;
+            border-top: 1px solid #eee;
+        }
+
+        /* --- MOBILE OPTIMIZATION --- */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+                background: white; 
+                align-items: flex-start;
+            }
+
+            .card-container {
+                border-radius: 0;
+                box-shadow: none;
+                border-top: none; 
+                max-width: 100%;
+                min-height: 100vh;
+            }
+
+            .header {
+                padding-top: 50px; 
+            }
+
+            .logo-container {
+                width: 180px; 
+                height: 180px;
+            }
+
+            h1 {
+                font-size: 26px;
+            }
+            
+            .btn {
+                padding: 18px; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card-container">
+        <div class="header">
+            <!-- Logo with branding logic -->
+            <div class="logo-container">
+                <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png?raw=true" alt="MG Transformer Logo" class="logo-img" onerror="this.src='https://github.com/mgtransformer/ASSETS/blob/main/MG_LOGO_WITH_NAME-removebg-preview.png?raw=true'">
+            </div>
+            
+            <h1>Mukund M. Gawale</h1>
+            <div class="subtitle">Founder, MG Transformer Services & Supplies</div>
+            
+            <!-- Complete Transformer Assembly Animation -->
+            <div class="electrical-animation">
+                <!-- Field Effects -->
+                <div class="flux-ring ring-inner"></div>
+                <div class="flux-ring ring-outer"></div>
+                <div class="electric-arc"></div>
+                
+                <!-- Sparks -->
+                <div class="electron e-yellow"></div> 
+                <div class="electron e-violet"></div>
+                
+                <!-- The Assembly -->
+                <div class="transformer-assembly">
+                    <div class="bushings">
+                        <div class="bushing"></div>
+                        <div class="bushing"></div>
+                        <div class="bushing"></div>
+                    </div>
+                    
+                    <div class="conservator-tank"></div>
+                    <div class="conservator-pipe"></div>
+                    
+                    <div class="tank-body">
+                        <!-- Radiator Fins -->
+                        <div class="fins-left">
+                            <div class="fin-vertical"></div>
+                            <div class="fin"></div><div class="fin"></div><div class="fin"></div>
+                        </div>
+                        <div class="fins-right">
+                            <div class="fin-vertical"></div>
+                            <div class="fin"></div><div class="fin"></div><div class="fin"></div>
+                        </div>
+                        
+                        <i class="fas fa-bolt voltage-symbol"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="status-badge">
+                <i class="fas fa-tools"></i> Website Under Construction
+            </div>
+        </div>
+
+        <ul class="contact-list">
+            <li class="contact-item">
+                <div class="icon-box"><i class="fas fa-phone-alt"></i></div>
+                <div class="info-text">
+                    <span class="info-label">Call Me</span>
+                    <a href="tel:+918898517528" class="info-value">+91 889851 7528</a>
+                </div>
+            </li>
+            
+            <li class="contact-item">
+                <div class="icon-box"><i class="fas fa-envelope"></i></div>
+                <div class="info-text">
+                    <span class="info-label">Email</span>
+                    <a href="mailto:mukund.gawale@mgtransformer.com" class="info-value">mukund.gawale@mgtransformer.com</a>
+                </div>
+            </li>
+
+            <li class="contact-item">
+                <div class="icon-box"><i class="fas fa-map-marker-alt"></i></div>
+                <div class="info-text">
+                    <span class="info-label">Location</span>
+                    <span class="info-value">Sector-20, Kamothe, Navi Mumbai</span>
+                </div>
+            </li>
+        </ul>
+
+        <div class="divider"></div>
+
+        <div class="action-buttons">
+            <a href="https://wa.me/918898517528" class="btn btn-whatsapp">
+                <i class="fab fa-whatsapp" style="margin-right: 10px; font-size: 22px;"></i> Chat on WhatsApp
+            </a>
+            
+            <a href="tel:+918898517528" class="btn btn-primary">
+                <i class="fas fa-phone" style="margin-right: 10px;"></i> Call Now
+            </a>
+            
+            <button onclick="shareCard()" class="btn btn-secondary">
+                <i class="fas fa-share-alt" style="margin-right: 10px;"></i> Share Details
+            </button>
+        </div>
+
+        <div class="footer">
+            &copy; 2026 MG Transformer Services & Supplies<br>
+            <span style="font-size: 11px;">Powered by Mr. Transformer</span>
+        </div>
+    </div>
+
+    <script>
+        function shareCard() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'MG Transformer - Mukund Gawale',
+                    text: 'Here are my contact details for MG Transformer Services & Supplies. Website coming soon!',
+                    url: window.location.href
+                })
+                .catch(console.error);
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Website link copied to clipboard!");
+            }
+        }
+    </script>
+</body>
+</html>
