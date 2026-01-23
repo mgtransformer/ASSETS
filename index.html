@@ -51,6 +51,7 @@
         .card-container {
             background-color: white;
             width: 100%;
+            /* DEFAULT MOBILE WIDTH */
             max-width: 480px; 
             border-radius: 24px;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
@@ -58,13 +59,17 @@
             text-align: center;
             border-top: 8px solid var(--primary-orange);
             position: relative;
-            transition: transform 0.3s ease;
+            transition: all 0.3s ease;
         }
 
         .header {
             background-color: white;
             padding: 40px 25px 20px;
             position: relative;
+            /* Flex Column for Mobile */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         /* --- LOGO SECTION --- */
@@ -106,6 +111,7 @@
         .electrical-animation {
             margin: 20px 0 45px 0;
             height: 120px;
+            width: 100%; /* Take full width of container */
             position: relative;
             display: flex;
             justify-content: center;
@@ -119,7 +125,6 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            /* Filter to give a slight shadow to the whole assembly */
             filter: drop-shadow(0 5px 5px rgba(0,0,0,0.3));
         }
 
@@ -133,7 +138,6 @@
         .bushing {
             width: 8px;
             height: 18px;
-            /* Brown/Grey insulator look */
             background: repeating-linear-gradient(
                 to bottom,
                 #8d6e63,
@@ -148,12 +152,12 @@
         .conservator-tank {
             position: absolute;
             top: 6px;
-            right: -18px; /* Adjusted position */
+            right: -18px; 
             width: 38px;
             height: 14px;
             background-color: var(--metal-black);
             border-radius: 4px;
-            border-left: 1px solid rgba(255,255,255,0.2); /* Highlight for 3D effect */
+            border-left: 1px solid rgba(255,255,255,0.2); 
             z-index: 1;
         }
         
@@ -165,7 +169,7 @@
             height: 8px;
             background-color: var(--metal-detail);
             z-index: 0;
-            transform: skewX(-10deg); /* Slight angle */
+            transform: skewX(-10deg); 
         }
 
         /* 3. Main Tank Body */
@@ -173,7 +177,7 @@
             width: 70px;
             height: 65px;
             background: var(--metal-black);
-            background: linear-gradient(135deg, #2c3e50, #1a2530); /* Metallic gradient */
+            background: linear-gradient(135deg, #2c3e50, #1a2530); 
             border-radius: 4px;
             position: relative;
             display: flex;
@@ -213,22 +217,18 @@
         .fins-left .fin-vertical { right: 0; }
         .fins-right .fin-vertical { left: 0; }
 
-        /* Symbol on Tank - Keeping Orange for Brand Identity */
         .voltage-symbol {
             font-size: 22px;
             color: var(--primary-orange); 
-            /* Text shadow to make it glow against black */
             text-shadow: 0 0 5px rgba(217, 83, 30, 0.5);
             animation: pulse-bolt 2s ease-in-out infinite;
         }
 
-        /* === FIELD EFFECTS (Around the Assembly) === */
-        
-        /* Magnetic Flux Rings (Violet) */
+        /* === FIELD EFFECTS === */
         .flux-ring {
             position: absolute;
             border-radius: 50%;
-            border: 2px dashed rgba(155, 89, 182, 0.4); /* Violet dashed */
+            border: 2px dashed rgba(155, 89, 182, 0.4); 
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -239,7 +239,7 @@
             width: 120px;
             height: 120px;
             animation: spin 10s linear infinite;
-            border-color: rgba(155, 89, 182, 0.6); /* Stronger violet */
+            border-color: rgba(155, 89, 182, 0.6); 
         }
 
         .ring-outer {
@@ -248,28 +248,26 @@
             animation: spin-reverse 15s linear infinite;
             border-width: 1px;
             opacity: 0.5;
-            border-color: rgba(142, 68, 173, 0.5); /* Darker violet */
+            border-color: rgba(142, 68, 173, 0.5); 
         }
 
-        /* Electric Arc (Yellow/Gold) */
         .electric-arc {
             position: absolute;
             width: 135px;
             height: 135px;
             border-radius: 50%;
             border: 2px solid transparent;
-            border-top-color: var(--elec-yellow); /* Bright Yellow */
-            border-right-color: rgba(241, 196, 15, 0.3); /* Fading yellow tail */
+            border-top-color: var(--elec-yellow); 
+            border-right-color: rgba(241, 196, 15, 0.3); 
             top: 50%;
             left: 50%;
             margin-top: -67.5px; 
             margin-left: -67.5px;
-            animation: spin 1.5s linear infinite; /* Faster spin for electricity */
+            animation: spin-arc 1.5s linear infinite; 
             z-index: 0;
-            box-shadow: 0 0 8px rgba(241, 196, 15, 0.2); /* Glow */
+            box-shadow: 0 0 8px rgba(241, 196, 15, 0.2); 
         }
 
-        /* Sparks */
         .electron {
             position: absolute;
             width: 7px;
@@ -282,13 +280,11 @@
             animation: orbit 3s linear infinite;
         }
         
-        /* Electron 1: Yellow */
         .e-yellow {
             background-color: var(--elec-yellow);
             box-shadow: 0 0 6px var(--elec-yellow);
         }
         
-        /* Electron 2: Violet */
         .e-violet {
             background-color: var(--elec-violet);
             box-shadow: 0 0 6px var(--elec-violet);
@@ -304,20 +300,15 @@
             0% { transform: translate(-50%, -50%) rotate(0deg); }
             100% { transform: translate(-50%, -50%) rotate(-360deg); }
         }
-        
         @keyframes spin-arc { 
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); } 
         }
-
-        .electric-arc { animation: spin-arc 1.5s linear infinite; }
-        
         @keyframes pulse-bolt {
             0% { opacity: 0.7; transform: scale(0.95); }
             50% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 10px rgba(217, 83, 30, 0.8); }
             100% { opacity: 0.7; transform: scale(0.95); }
         }
-
         @keyframes orbit {
             from { transform: rotate(0deg) translateX(70px) rotate(0deg); }
             to   { transform: rotate(360deg) translateX(70px) rotate(-360deg); }
@@ -499,19 +490,113 @@
                 padding: 18px; 
             }
         }
+
+        /* =========================================
+           DESKTOP / LAPTOP TRANSFORMATION LOGIC 
+           ========================================= */
+        @media (min-width: 992px) {
+            .card-container {
+                /* Widen the container substantially */
+                max-width: 1100px;
+                padding: 20px;
+                border-top: none;
+                border-left: 8px solid var(--primary-orange);
+                text-align: left;
+            }
+
+            .header {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                padding-bottom: 40px;
+                text-align: left;
+            }
+
+            .header-content {
+                flex: 1;
+                padding-right: 40px;
+            }
+
+            .logo-container {
+                margin: 0 0 20px 0; /* Left align logo */
+                justify-content: flex-start;
+            }
+
+            h1 {
+                font-size: 36px; /* Bigger Title */
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+
+            .status-badge {
+                margin-top: 20px;
+            }
+
+            .electrical-animation {
+                /* Move animation to the right side */
+                width: 400px;
+                height: 300px;
+                margin: 0;
+                transform: scale(1.4); /* Make it bigger */
+            }
+
+            .contact-list {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 20px;
+                padding: 20px 30px;
+                background-color: #fff9f5;
+                border-radius: 16px;
+                margin: 0 25px;
+            }
+
+            .contact-item {
+                flex: 1;
+                margin-bottom: 0;
+                justify-content: center;
+                border: 1px solid #ffe0b2;
+            }
+
+            .divider {
+                display: none; /* Hide divider on desktop */
+            }
+
+            .action-buttons {
+                display: flex;
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 20px;
+                padding: 40px 30px;
+            }
+
+            .btn {
+                width: auto;
+                padding: 16px 32px;
+                font-size: 18px;
+            }
+        }
     </style>
 </head>
 <body>
 
     <div class="card-container">
         <div class="header">
-            <!-- Logo with branding logic -->
-            <div class="logo-container">
-                <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png?raw=true" alt="MG Transformer Logo" class="logo-img" onerror="this.src='https://github.com/mgtransformer/ASSETS/blob/main/MG_LOGO_WITH_NAME-removebg-preview.png?raw=true'">
+            <!-- Wrapped Text Content for Desktop Layout -->
+            <div class="header-content">
+                <div class="logo-container">
+                    <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png?raw=true" alt="MG Transformer Logo" class="logo-img" onerror="this.src='https://github.com/mgtransformer/ASSETS/blob/main/MG_LOGO_WITH_NAME-removebg-preview.png?raw=true'">
+                </div>
+                
+                <h1>Mukund M. Gawale</h1>
+                <div class="subtitle">Founder, MG Transformer Services & Supplies</div>
+                
+                <div class="status-badge">
+                    <i class="fas fa-tools"></i> Website Under Construction
+                </div>
             </div>
-            
-            <h1>Mukund M. Gawale</h1>
-            <div class="subtitle">Founder, MG Transformer Services & Supplies</div>
             
             <!-- Complete Transformer Assembly Animation -->
             <div class="electrical-animation">
@@ -549,10 +634,6 @@
                         <i class="fas fa-bolt voltage-symbol"></i>
                     </div>
                 </div>
-            </div>
-
-            <div class="status-badge">
-                <i class="fas fa-tools"></i> Website Under Construction
             </div>
         </div>
 
