@@ -3,41 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gawale Family Safety</title>
+    <title>Gawale Safety App</title>
     
     <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="My Safety">
-    <meta name="theme-color" content="#0ea5e9">
+    <meta name="theme-color" content="#ffffff">
     
-    <!-- Medical Icon -->
+    <!-- App Icon -->
     <link rel="icon" type="image/png" href="https://cdn-icons-png.flaticon.com/512/2966/2966327.png">
     <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/2966/2966327.png">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Designer Fonts: Poppins (Headings) & DM Sans (Body) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;500;700&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
         :root {
-            /* Bright & Optimistic Theme */
-            --primary: #0ea5e9; /* Sky 500 */
-            --primary-dark: #0284c7; /* Sky 600 */
-            --secondary: #10b981; /* Emerald 500 */
-            --bg-page: #f8fafc; /* Slate 50 */
-            --text-main: #0f172a; /* Slate 900 */
-            --text-sub: #334155; /* Slate 700 */
+            /* Designer Theme Palette */
+            --primary: #4f46e5; /* Indigo 600 */
+            --primary-dark: #3730a3; /* Indigo 800 */
+            --accent: #0ea5e9; /* Sky 500 */
+            --bg-app: #f3f4f6; /* Gray 100 */
+            --text-main: #111827; /* Gray 900 */
+            --text-sub: #374151; /* Gray 700 */
+            --card-white: #ffffff;
         }
         
         body { 
-            font-family: 'Fredoka', sans-serif; 
-            background-color: var(--bg-page); 
+            font-family: 'DM Sans', sans-serif; 
+            background-color: var(--bg-app); 
             color: var(--text-main);
             -webkit-tap-highlight-color: transparent;
             overscroll-behavior-y: none;
@@ -45,356 +47,423 @@
             font-size: 15px;
         }
         
-        .secondary-font { font-family: 'Nunito', sans-serif; }
+        h1, h2, h3, h4, .font-heading { font-family: 'Poppins', sans-serif; }
+        
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Animations */
-        .modal-overlay { transition: opacity 0.2s ease-in-out; opacity: 0; pointer-events: none; }
+        /* Smooth Transitions */
+        .tab-content { display: none; opacity: 0; transform: translateY(10px); transition: all 0.3s ease; }
+        .tab-content.active { display: block; opacity: 1; transform: translateY(0); }
+
+        /* Glassmorphism Elements */
+        .glass-nav { 
+            background: rgba(255, 255, 255, 0.9); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255,255,255,0.5);
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+        }
+        
+        .glass-header {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* Filter Chips */
+        .chip {
+            transition: all 0.2s ease;
+            border: 1px solid transparent;
+        }
+        .chip.active {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+            color: white;
+            box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+            transform: translateY(-1px);
+        }
+        .chip.inactive {
+            background: white;
+            color: #4b5563;
+            border-color: #e5e7eb;
+        }
+
+        /* Card Styles */
+        .app-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.02);
+            transition: transform 0.1s ease;
+        }
+        .app-card:active { transform: scale(0.98); }
+
+        /* Modal Animation */
+        .modal-overlay { transition: opacity 0.25s ease; opacity: 0; pointer-events: none; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .bottom-sheet { transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+        .bottom-sheet { transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .modal-overlay.active .bottom-sheet { transform: translateY(0); }
 
-        .tab-content { display: none; }
-        .tab-content.active { display: block; animation: fadeIn 0.2s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-        .glass-header { background: #ffffff; border-bottom: 1px solid #e2e8f0; }
-        
-        /* Button States */
-        .zone-btn.active { 
-            background-color: var(--primary); 
-            color: white; 
-            border-color: var(--primary-dark); 
-            box-shadow: 0 4px 6px -1px rgba(14, 165, 233, 0.4);
-            font-weight: 700;
+        /* Premium Gradient Text */
+        .text-gradient {
+            background: linear-gradient(to right, #4f46e5, #0ea5e9);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
-        .type-btn.active { 
-            background-color: #334155; 
-            color: white; 
-            border-color: #334155; 
-        }
-        
-        /* Utility */
-        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03); }
     </style>
 </head>
-<body class="h-[100dvh] flex flex-col relative overflow-hidden text-slate-900">
+<body class="h-[100dvh] flex flex-col relative overflow-hidden">
 
-    <!-- Header -->
-    <header class="glass-header shadow-sm px-3 py-3 z-40 flex-none bg-white">
-        <div class="flex justify-between items-center mb-2">
-            <div class="flex items-center gap-2">
-                <div class="w-9 h-9 rounded-lg bg-sky-100 flex items-center justify-center text-sky-600 border border-sky-200">
-                    <i class="fas fa-heartbeat text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="text-lg font-bold text-slate-800 leading-none">Gawale Family</h1>
-                    <span class="text-[10px] text-sky-600 font-bold tracking-widest block uppercase mt-0.5">Safety Matrix v7.0</span>
-                </div>
+    <!-- Sticky Header -->
+    <header class="glass-header px-5 py-4 z-40 flex-none absolute top-0 w-full">
+        <div class="flex justify-between items-center">
+            <div class="flex flex-col">
+                <span class="text-[10px] text-gray-500 font-bold tracking-[0.2em] uppercase mb-0.5">Safety Matrix</span>
+                <h1 class="text-2xl font-bold text-gray-900 leading-none">Gawale Family</h1>
             </div>
-            <a href="tel:108" class="bg-red-500 text-white px-3 py-1.5 rounded-lg font-bold shadow-md animate-pulse flex items-center gap-1 border border-red-600">
-                <i class="fas fa-phone-alt text-sm"></i> 
-                <span class="text-sm">108</span>
+            <a href="tel:108" class="bg-red-500 text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg shadow-red-200 animate-pulse border-2 border-white ring-2 ring-red-100">
+                <i class="fas fa-phone text-lg"></i>
             </a>
-        </div>
-        
-        <!-- Tab Switcher -->
-        <div class="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
-            <button onclick="switchTab('hospitals')" class="flex-1 py-2 text-sm font-bold text-center rounded-md transition-all duration-200" id="btn-hospitals">
-                <i class="fas fa-hospital mr-1.5"></i>Hospitals
-            </button>
-            <button onclick="switchTab('policy')" class="flex-1 py-2 text-sm font-bold text-center rounded-md transition-all duration-200 text-slate-500" id="btn-policy">
-                <i class="fas fa-file-contract mr-1.5"></i>My Policy
-            </button>
         </div>
     </header>
 
-    <!-- Content Area -->
-    <div class="flex-grow overflow-y-auto hide-scrollbar pb-28 relative bg-slate-50">
+    <!-- Main Scrollable Area -->
+    <div class="flex-grow overflow-y-auto hide-scrollbar pt-20 pb-28 px-4 relative">
         
         <!-- VIEW 1: HOSPITALS -->
-        <div id="view-hospitals" class="tab-content active p-3">
-            <!-- Compact Search & Filters -->
-            <div class="sticky top-0 z-30 bg-slate-50 pb-2 pt-1 -mx-3 px-3 shadow-sm border-b border-slate-200">
-                <div class="relative mb-2">
-                    <input type="text" id="search-input" onkeyup="filterList()" 
-                        class="block w-full pl-9 pr-3 py-2.5 text-sm font-semibold border border-slate-300 rounded-lg bg-white focus:ring-2 focus:ring-sky-500 focus:border-sky-500 shadow-sm text-slate-900 placeholder-slate-400 transition-all" 
-                        placeholder="Search Hospital, Area, Specialty...">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <i class="fas fa-search text-slate-400 text-sm"></i>
-                    </div>
+        <div id="view-hospitals" class="tab-content active">
+            
+            <!-- Modern Search Bar -->
+            <div class="relative mb-5 mt-1">
+                <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none">
+                    <i class="fas fa-search text-indigo-500 text-lg"></i>
                 </div>
-                
-                <!-- Compact Zone Filters -->
-                <div class="flex overflow-x-auto gap-2 mb-2 hide-scrollbar pb-1">
-                    <button onclick="setZoneFilter('all')" class="zone-btn active whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">All</button>
-                    <button onclick="setZoneFilter('Sector 19')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Home</button>
-                    <button onclick="setZoneFilter('Kamothe')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Kamothe</button>
-                    <button onclick="setZoneFilter('Khanda Colony')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Khanda</button>
-                    <button onclick="setZoneFilter('Panvel')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Panvel</button>
-                    <button onclick="setZoneFilter('Ulwe')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Ulwe</button>
-                    <button onclick="setZoneFilter('Kharghar')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Kharghar</button>
-                    <button onclick="setZoneFilter('Nerul')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Nerul</button>
-                    <button onclick="setZoneFilter('Vashi')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Vashi</button>
-                    <button onclick="setZoneFilter('Thane')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Thane</button>
-                    <button onclick="setZoneFilter('Mumbai')" class="zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-300">Mumbai</button>
-                </div>
+                <input type="text" id="search-input" onkeyup="filterList()" 
+                    class="block w-full pl-12 pr-4 py-3.5 text-base font-medium text-gray-900 bg-white border-0 rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 placeholder-gray-400" 
+                    placeholder="Search hospitals, area, speciality...">
+            </div>
 
-                <!-- Compact Type Filters -->
-                <div class="flex overflow-x-auto gap-2 hide-scrollbar pb-1">
-                    <button onclick="setTypeFilter('all')" class="type-btn active whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-bold bg-white text-slate-600 border border-slate-300 uppercase tracking-wide">All</button>
-                    <button onclick="setTypeFilter('ICU')" class="type-btn whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-bold bg-white text-slate-600 border border-slate-300"><i class="fas fa-heartbeat mr-1"></i>ICU</button>
-                    <button onclick="setTypeFilter('Maternity')" class="type-btn whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-bold bg-white text-slate-600 border border-slate-300"><i class="fas fa-baby-carriage mr-1"></i>Baby</button>
-                    <button onclick="setTypeFilter('Eye')" class="type-btn whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-bold bg-white text-slate-600 border border-slate-300"><i class="fas fa-eye mr-1"></i>Eye</button>
-                    <button onclick="setTypeFilter('Ortho')" class="type-btn whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-bold bg-white text-slate-600 border border-slate-300"><i class="fas fa-bone mr-1"></i>Bone</button>
-                    <button onclick="setTypeFilter('Heart')" class="type-btn whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-bold bg-white text-slate-600 border border-slate-300"><i class="fas fa-heart mr-1"></i>Heart</button>
-                    <button onclick="setTypeFilter('Cancer')" class="type-btn whitespace-nowrap px-3 py-1.5 rounded-md text-[11px] font-bold bg-white text-slate-600 border border-slate-300"><i class="fas fa-ribbon mr-1"></i>Cancer</button>
+            <!-- Filter Categories (Horizontal Scroll) -->
+            <div class="mb-2">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Location</h3>
+                <div class="flex overflow-x-auto gap-2 pb-2 hide-scrollbar">
+                    <button onclick="setZoneFilter('all')" class="chip active px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">All Areas</button>
+                    <button onclick="setZoneFilter('Sector 19')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Home (Sec-19)</button>
+                    <button onclick="setZoneFilter('Kamothe')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Kamothe</button>
+                    <button onclick="setZoneFilter('Khanda Colony')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Khanda</button>
+                    <button onclick="setZoneFilter('Panvel')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Panvel</button>
+                    <button onclick="setZoneFilter('Ulwe')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Ulwe</button>
+                    <button onclick="setZoneFilter('Kharghar')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Kharghar</button>
+                    <button onclick="setZoneFilter('Nerul')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Nerul</button>
+                    <button onclick="setZoneFilter('Vashi')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Vashi</button>
+                    <button onclick="setZoneFilter('Thane')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Thane</button>
+                    <button onclick="setZoneFilter('Mumbai')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap">Mumbai</button>
                 </div>
             </div>
 
-            <!-- Results -->
-            <div class="flex justify-between items-center mb-2 px-1 mt-2">
-                <span class="text-xs font-extrabold text-slate-400 uppercase tracking-widest" id="result-count-label">Centers Found</span>
+            <div class="mb-4">
+                <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Specialty</h3>
+                <div class="flex overflow-x-auto gap-2 pb-1 hide-scrollbar">
+                    <button onclick="setTypeFilter('all')" class="chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap bg-gray-800 text-white border-gray-800">All</button>
+                    <button onclick="setTypeFilter('ICU')" class="chip inactive px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap"><i class="fas fa-heartbeat mr-1"></i> ICU</button>
+                    <button onclick="setTypeFilter('Maternity')" class="chip inactive px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap"><i class="fas fa-baby mr-1"></i> Baby</button>
+                    <button onclick="setTypeFilter('Eye')" class="chip inactive px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap"><i class="fas fa-eye mr-1"></i> Eye</button>
+                    <button onclick="setTypeFilter('Ortho')" class="chip inactive px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap"><i class="fas fa-bone mr-1"></i> Bone</button>
+                    <button onclick="setTypeFilter('Heart')" class="chip inactive px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap"><i class="fas fa-heart mr-1"></i> Heart</button>
+                    <button onclick="setTypeFilter('Cancer')" class="chip inactive px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap"><i class="fas fa-ribbon mr-1"></i> Cancer</button>
+                </div>
             </div>
-            <div id="hospital-container" class="space-y-3"></div>
+
+            <!-- List Header -->
+            <div class="flex justify-between items-end mb-3 px-1">
+                <h2 class="text-lg font-bold text-gray-800">Nearby Centers</h2>
+                <span id="result-count-label" class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-md">Loading...</span>
+            </div>
+
+            <!-- Hospital Container -->
+            <div id="hospital-container" class="space-y-4 pb-4"></div>
         </div>
 
         <!-- VIEW 2: POLICY DASHBOARD -->
-        <div id="view-policy" class="tab-content p-4">
-            <!-- Bright Digital Policy Card -->
-            <div class="bg-gradient-to-br from-sky-500 to-blue-600 rounded-2xl p-5 text-white shadow-xl mb-6 relative overflow-hidden border border-sky-400">
-                <div class="absolute -top-10 -right-10 w-40 h-40 bg-white opacity-20 rounded-full blur-3xl"></div>
-                <div class="relative z-10">
-                    <div class="flex justify-between items-start mb-4">
-                        <div class="bg-white text-sky-700 px-2.5 py-1 rounded text-[10px] font-extrabold tracking-wider border border-white shadow-sm uppercase">Titanium+</div>
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Niva_Bupa_Logo.jpg/800px-Niva_Bupa_Logo.jpg" class="h-6 rounded bg-white mix-blend-screen opacity-90" alt="Niva Bupa">
+        <div id="view-policy" class="tab-content">
+            
+            <!-- Premium Credit Card UI -->
+            <div class="relative w-full aspect-[1.586] rounded-2xl overflow-hidden shadow-2xl mb-6 transform transition hover:scale-[1.01]">
+                <!-- Card Background -->
+                <div class="absolute inset-0 bg-gradient-to-br from-[#4f46e5] via-[#4338ca] to-[#312e81]"></div>
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl -mr-16 -mt-16"></div>
+                <div class="absolute bottom-0 left-0 w-40 h-40 bg-indigo-300 opacity-10 rounded-full blur-2xl -ml-10 -mb-10"></div>
+                
+                <!-- Card Content -->
+                <div class="relative z-10 p-6 flex flex-col justify-between h-full text-white">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="text-[10px] font-bold tracking-[0.2em] uppercase opacity-70">Health Insurance</p>
+                            <h2 class="text-2xl font-bold font-heading tracking-wide mt-1">Aspire</h2>
+                            <div class="inline-block bg-white/20 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-bold mt-1 tracking-wider border border-white/10">TITANIUM+</div>
+                        </div>
+                        <!-- Mock Chip -->
+                        <div class="w-10 h-7 rounded bg-gradient-to-br from-yellow-200 to-yellow-500 opacity-90 shadow-inner"></div>
                     </div>
-                    <h2 class="text-2xl font-bold secondary-font tracking-wide mb-1 text-white">Aspire</h2>
-                    <p class="text-xs text-sky-100 mb-4 font-semibold">Policy No: <span class="font-bold text-white text-sm tracking-wider ml-1 bg-sky-700/40 px-1.5 py-0.5 rounded">35124663202500</span></p>
-                    <div class="space-y-3 border-t border-sky-400/50 pt-3">
-                        <div class="grid grid-cols-2 gap-2">
-                            <div><p class="text-[10px] text-sky-100 uppercase font-bold mb-0.5">Insured 1</p><p class="font-bold text-sm">Mukund M. Gawale</p></div>
-                            <div class="text-right"><p class="text-[10px] text-sky-100 uppercase font-bold mb-0.5">Insured 2</p><p class="font-bold text-sm">Sheetal M. Gawale</p></div>
+
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end">
+                            <div class="space-y-0.5">
+                                <p class="text-[9px] uppercase font-bold opacity-60">Primary Insured</p>
+                                <p class="text-base font-bold font-mono tracking-wide text-shadow">MUKUND G.</p>
+                            </div>
+                            <div class="space-y-0.5 text-right">
+                                <p class="text-[9px] uppercase font-bold opacity-60">Spouse</p>
+                                <p class="text-base font-bold font-mono tracking-wide text-shadow">SHEETAL G.</p>
+                            </div>
                         </div>
-                        <div class="flex justify-between items-center pt-1">
-                             <div><p class="text-[10px] text-sky-100 uppercase font-bold mb-0.5">Valid Till</p><p class="font-bold text-sm">18 Mar 2028</p></div>
-                             <div class="text-right"><p class="text-[10px] text-sky-100 uppercase font-bold mb-0.5">Customer ID</p><p class="font-bold text-sm">2004161979</p></div>
-                        </div>
-                        <div class="bg-white/20 rounded-lg p-2.5 flex justify-between items-center border border-white/20 backdrop-blur-sm mt-2">
-                            <span class="text-xs font-bold uppercase tracking-wide">Sum Insured</span>
-                            <span class="font-bold text-lg text-yellow-300 drop-shadow-sm">₹ 10,00,000</span>
+                        
+                        <div class="flex justify-between items-end pt-1">
+                            <div>
+                                <p class="text-[9px] uppercase font-bold opacity-60">Policy No</p>
+                                <p class="text-sm font-bold tracking-widest font-mono">3512 4663 2025 00</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-[9px] uppercase font-bold opacity-60">Sum Insured</p>
+                                <p class="text-lg font-bold text-emerald-300 drop-shadow-md">₹ 10 Lakh</p>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Detailed Features List -->
-            <div class="mb-6">
-                <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-3 ml-1 flex items-center gap-2">
-                    <i class="fas fa-check-circle text-emerald-500"></i> Included Features
-                </h3>
-                <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
-                    
-                    <!-- Renewal & Restoration -->
-                    <div class="p-3.5 hover:bg-slate-50 transition">
-                        <h4 class="text-sm font-bold text-slate-900 flex justify-between">Restoration of Cover <span class="text-sky-600">100%</span></h4>
-                        <p class="text-xs text-slate-600 font-medium mt-1">₹ 10 Lakh unlimited times/year. Carried forward at renewal.</p>
+            <!-- Validity Badge -->
+            <div class="flex justify-between items-center bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center">
+                        <i class="fas fa-calendar-check"></i>
                     </div>
-
-                    <!-- Room Rent -->
-                    <div class="p-3.5 hover:bg-slate-50 transition">
-                        <h4 class="text-sm font-bold text-slate-900 flex justify-between">Room Rent Limit <span class="text-emerald-600">No Capping</span></h4>
-                        <p class="text-xs text-slate-600 font-medium mt-1">Any room category allowed.</p>
+                    <div>
+                        <p class="text-[10px] font-bold text-gray-400 uppercase">Valid Until</p>
+                        <p class="text-sm font-bold text-gray-800">18 March 2028</p>
                     </div>
-
-                    <!-- Maternity -->
-                    <div class="p-3.5 hover:bg-slate-50 transition">
-                        <h4 class="text-sm font-bold text-slate-900 flex justify-between">Maternity Cover <span class="text-pink-600">₹ 12,000</span></h4>
-                        <p class="text-xs text-slate-600 font-medium mt-1">Deliveries, IVF, Surrogacy. 9 months waiting period.</p>
-                    </div>
-
-                    <!-- Baby Cover -->
-                    <div class="p-3.5 hover:bg-slate-50 transition">
-                        <h4 class="text-sm font-bold text-slate-900">New Born Baby Cover</h4>
-                        <p class="text-xs text-slate-600 font-medium mt-1">Covered up to Sum Insured from Day 1. Premium at renewal.</p>
-                    </div>
-
-                    <!-- Pre/Post Natal -->
-                    <div class="p-3.5 hover:bg-slate-50 transition">
-                        <h4 class="text-sm font-bold text-slate-900">Pre & Post Natal</h4>
-                        <p class="text-xs text-slate-600 font-medium mt-1">Covered up to Maternity limit (₹ 12,000).</p>
-                    </div>
-
-                    <!-- Pre/Post Hospitalization -->
-                    <div class="p-3.5 hover:bg-slate-50 transition">
-                        <h4 class="text-sm font-bold text-slate-900 flex justify-between">Pre/Post Hospitalization <span class="text-slate-500">60 / 180 Days</span></h4>
-                        <p class="text-xs text-slate-600 font-medium mt-1">Expenses covered before & after admission.</p>
-                    </div>
-
-                    <!-- Ambulance -->
-                    <div class="p-3.5 hover:bg-slate-50 transition">
-                        <h4 class="text-sm font-bold text-slate-900">Ambulance Charges</h4>
-                        <p class="text-xs text-slate-600 font-medium mt-1">Road & Air (Domestic) up to ₹ 10 Lakh.</p>
-                    </div>
-
-                    <!-- Health Checkup -->
-                    <div class="p-3.5 hover:bg-slate-50 transition">
-                        <h4 class="text-sm font-bold text-slate-900">Free Health Checkup</h4>
-                        <p class="text-xs text-slate-600 font-medium mt-1">Once/year for all adults. Max ₹ 10,000 per policy.</p>
-                    </div>
-
-                    <!-- Day Care & AYUSH -->
-                    <div class="p-3.5 hover:bg-slate-50 transition">
-                        <h4 class="text-sm font-bold text-slate-900">Day Care & AYUSH</h4>
-                        <p class="text-xs text-slate-600 font-medium mt-1">All day care valid (2+ hrs). AYUSH up to ₹ 10 Lakh.</p>
-                    </div>
-
-                    <!-- Waiting Periods -->
-                    <div class="p-3.5 bg-orange-50/50">
-                        <h4 class="text-sm font-bold text-orange-900">Waiting Periods</h4>
-                        <ul class="list-disc pl-4 text-xs text-orange-800 font-medium mt-1 space-y-0.5">
-                            <li>Initial: 30 Days (Accidents covered Day 1)</li>
-                            <li>Specific Illness: 24 Months (Cataract, Hernia, etc.)</li>
-                            <li>Pre-existing: 3 Years</li>
-                        </ul>
-                    </div>
-
-                    <!-- Exclusions -->
-                    <div class="p-3.5 bg-red-50/50">
-                        <h4 class="text-sm font-bold text-red-900 flex items-center gap-2"><i class="fas fa-ban text-xs"></i> Excluded</h4>
-                        <p class="text-xs text-red-800 font-medium mt-1">Animal bite vaccination is NOT covered.</p>
-                    </div>
-
+                </div>
+                <div class="text-right">
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Customer ID</p>
+                    <p class="text-sm font-bold text-gray-800 tracking-wide">2004161979</p>
                 </div>
             </div>
 
-            <!-- Support -->
-            <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-200 mb-6">
-                <h3 class="text-sm font-bold text-slate-900 mb-4 flex items-center gap-2"><i class="fas fa-headset text-sky-600 text-lg"></i> Niva Bupa Support</h3>
-                <div class="flex gap-3">
-                    <a href="tel:18605008888" class="flex-1 bg-slate-50 hover:bg-slate-100 py-3 rounded-xl text-center border border-slate-200 transition"><p class="text-sm font-bold text-slate-800">Call Now</p><p class="text-xs text-slate-500 font-bold mt-0.5">1860-500-8888</p></a>
-                    <a href="https://rules.nivabupa.com/customer-service/" target="_blank" class="flex-1 bg-slate-50 hover:bg-slate-100 py-3 rounded-xl text-center border border-slate-200 transition"><p class="text-sm font-bold text-slate-800">Insta Assist</p><p class="text-xs text-slate-500 font-bold mt-0.5">Self Service</p></a>
+            <!-- Features Accordion Style -->
+            <h3 class="text-sm font-bold text-gray-800 mb-3 ml-1 flex items-center gap-2">
+                <i class="fas fa-star text-amber-500"></i> Premium Benefits
+            </h3>
+            
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <!-- Feature 1 -->
+                <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-center items-center text-center">
+                    <i class="fas fa-sync-alt text-indigo-500 text-xl mb-1"></i>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Restoration</p>
+                    <p class="text-sm font-bold text-gray-800">100%</p>
+                    <p class="text-[9px] text-gray-500 leading-tight mt-1">Unlimited times/yr</p>
+                </div>
+                <!-- Feature 2 -->
+                <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-center items-center text-center">
+                    <i class="fas fa-bed text-indigo-500 text-xl mb-1"></i>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Room Rent</p>
+                    <p class="text-sm font-bold text-gray-800">No Capping</p>
+                    <p class="text-[9px] text-gray-500 leading-tight mt-1">Any Category</p>
+                </div>
+                <!-- Feature 3 -->
+                <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-center items-center text-center">
+                    <i class="fas fa-baby-carriage text-pink-500 text-xl mb-1"></i>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Maternity</p>
+                    <p class="text-sm font-bold text-gray-800">₹ 12,000</p>
+                    <p class="text-[9px] text-gray-500 leading-tight mt-1">9 Months wait</p>
+                </div>
+                <!-- Feature 4 -->
+                <div class="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col justify-center items-center text-center">
+                    <i class="fas fa-plane text-sky-500 text-xl mb-1"></i>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase">Air Ambul.</p>
+                    <p class="text-sm font-bold text-gray-800">₹ 10 Lakh</p>
+                    <p class="text-[9px] text-gray-500 leading-tight mt-1">Domestic</p>
                 </div>
             </div>
+
+            <!-- Detailed List -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+                <div class="p-3 bg-gray-50 border-b border-gray-100 font-bold text-xs text-gray-500 uppercase tracking-wider">Additional Coverage</div>
+                
+                <div class="p-4 flex items-center gap-3 border-b border-gray-50">
+                    <i class="fas fa-child text-purple-500 w-5"></i>
+                    <div>
+                        <p class="text-xs font-bold text-gray-800">New Born Baby</p>
+                        <p class="text-[10px] text-gray-500">Covered from Day 1 up to Sum Insured</p>
+                    </div>
+                </div>
+                <div class="p-4 flex items-center gap-3 border-b border-gray-50">
+                    <i class="fas fa-user-md text-teal-500 w-5"></i>
+                    <div>
+                        <p class="text-xs font-bold text-gray-800">Annual Health Checkup</p>
+                        <p class="text-[10px] text-gray-500">Once/Year for all adults (Max ₹ 10k)</p>
+                    </div>
+                </div>
+                <div class="p-4 flex items-center gap-3 border-b border-gray-50">
+                    <i class="fas fa-leaf text-green-500 w-5"></i>
+                    <div>
+                        <p class="text-xs font-bold text-gray-800">AYUSH & Day Care</p>
+                        <p class="text-[10px] text-gray-500">Up to ₹ 10 Lakh. All day care covered.</p>
+                    </div>
+                </div>
+                <div class="p-4 flex items-center gap-3 bg-red-50/50">
+                    <i class="fas fa-ban text-red-500 w-5"></i>
+                    <div>
+                        <p class="text-xs font-bold text-red-800">Key Exclusion</p>
+                        <p class="text-[10px] text-red-600">Animal bite vaccination not covered.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Support -->
+            <a href="tel:18605008888" class="block w-full bg-slate-900 text-white p-4 rounded-xl text-center shadow-lg active:scale-[0.98] transition">
+                <p class="font-bold text-sm">Call Niva Bupa Support</p>
+                <p class="text-xs text-gray-400">1860-500-8888</p>
+            </a>
+            
+            <div class="h-24"></div>
         </div>
     </div>
 
-    <!-- MODAL -->
-    <div id="modal-overlay" class="modal-overlay fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center" onclick="closeModal()">
-        <div id="detail-card" class="bottom-sheet bg-white w-full max-w-md mx-auto sm:rounded-2xl rounded-t-3xl shadow-2xl overflow-hidden h-[90vh] sm:h-auto flex flex-col" onclick="event.stopPropagation()">
-            <div class="h-36 bg-sky-600 relative shrink-0">
-                <div class="absolute inset-0 bg-gradient-to-tr from-sky-700 via-sky-600 to-blue-500 opacity-100"></div>
-                <button onclick="closeModal()" class="absolute top-4 left-4 w-9 h-9 bg-white/20 backdrop-blur-md rounded-full text-white flex items-center justify-center hover:bg-white/30 transition border border-white/20"><i class="fas fa-times text-lg"></i></button>
-                <div class="absolute bottom-5 left-5 right-5 text-white">
-                    <span id="modal-badge" class="bg-white/20 backdrop-blur-md px-2.5 py-1 rounded-lg text-xs font-extrabold mb-2 inline-block tracking-wide border border-white/10 shadow-sm">NEAREST</span>
-                    <h2 id="modal-title" class="text-2xl font-bold leading-tight mb-1 text-shadow">Hospital Name</h2>
-                    <p id="modal-area" class="text-sm text-sky-50 font-semibold flex items-center"><i class="fas fa-map-marker-alt mr-1.5 text-sky-200"></i> Area Name</p>
-                </div>
-            </div>
-            <div class="flex-grow overflow-y-auto p-5 hide-scrollbar bg-white">
-                <div class="grid grid-cols-3 gap-3 mb-6">
-                    <a id="btn-call" href="#" class="bg-sky-50 py-3 rounded-xl flex flex-col items-center justify-center text-sky-800 active:scale-95 transition border border-sky-100 shadow-sm hover:bg-sky-100"><i class="fas fa-phone mb-1.5 text-lg"></i><span class="text-xs font-bold">Call</span></a>
-                    <a id="btn-map" href="#" target="_blank" class="bg-emerald-50 py-3 rounded-xl flex flex-col items-center justify-center text-emerald-800 active:scale-95 transition border border-emerald-100 shadow-sm hover:bg-emerald-100"><i class="fas fa-location-arrow mb-1.5 text-lg"></i><span class="text-xs font-bold">Map</span></a>
-                    <a id="btn-web" href="#" target="_blank" class="bg-slate-50 py-3 rounded-xl flex flex-col items-center justify-center text-slate-800 active:scale-95 transition border border-slate-200 shadow-sm hover:bg-slate-100"><i class="fas fa-globe mb-1.5 text-lg"></i><span class="text-xs font-bold">Web</span></a>
-                </div>
-                <div class="space-y-5">
-                    <div><h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-2 ml-1">Address</h3><p id="modal-address" class="text-base text-slate-800 font-semibold leading-relaxed bg-slate-50 p-4 rounded-xl border border-slate-200">Address...</p></div>
-                    <div><h3 class="text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-2.5 ml-1">Specialities</h3><div id="modal-facilities" class="flex flex-wrap gap-2"></div></div>
-                    <div class="bg-sky-50 rounded-xl p-4 border border-sky-100 mt-2 shadow-sm">
-                        <div class="flex gap-3"><i class="fas fa-info-circle text-sky-600 mt-1 text-lg"></i><div><p class="text-sm font-bold text-slate-900">PPN Network Status</p><p class="text-xs text-slate-700 mt-0.5 font-semibold leading-relaxed">Cashless facility available subject to Niva Bupa approval. Carry your e-card (Customer ID: 2004161979).</p></div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="p-5 bg-white border-t border-slate-200 shrink-0"><a id="btn-navigate-main" href="#" class="block w-full bg-sky-600 text-white text-center py-3.5 rounded-xl font-bold shadow-lg shadow-sky-200 active:scale-[0.98] transition text-base border border-sky-700"><i class="fas fa-directions mr-2"></i> Navigate Now</a></div>
+    <!-- Floating Bottom Navigation Dock -->
+    <div class="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-sm">
+        <div class="glass-nav rounded-2xl p-1.5 flex justify-between items-center shadow-2xl">
+            <button onclick="switchTab('hospitals')" id="nav-hospitals" class="flex-1 py-3 rounded-xl text-center transition-all duration-300 bg-indigo-600 text-white shadow-md">
+                <i class="fas fa-hospital mb-1 block text-lg"></i>
+                <span class="text-[10px] font-bold block leading-none">Hospitals</span>
+            </button>
+            <button onclick="switchTab('policy')" id="nav-policy" class="flex-1 py-3 rounded-xl text-center transition-all duration-300 text-gray-500 hover:bg-gray-100">
+                <i class="fas fa-file-contract mb-1 block text-lg"></i>
+                <span class="text-[10px] font-bold block leading-none">Policy</span>
+            </button>
         </div>
     </div>
 
-    <!-- FOOTER -->
-    <footer class="bg-white border-t border-slate-200 p-5 pb- safe-area-inset-bottom text-center">
-        <p class="text-xs text-slate-400 font-bold tracking-wide">Gawale Family Safety Matrix v7.0</p>
-    </footer>
+    <!-- DETAILS MODAL -->
+    <div id="modal-overlay" class="modal-overlay fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center" onclick="closeModal()">
+        <div id="detail-card" class="bottom-sheet bg-white w-full max-w-md mx-auto sm:rounded-3xl rounded-t-3xl shadow-2xl overflow-hidden h-[85vh] sm:h-auto flex flex-col" onclick="event.stopPropagation()">
+            
+            <!-- Stylish Header -->
+            <div class="relative h-44 bg-slate-900 shrink-0">
+                <div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-blue-500 opacity-90"></div>
+                <button onclick="closeModal()" class="absolute top-5 right-5 w-8 h-8 bg-black/20 backdrop-blur-md rounded-full text-white flex items-center justify-center hover:bg-black/30 transition border border-white/20"><i class="fas fa-times"></i></button>
+                
+                <div class="absolute bottom-6 left-6 right-6 text-white">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span id="modal-badge" class="bg-white/20 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-bold border border-white/20">NEAREST</span>
+                        <span id="modal-type" class="bg-black/20 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-bold border border-white/10 uppercase tracking-wide">Multi</span>
+                    </div>
+                    <h2 id="modal-title" class="text-2xl font-bold font-heading leading-tight mb-1 text-shadow">Hospital Name</h2>
+                    <p id="modal-area" class="text-sm text-indigo-100 font-medium flex items-center opacity-90"><i class="fas fa-map-marker-alt mr-1.5"></i> Area Name</p>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-grow overflow-y-auto p-6 hide-scrollbar bg-white">
+                
+                <!-- Quick Actions -->
+                <div class="grid grid-cols-3 gap-3 mb-8">
+                    <a id="btn-call" href="#" class="bg-green-50 py-3 rounded-2xl flex flex-col items-center justify-center text-green-700 active:scale-95 transition border border-green-100 shadow-sm">
+                        <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center mb-1"><i class="fas fa-phone text-sm"></i></div>
+                        <span class="text-xs font-bold">Call</span>
+                    </a>
+                    <a id="btn-map" href="#" target="_blank" class="bg-blue-50 py-3 rounded-2xl flex flex-col items-center justify-center text-blue-700 active:scale-95 transition border border-blue-100 shadow-sm">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mb-1"><i class="fas fa-location-arrow text-sm"></i></div>
+                        <span class="text-xs font-bold">Map</span>
+                    </a>
+                    <a id="btn-web" href="#" target="_blank" class="bg-gray-50 py-3 rounded-2xl flex flex-col items-center justify-center text-gray-700 active:scale-95 transition border border-gray-100 shadow-sm">
+                        <div class="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center mb-1"><i class="fas fa-globe text-sm"></i></div>
+                        <span class="text-xs font-bold">Web</span>
+                    </a>
+                </div>
+
+                <div class="space-y-6">
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">Location</h3>
+                        <p id="modal-address" class="text-base text-gray-800 font-medium leading-relaxed bg-gray-50 p-4 rounded-2xl border border-gray-100">Address...</p>
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 ml-1">Specialities</h3>
+                        <div id="modal-facilities" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div class="bg-indigo-50 rounded-2xl p-4 border border-indigo-100 mt-2 flex gap-4 items-start">
+                        <div class="bg-white p-2 rounded-lg text-indigo-600 shadow-sm"><i class="fas fa-id-card text-xl"></i></div>
+                        <div>
+                            <p class="text-sm font-bold text-gray-900">Cashless Status</p>
+                            <p class="text-xs text-gray-600 mt-0.5 leading-relaxed">Available subject to approval. Show e-card (ID: 2004161979).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-5 bg-white border-t border-gray-100 shrink-0">
+                <a id="btn-navigate-main" href="#" class="block w-full bg-gray-900 text-white text-center py-4 rounded-2xl font-bold shadow-lg shadow-gray-200 active:scale-[0.98] transition text-base">
+                    <i class="fas fa-directions mr-2"></i> Navigate Now
+                </a>
+            </div>
+        </div>
+    </div>
 
     <script>
+        // --- MASTER DATA (Combined & Cleaned) ---
         const hospitals = [
-            // SECTOR 19 (HOME) - High Priority
+            // SECTOR 19 (HOME)
             { id: 1, name: "Healing Touch Eye Hospital", address: "Shop 5/6 Satyam Heights, Sector 19, Kamothe", area: "Sector 19", distance: "0.2 km", phone: "+919320496332", website: "https://healingtoucheyehospital.com", facilities: ["Ophthalmology", "Cataract", "Eye Emergency"], badge: "Nearest 🏠", type: "Eye" },
             { id: 2, name: "Orchid Multispeciality Hospital", address: "Silver Star CHS, Sector 18, Kamothe", area: "Sector 19", distance: "0.4 km", phone: "02227430000", website: "https://www.justdial.com", facilities: ["ICU", "Trauma", "General Surgery"], type: "ICU" },
-            { id: 3, name: "Sunrise Multispeciality Hospital", address: "Plot 01, Sector 17, Kamothe", area: "Sector 19", distance: "0.5 km", phone: "02227431234", website: "https://www.practo.com", facilities: ["General Medicine", "ICU", "Casualty"], type: "ICU" },
-            { id: 4, name: "Life Era Multispeciality", address: "Sector 20, Kamothe", area: "Sector 19", distance: "0.6 km", phone: "108", website: "https://maps.google.com", facilities: ["Multispeciality", "ICU", "Orthopedics", "Gynecology"], type: "Multispeciality" },
-            { id: 5, name: "Jeevan Jyot Hospital", address: "Sec 21, Plot No 59 C, Kamothe", area: "Sector 19", distance: "0.8 km", phone: "108", website: "https://maps.google.com", facilities: ["Maternity", "Child Care", "General Medicine"], type: "Maternity" },
-            { id: 6, name: "Noble Care Hospital", address: "Sai Dwar 1St Floor Plot No 64 Sector 21 Kamothe", area: "Sector 19", distance: "0.9 km", phone: "108", website: "https://maps.google.com", facilities: ["General", "ICU", "Emergency"], type: "ICU" },
-
+            { id: 3, name: "Sunrise Multispeciality", address: "Plot 01, Sector 17, Kamothe", area: "Sector 19", distance: "0.5 km", phone: "02227431234", website: "https://www.practo.com", facilities: ["General Medicine", "ICU", "Casualty"], type: "ICU" },
+            { id: 4, name: "Life Era Multispeciality", address: "Sector 20, Kamothe", area: "Sector 19", distance: "0.6 km", phone: "108", website: "https://maps.google.com", facilities: ["Multispeciality", "ICU", "Ortho", "Gynae"], type: "Multispeciality" },
+            { id: 5, name: "Jeevan Jyot Hospital", address: "Sec 21, Plot No 59 C, Kamothe", area: "Sector 19", distance: "0.8 km", phone: "108", website: "https://maps.google.com", facilities: ["Maternity", "Child Care", "General"], type: "Maternity" },
+            
             // KAMOTHE REST
-            { id: 7, name: "Medisecure Superspeciality", address: "Plot No 10/8, Sec 7, Kamothe", area: "Kamothe", distance: "1.5 km", phone: "108", website: "https://maps.google.com", facilities: ["Cardiac Care", "Neurology", "Advanced ICU"], type: "Heart" },
-            { id: 8, name: "Mauli Accident & General", address: "Sector 14, Kamothe", area: "Kamothe", distance: "1.2 km", phone: "108", website: "https://maps.google.com", facilities: ["Accident Care", "Trauma Center", "Fracture Clinic"], type: "Ortho" },
-            { id: 9, name: "B And J Superspeciality", address: "Sector 36, Kamothe", area: "Kamothe", distance: "2.5 km", phone: "108", website: "https://maps.google.com", facilities: ["Joint Replacement", "Orthopedics", "Spine Surgery"], type: "Ortho" },
-            { id: 50, name: "Swami Krupa Nursing Home", address: "Plot 159, Sector 14, Kamothe", area: "Kamothe", distance: "1.3 km", phone: "108", website: "https://maps.google.com", facilities: ["General", "Nursing", "Maternity"], type: "Maternity" },
-
+            { id: 7, name: "Medisecure Superspeciality", address: "Plot No 10/8, Sec 7, Kamothe", area: "Kamothe", distance: "1.5 km", phone: "108", website: "https://maps.google.com", facilities: ["Cardiac", "Neurology", "ICU"], type: "Heart" },
+            { id: 8, name: "Mauli Accident & General", address: "Sector 14, Kamothe", area: "Kamothe", distance: "1.2 km", phone: "108", website: "https://maps.google.com", facilities: ["Accident", "Trauma", "Fracture"], type: "Ortho" },
+            { id: 9, name: "B And J Superspeciality", address: "Sector 36, Kamothe", area: "Kamothe", distance: "2.5 km", phone: "108", website: "https://maps.google.com", facilities: ["Joint Replacement", "Ortho", "Spine"], type: "Ortho" },
+            
             // KHANDA COLONY
-            { id: 10, name: "Ashtvinayak Hospital", address: "Sector 6, Khanda Colony", area: "Khanda Colony", distance: "1.5 km", phone: "108", website: "https://maps.google.com", facilities: ["General Hospital", "Emergency", "ICU"], type: "ICU" },
-            { id: 11, name: "More Hospital And ICU", address: "Sector 17, Khanda Colony", area: "Khanda Colony", distance: "1.6 km", phone: "108", website: "https://maps.google.com", facilities: ["Critical Care (ICU)", "General Medicine"], type: "ICU" },
-            { id: 51, name: "Maxx Healthcare Hospital", address: "Row House Plot 3B Near Swad Hotel Sector 10", area: "Khanda Colony", distance: "1.8 km", phone: "108", website: "https://maps.google.com", facilities: ["General", "Trauma"], type: "Multispeciality" },
+            { id: 10, name: "Ashtvinayak Hospital", address: "Sector 6, Khanda Colony", area: "Khanda Colony", distance: "1.5 km", phone: "108", website: "https://maps.google.com", facilities: ["General", "Emergency", "ICU"], type: "ICU" },
             { id: 52, name: "Padalkar Hospital & SICU", address: "105/204 A Neel Enclave Sector 9", area: "Khanda Colony", distance: "1.8 km", phone: "108", website: "https://maps.google.com", facilities: ["Surgical ICU", "Ortho"], type: "Ortho" },
 
             // PANVEL
-            { id: 12, name: "Panacea Hospital", address: "Plot No 105 & 106 Sector 08, New Panvel East", area: "Panvel", distance: "2.5 km", phone: "108", website: "https://maps.google.com", facilities: ["Multispeciality", "Diagnostics", "Research"], type: "Multispeciality" },
-            { id: 13, name: "Prism Eye Institute", address: "Plot No 63 Sector 1 (S) Behind Cidco Office", area: "Panvel", distance: "3.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Advanced Eye Care", "Laser Surgery"], type: "Eye" },
-            { id: 14, name: "Lifeline Hospital", address: "Shivaji Road Opp ST Bus Stand", area: "Panvel", distance: "3.6 km", phone: "108", website: "https://maps.google.com", facilities: ["Trauma Center", "Emergency", "Research"], type: "ICU" },
-            { id: 16, name: "Laxmi Eye Hospital", address: "A Hamid Mulla Road Mp Heights, Old Panvel", area: "Panvel", distance: "3.2 km", phone: "02227452228", website: "https://laxmieye.org", facilities: ["Tertiary Eye Care", "Retina", "Glaucoma"], type: "Eye" },
-            { id: 53, name: "Aadhar Multispeciality", address: "7A 1St Floor Gurusharanam Complex Old Panvel", area: "Panvel", distance: "3.5 km", phone: "108", website: "https://maps.google.com", facilities: ["Multispeciality", "ICU"], type: "Multispeciality" },
-            { id: 54, name: "Gandhi Hospital", address: "142 M C C H Society, Panvel", area: "Panvel", distance: "3.0 km", phone: "108", website: "https://maps.google.com", facilities: ["General"], type: "Multispeciality" },
-            { id: 55, name: "Unnati Hospital & ICU", address: "J K Plaza Shivaji Chowk, Panvel", area: "Panvel", distance: "3.5 km", phone: "108", website: "https://maps.google.com", facilities: ["ICU", "Trauma"], type: "ICU" },
-            { id: 56, name: "The R Jhunjhunwala Sankara Eye", address: "Plot No 13 Sector 5A New Panvel East", area: "Panvel", distance: "2.8 km", phone: "108", website: "https://maps.google.com", facilities: ["Eye Surgery", "Cataract"], type: "Eye" },
+            { id: 12, name: "Panacea Hospital", address: "Plot No 105 Sector 08, New Panvel", area: "Panvel", distance: "2.5 km", phone: "108", website: "https://maps.google.com", facilities: ["Multispeciality", "Diagnostics"], type: "Multispeciality" },
+            { id: 13, name: "Prism Eye Institute", address: "Plot No 63 Sector 1 (S) New Panvel", area: "Panvel", distance: "3.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Advanced Eye Care", "Laser"], type: "Eye" },
+            { id: 14, name: "Lifeline Hospital", address: "Shivaji Road Opp ST Bus Stand", area: "Panvel", distance: "3.6 km", phone: "108", website: "https://maps.google.com", facilities: ["Trauma", "Emergency", "Research"], type: "ICU" },
+            { id: 16, name: "Laxmi Eye Hospital", address: "A Hamid Mulla Road, Old Panvel", area: "Panvel", distance: "3.2 km", phone: "02227452228", website: "https://laxmieye.org", facilities: ["Tertiary Eye Care", "Retina"], type: "Eye" },
+            { id: 55, name: "Unnati Hospital & ICU", address: "Shivaji Chowk, Panvel", area: "Panvel", distance: "3.5 km", phone: "108", website: "https://maps.google.com", facilities: ["ICU", "Trauma"], type: "ICU" },
 
-            // ULWE (NEW ZONE)
-            { id: 57, name: "Balaji Hospital", address: "84 Star Paradise Bldg Sector 5 Ulwe", area: "Ulwe", distance: "12.0 km", phone: "108", website: "https://maps.google.com", facilities: ["General", "Emergency"], type: "Multispeciality" },
-            { id: 58, name: "Galaxy Hospital", address: "Shop 101 Nms Icon Plot 194 Sector 19 Ulwe", area: "Ulwe", distance: "13.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Multispeciality"], type: "Multispeciality" },
-            { id: 59, name: "Feenixx Hospital", address: "1St Floor Shyam Sheth Tower Sector 19 Ulwe", area: "Ulwe", distance: "13.0 km", phone: "108", website: "https://maps.google.com", facilities: ["General"], type: "Multispeciality" },
-            { id: 60, name: "Little Krishna Child Care", address: "Shop 110 Nms Icon Sector 19 Ulwe", area: "Ulwe", distance: "13.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Pediatrics", "Child Care"], type: "Maternity" },
-            { id: 61, name: "Ulwe Superspeciality", address: "Shri Amey Krupa Plot 60 Sec 19 Ulwe", area: "Ulwe", distance: "13.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Superspeciality"], type: "Multispeciality" },
+            // ULWE
+            { id: 57, name: "Balaji Hospital", address: "84 Star Paradise Bldg Sec 5", area: "Ulwe", distance: "12.0 km", phone: "108", website: "https://maps.google.com", facilities: ["General", "Emergency"], type: "Multispeciality" },
+            { id: 58, name: "Galaxy Hospital", address: "Shop 101 Nms Icon Plot 194 Sec 19", area: "Ulwe", distance: "13.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Multispeciality"], type: "Multispeciality" },
+            { id: 60, name: "Little Krishna Child Care", address: "Shop 110 Nms Icon Sector 19", area: "Ulwe", distance: "13.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Pediatrics", "Child Care"], type: "Maternity" },
 
             // KHARGHAR
-            { id: 15, name: "Medicover Hospitals", address: "Plot No 1 Sector 10 Near BOI", area: "Kharghar", distance: "3.5 km", phone: "108", website: "https://www.medicoverhospitals.in", facilities: ["Tertiary Care", "Cardiology", "Neurology", "ICU"], type: "Multispeciality" },
+            { id: 15, name: "Medicover Hospitals", address: "Plot No 1 Sector 10 Near BOI", area: "Kharghar", distance: "3.5 km", phone: "108", website: "https://www.medicoverhospitals.in", facilities: ["Tertiary Care", "Heart", "Neuro", "ICU"], type: "Multispeciality" },
             { id: 17, name: "Mitr Healthcare", address: "74-79 Chaturbhuj CHS Sector 12", area: "Kharghar", distance: "4.0 km", phone: "02227744229", website: "https://mitrhospital.com", facilities: ["Laparoscopy", "Urology", "Surgery"], type: "Multispeciality" },
-            { id: 19, name: "Tata Memorial (ACTREC)", address: "Sector 22, Kharghar", area: "Kharghar", distance: "5.5 km", phone: "02227405000", website: "https://actrec.gov.in", facilities: ["Oncology", "Cancer Research", "Radiotherapy"], type: "Cancer" },
-            { id: 62, name: "Aayush Hospital", address: "Plot No 112 Sector 30 Kharghar", area: "Kharghar", distance: "5.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Multispeciality"], type: "Multispeciality" },
-            { id: 63, name: "Kharghar Medicity Hospital", address: "Aum Sai CHS Plot No 23/C Sector 7", area: "Kharghar", distance: "3.8 km", phone: "108", website: "https://maps.google.com", facilities: ["General", "ICU"], type: "ICU" },
+            { id: 19, name: "Tata Memorial (ACTREC)", address: "Sector 22, Kharghar", area: "Kharghar", distance: "5.5 km", phone: "02227405000", website: "https://actrec.gov.in", facilities: ["Oncology", "Cancer Research"], type: "Cancer" },
+            { id: 18, name: "Motherhood Hospital", address: "Sector 20, Kharghar", area: "Kharghar", distance: "4.2 km", phone: "18001088008", website: "https://www.motherhoodindia.com", facilities: ["Maternity", "Pediatrics", "Neonatology"], type: "Maternity" },
 
-            // NERUL / BELAPUR / CBD
-            { id: 20, name: "Apollo Hospitals", address: "Plot 13 Parsik Hill Road Sector 23 CBD Belapur", area: "Nerul", distance: "8.0 km", phone: "02233503350", website: "https://mumbai.apollohospitals.com", facilities: ["Tertiary Care", "Transplants", "Cardiac", "Neuro"], type: "Multispeciality" },
-            { id: 21, name: "Terna Speciality Hospital", address: "Plot No 12 Sector 22 Nerul West", area: "Nerul", distance: "7.5 km", phone: "02261578300", website: "https://ternahospital.org", facilities: ["Medical College", "Trauma"], type: "Multispeciality" },
+            // NERUL / BELAPUR
+            { id: 20, name: "Apollo Hospitals", address: "Parsik Hill Road Sec 23 CBD Belapur", area: "Nerul", distance: "8.0 km", phone: "02233503350", website: "https://mumbai.apollohospitals.com", facilities: ["Transplants", "Cardiac", "Neuro"], type: "Multispeciality" },
+            { id: 21, name: "Terna Speciality", address: "Plot No 12 Sector 22 Nerul West", area: "Nerul", distance: "7.5 km", phone: "02261578300", website: "https://ternahospital.org", facilities: ["Medical College", "Trauma"], type: "Multispeciality" },
             { id: 22, name: "Neurogen Brain & Spine", address: "Plot 19 Sector 40 Seawoods", area: "Nerul", distance: "7.0 km", phone: "09920200400", website: "https://www.neurogen.in", facilities: ["Neuro Rehab", "Spine Surgery"], type: "Ortho" },
-            { id: 64, name: "Acharya Shri Nanesh", address: "34-37 Sector 8A Artist Village CBD Belapur", area: "Nerul", distance: "7.5 km", phone: "108", website: "https://maps.google.com", facilities: ["General"], type: "Multispeciality" },
-            { id: 65, name: "Seawood Hospital", address: "Plot No 21 Sector 48 Nerul(W)", area: "Nerul", distance: "7.2 km", phone: "108", website: "https://maps.google.com", facilities: ["General"], type: "Multispeciality" },
 
             // VASHI
-            { id: 24, name: "Fortis Hiranandani", address: "Mini Sea Shore Road Sector 10A Vashi", area: "Vashi", distance: "10.0 km", phone: "02239199222", website: "https://www.fortismumbai.com", facilities: ["Cardiac", "Critical Care", "Ortho"], type: "Multispeciality" },
+            { id: 24, name: "Fortis Hiranandani", address: "Mini Sea Shore Road Sec 10A Vashi", area: "Vashi", distance: "10.0 km", phone: "02239199222", website: "https://www.fortismumbai.com", facilities: ["Cardiac", "Critical Care"], type: "Multispeciality" },
             { id: 25, name: "MGM Hospital", address: "Sector 3, Vashi", area: "Vashi", distance: "10.5 km", phone: "02261526666", website: "https://mgmhospitalvashi.net", facilities: ["Trauma", "Medical College"], type: "Multispeciality" },
-            { id: 26, name: "Advanced Eye Hospital", address: "Sector 19A Near Palm Beach Road Vashi", area: "Vashi", distance: "9.5 km", phone: "02267313636", website: "https://www.advancedeyehospital.com", facilities: ["Advanced Eye Care", "Retina"], type: "Eye" },
-            { id: 23, name: "Cloudnine Hospital", address: "Plot 17 Sector 19D Vashi", area: "Vashi", distance: "9.0 km", phone: "09972899728", website: "https://www.cloudninecare.com", facilities: ["Maternity", "Fertility", "Pediatrics"], type: "Maternity" },
-            { id: 66, name: "Dr Agarwals Eye Hospital", address: "Sector 12 Vashi", area: "Vashi", distance: "9.8 km", phone: "108", website: "https://maps.google.com", facilities: ["Eye Surgery"], type: "Eye" },
-            { id: 67, name: "Vinamra Swaraj Hospital", address: "108-109 Sector 11 Vashi", area: "Vashi", distance: "9.6 km", phone: "108", website: "https://maps.google.com", facilities: ["General"], type: "Multispeciality" },
+            { id: 23, name: "Cloudnine Hospital", address: "Plot 17 Sector 19D Vashi", area: "Vashi", distance: "9.0 km", phone: "09972899728", website: "https://www.cloudninecare.com", facilities: ["Maternity", "Fertility", "Kids"], type: "Maternity" },
 
-            // THANE & MULUND
-            { id: 27, name: "Jupiter Hospital", address: "Eastern Express Highway Thane West", area: "Thane", distance: "25.0 km", phone: "02221725555", website: "https://www.jupiterhospital.com", facilities: ["Tertiary Care", "Transplant", "Oncology"], type: "Multispeciality" },
-            { id: 28, name: "Bethany Hospital", address: "Pokhran Road No 2 Thane West", area: "Thane", distance: "26.0 km", phone: "02221725111", website: "https://bethanyhospital.in", facilities: ["General Medicine", "Surgery"], type: "Multispeciality" },
-            { id: 68, name: "Fortis Hospitals Mulund", address: "Mulund Goregaon Link Road", area: "Thane", distance: "22.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Cardiac", "Transplants"], type: "Heart" },
-            { id: 69, name: "Apex Hospitals Mulund", address: "Veena Nagar Mulund West", area: "Thane", distance: "23.0 km", phone: "108", website: "https://maps.google.com", facilities: ["General"], type: "Multispeciality" },
-
-            // MUMBAI (MAJOR)
-            { id: 29, name: "Kokilaben Ambani Hospital", address: "Four Bungalows Andheri West", area: "Mumbai", distance: "35.0 km", phone: "02230696969", website: "https://www.kokilabenhospital.com", facilities: ["Quaternary Care", "Robotic Surgery"], type: "Multispeciality" },
-            { id: 30, name: "Lilavati Hospital", address: "Bandra Reclamation Bandra West", area: "Mumbai", distance: "30.0 km", phone: "02226751000", website: "https://lilavatihospital.com", facilities: ["Tertiary Care", "Cardiac"], type: "Multispeciality" },
-            { id: 31, name: "Tata Memorial Hospital", address: "Parel, Mumbai", area: "Mumbai", distance: "32.0 km", phone: "02224177000", website: "https://tmc.gov.in", facilities: ["Comprehensive Cancer Care"], type: "Cancer" },
-            { id: 32, name: "Jaslok Hospital", address: "Pedder Road Mumbai", area: "Mumbai", distance: "35.0 km", phone: "02266573333", website: "https://www.jaslokhospital.net", facilities: ["Multi-Specialty", "Research"], type: "Multispeciality" },
-            { id: 70, name: "Nanavati Super Speciality", address: "S V Road Vile Parle West", area: "Mumbai", distance: "32.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Super Speciality"], type: "Multispeciality" },
-            { id: 71, name: "Sir HN Reliance Foundation", address: "Raja Rammohan Roy Road Girgaon", area: "Mumbai", distance: "38.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Quaternary Care"], type: "Multispeciality" },
-            { id: 72, name: "P.D. Hinduja Hospital", address: "Veer Savarkar Marg Mahim", area: "Mumbai", distance: "28.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Tertiary Care"], type: "Multispeciality" },
-            { id: 73, name: "Global Hospital", address: "Dr E Borges Road Parel", area: "Mumbai", distance: "32.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Transplants", "Liver"], type: "Multispeciality" },
-            { id: 74, name: "SevenHills Hospital", address: "Marol Maroshi Road Andheri East", area: "Mumbai", distance: "28.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Health City"], type: "Multispeciality" },
-            { id: 75, name: "SRCC Childrens Hospital", address: "Haji Ali Park Mahalaxmi", area: "Mumbai", distance: "36.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Pediatrics"], type: "Maternity" },
-            { id: 76, name: "Asian Heart Institute", address: "Bandra Kurla Complex", area: "Mumbai", distance: "25.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Cardiac Care"], type: "Heart" },
-            { id: 77, name: "Wockhardt Hospital", address: "Mumbai Central", area: "Mumbai", distance: "35.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Critical Care"], type: "Multispeciality" }
+            // MUMBAI & THANE
+            { id: 27, name: "Jupiter Hospital", address: "Eastern Express Highway Thane", area: "Thane", distance: "25.0 km", phone: "02221725555", website: "https://www.jupiterhospital.com", facilities: ["Tertiary Care", "Transplant"], type: "Multispeciality" },
+            { id: 29, name: "Kokilaben Ambani", address: "Four Bungalows Andheri West", area: "Mumbai", distance: "35.0 km", phone: "02230696969", website: "https://www.kokilabenhospital.com", facilities: ["Robotic Surgery", "Neuro"], type: "Multispeciality" },
+            { id: 30, name: "Lilavati Hospital", address: "Bandra Reclamation", area: "Mumbai", distance: "30.0 km", phone: "02226751000", website: "https://lilavatihospital.com", facilities: ["Tertiary Care", "Cardiac"], type: "Multispeciality" },
+            { id: 31, name: "Tata Memorial", address: "Parel, Mumbai", area: "Mumbai", distance: "32.0 km", phone: "02224177000", website: "https://tmc.gov.in", facilities: ["Comprehensive Cancer Care"], type: "Cancer" },
+            { id: 71, name: "Sir HN Reliance", address: "Girgaon, Mumbai", area: "Mumbai", distance: "38.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Quaternary Care"], type: "Multispeciality" },
+            { id: 74, name: "SevenHills Hospital", address: "Marol Andheri East", area: "Mumbai", distance: "28.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Health City"], type: "Multispeciality" },
+            { id: 76, name: "Asian Heart Institute", address: "Bandra Kurla Complex", area: "Mumbai", distance: "25.0 km", phone: "108", website: "https://maps.google.com", facilities: ["Cardiac Care"], type: "Heart" }
         ];
 
         let currentZone = 'all';
@@ -404,26 +473,25 @@
             document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
             document.getElementById(`view-${tabId}`).classList.add('active');
             
-            const btnHospitals = document.getElementById('btn-hospitals');
-            const btnPolicy = document.getElementById('btn-policy');
+            const btnHospitals = document.getElementById('nav-hospitals');
+            const btnPolicy = document.getElementById('nav-policy');
             
             if (tabId === 'hospitals') {
-                btnHospitals.className = "flex-1 py-2 text-sm font-bold text-center rounded-md bg-sky-100 text-sky-800 shadow-sm transition-all border border-sky-200";
-                btnPolicy.className = "flex-1 py-2 text-sm font-bold text-center rounded-md text-slate-500 hover:bg-slate-200 transition-all";
+                btnHospitals.className = "flex-1 py-3 rounded-xl text-center transition-all duration-300 bg-indigo-600 text-white shadow-md transform scale-105";
+                btnPolicy.className = "flex-1 py-3 rounded-xl text-center transition-all duration-300 text-gray-500 hover:bg-gray-100";
             } else {
-                btnHospitals.className = "flex-1 py-2 text-sm font-bold text-center rounded-md text-slate-500 hover:bg-slate-200 transition-all";
-                btnPolicy.className = "flex-1 py-2 text-sm font-bold text-center rounded-md bg-sky-100 text-sky-800 shadow-sm transition-all border border-sky-200";
+                btnHospitals.className = "flex-1 py-3 rounded-xl text-center transition-all duration-300 text-gray-500 hover:bg-gray-100";
+                btnPolicy.className = "flex-1 py-3 rounded-xl text-center transition-all duration-300 bg-indigo-600 text-white shadow-md transform scale-105";
             }
         }
 
         function setZoneFilter(zone) {
             currentZone = zone;
-            document.querySelectorAll('.zone-btn').forEach(btn => {
-                const isActive = btn.textContent.includes(zone === 'Sector 19' ? 'Home' : zone === 'all' ? 'All' : zone);
-                if(isActive) {
-                    btn.className = "zone-btn active whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-sky-500 text-white border-2 border-sky-700 shadow-sm transition-all";
-                } else {
-                    btn.className = "zone-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-200 transition-all hover:bg-slate-50";
+            document.querySelectorAll('.chip').forEach(btn => {
+                if(btn.textContent.includes(zone === 'Sector 19' ? 'Home' : zone === 'all' ? 'All' : zone)) {
+                    btn.className = "chip active px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap";
+                } else if (btn.parentElement.previousElementSibling.textContent.includes('Location')) {
+                    btn.className = "chip inactive px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap";
                 }
             });
             filterList();
@@ -431,15 +499,16 @@
 
         function setTypeFilter(type) {
             currentType = type;
-            document.querySelectorAll('.type-btn').forEach(btn => {
+            document.querySelectorAll('.chip').forEach(btn => {
                 const btnText = btn.innerText.toLowerCase();
                 const typeText = type.toLowerCase();
-                const isActive = (type === 'all' && btnText.includes('all')) || (type !== 'all' && btnText.includes(typeText.split('/')[0]));
-
-                if(isActive) {
-                    btn.className = "type-btn active whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-slate-800 text-white border-2 border-slate-900 shadow-sm transition-all uppercase tracking-wide";
-                } else {
-                    btn.className = "type-btn whitespace-nowrap px-3 py-1.5 rounded-md text-xs font-bold bg-white text-slate-600 border border-slate-200 transition-all uppercase tracking-wide hover:bg-slate-50";
+                // Check if this button belongs to Specialty section
+                if(btn.innerHTML.includes('fa-') || btn.innerText === 'All') {
+                     if((type === 'all' && btn.innerText === 'All') || (type !== 'all' && btnText.includes(typeText.split('/')[0]))) {
+                        btn.className = "chip active px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap";
+                    } else if (btn.parentElement.previousElementSibling.textContent.includes('Specialty')) {
+                        btn.className = "chip inactive px-3 py-2 rounded-full text-xs font-bold whitespace-nowrap";
+                    }
                 }
             });
             filterList();
@@ -466,15 +535,15 @@
                 return matchesZone && matchesType && matchesSearch;
             });
 
-            document.getElementById('result-count-label').textContent = `${filtered.length} Centers Found`;
+            document.getElementById('result-count-label').textContent = `${filtered.length} Found`;
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center p-12"><i class="fas fa-search text-slate-300 text-6xl mb-4"></i><p class="text-slate-500 font-bold text-lg">No hospitals found.</p></div>`;
+                container.innerHTML = `<div class="text-center p-10 bg-white rounded-3xl border border-dashed border-gray-200 mt-4"><i class="fas fa-search text-gray-300 text-5xl mb-3"></i><p class="text-gray-400 font-bold">No hospitals found.</p></div>`;
                 return;
             }
 
             filtered.forEach(h => {
-                const badgeHtml = h.badge ? `<span class="bg-emerald-100 text-emerald-700 text-[10px] font-extrabold px-2.5 py-1 rounded-md mb-2.5 inline-block shadow-sm border border-emerald-200">${h.badge}</span>` : '';
+                const badgeHtml = h.badge ? `<span class="bg-emerald-100 text-emerald-700 text-[9px] font-extrabold px-2 py-0.5 rounded mb-1 inline-block uppercase tracking-wider">${h.badge}</span>` : '';
                 
                 let typeIcon = 'fa-hospital';
                 if(h.type === 'Eye') typeIcon = 'fa-eye';
@@ -484,23 +553,24 @@
                 if(h.type === 'Cancer') typeIcon = 'fa-ribbon';
 
                 const card = `
-                <div onclick="openHospital(${h.id})" class="bg-white rounded-xl p-4 border border-slate-200 card-shadow active:scale-[0.98] transition-transform duration-150 relative hover:border-sky-200">
-                    <div class="flex justify-between items-start">
+                <div onclick="openHospital(${h.id})" class="app-card p-5 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-5"><i class="fas ${typeIcon} text-6xl text-gray-800"></i></div>
+                    <div class="flex justify-between items-start relative z-10">
                         <div class="w-[75%]">
                             ${badgeHtml}
-                            <h3 class="text-lg font-bold text-slate-800 leading-tight mb-1.5">${h.name}</h3>
-                            <p class="text-xs text-slate-500 secondary-font mb-3 font-semibold flex items-center"><i class="fas fa-map-pin text-red-500 mr-1.5 text-sm"></i>${h.address}</p>
+                            <h3 class="text-lg font-bold text-gray-900 leading-tight mb-1 font-heading">${h.name}</h3>
+                            <p class="text-xs text-gray-500 font-medium mb-3 flex items-center"><i class="fas fa-map-marker-alt text-red-500 mr-1.5"></i>${h.address}</p>
                             <div class="flex flex-wrap gap-2">
-                                <span class="text-[10px] bg-slate-100 text-slate-700 px-2 py-1 rounded border border-slate-200 font-bold flex items-center gap-1"><i class="fas ${typeIcon}"></i> ${h.type}</span>
-                                ${h.facilities.slice(0, 2).map(f => `<span class="text-[10px] bg-sky-50 text-sky-700 px-2 py-1 rounded border border-sky-100 font-bold">${f}</span>`).join('')}
+                                <span class="text-[10px] bg-gray-100 text-gray-700 px-2 py-1 rounded-md font-bold flex items-center gap-1 border border-gray-200"><i class="fas ${typeIcon}"></i> ${h.type}</span>
+                                ${h.facilities.slice(0, 2).map(f => `<span class="text-[10px] bg-indigo-50 text-indigo-700 px-2 py-1 rounded-md font-bold border border-indigo-100">${f}</span>`).join('')}
                             </div>
                         </div>
                         <div class="w-[25%] text-right flex flex-col items-end justify-between h-full min-h-[80px]">
                             <div>
-                                <span class="text-xl font-bold text-slate-700 block">${h.distance}</span>
-                                <span class="text-[10px] text-slate-400 uppercase font-extrabold tracking-wider">Away</span>
+                                <span class="text-xl font-bold text-gray-800 block font-heading">${h.distance}</span>
+                                <span class="text-[9px] text-gray-400 uppercase font-bold tracking-wider">Away</span>
                             </div>
-                            <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center mt-2 text-slate-400 border border-slate-200">
+                            <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center mt-2 text-indigo-600">
                                 <i class="fas fa-chevron-right text-xs"></i>
                             </div>
                         </div>
@@ -518,6 +588,7 @@
             document.getElementById('modal-area').textContent = h.area + " • " + h.type;
             document.getElementById('modal-address').textContent = h.address;
             document.getElementById('modal-badge').style.display = h.badge ? 'inline-block' : 'none';
+            document.getElementById('modal-type').textContent = h.type;
 
             document.getElementById('btn-call').href = `tel:${h.phone}`;
             document.getElementById('btn-web').href = h.website;
@@ -526,7 +597,7 @@
 
             const fContainer = document.getElementById('modal-facilities');
             fContainer.innerHTML = h.facilities.map(f => 
-                `<span class="text-xs bg-slate-50 border border-slate-200 text-slate-700 px-2.5 py-1.5 rounded-lg font-bold shadow-sm">${f}</span>`
+                `<span class="text-xs bg-gray-50 border border-gray-100 text-gray-700 px-3 py-1.5 rounded-lg font-bold shadow-sm">${f}</span>`
             ).join('');
 
             document.getElementById('modal-overlay').classList.add('active');
