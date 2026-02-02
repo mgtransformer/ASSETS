@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>My Emergency Hospitals</title>
+    <title>MG Emergency Hospitals</title>
     
-    <!-- PWA Settings for App-like experience -->
+    <!-- PWA Settings -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#D9531E">
@@ -15,14 +15,13 @@
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Fonts -->
+    <!-- Professional Fonts: Fredoka & Nunito -->
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
     
     <!-- Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Personal Branding Colors */
         :root {
             --primary-orange: #D9531E;
             --secondary-bg: #fff0e6;
@@ -31,30 +30,51 @@
         
         body { 
             font-family: 'Fredoka', sans-serif; 
-            background-color: #f8f9fa; 
+            background-color: #fcfcfc; 
             -webkit-tap-highlight-color: transparent;
         }
-        .secondary-font { font-family: 'Nunito', sans-serif; }
         
+        .secondary-font { font-family: 'Nunito', sans-serif; }
         .text-primary { color: var(--primary-orange); }
         .bg-primary { background-color: var(--primary-orange); }
+        .bg-secondary { background-color: var(--secondary-bg); }
+        .text-burnt { color: var(--text-burnt-orange); }
         
-        .card-shadow { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .card-shadow { 
+            box-shadow: 0 4px 15px -3px rgba(217, 83, 30, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); 
+        }
         
-        /* Hide Scrollbar */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .emergency-btn {
+            background: linear-gradient(135deg, #D9531E 0%, #a0400e 100%);
+        }
+        
+        /* Pulse effect for Nearest badge */
+        @keyframes pulse-soft {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .pulse { animation: pulse-soft 2s infinite ease-in-out; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col pb-safe">
 
-    <!-- Header -->
-    <header class="bg-white shadow-md p-4 sticky top-0 z-50 border-b-4 border-[#D9531E]">
+    <!-- Header with MG Branding -->
+    <header class="bg-white shadow-sm p-4 sticky top-0 z-50 border-b-4 border-[#D9531E]">
         <div class="max-w-4xl mx-auto flex justify-between items-center">
-            <div class="text-left">
-                <h1 class="text-2xl font-bold text-primary">My Hospitals</h1>
-                <p class="text-xs text-gray-600 secondary-font mt-1">Sector-19, Kamothe | <span class="text-green-600 font-bold">Niva Bupa Cashless</span></p>
+            <div class="flex items-center gap-3">
+                <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG Logo" class="h-10 w-auto">
+                <div>
+                    <h1 class="text-xl font-bold text-primary leading-tight">Emergency Hospitals</h1>
+                    <p class="text-[10px] text-gray-500 secondary-font uppercase tracking-wider">Sector-19, Kamothe | Niva Bupa Cashless</p>
+                </div>
             </div>
+            <a href="tel:108" class="bg-red-600 text-white px-3 py-2 rounded-full text-xs font-bold animate-pulse flex items-center gap-1">
+                <i class="fas fa-phone-alt"></i> 108
+            </a>
         </div>
     </header>
 
@@ -62,236 +82,79 @@
     <main class="flex-grow p-4 max-w-4xl mx-auto w-full pb-24">
         
         <!-- Search Bar -->
-        <div class="relative mb-6">
+        <div class="relative mb-4">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                 <i class="fas fa-search text-gray-400"></i>
             </div>
             <input type="text" id="search-input" onkeyup="filterList()" 
-                class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-white focus:ring-[#D9531E] focus:border-[#D9531E] shadow-sm outline-none" 
-                placeholder="Search (e.g., Eye, ICU, Panvel)...">
+                class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-200 rounded-2xl bg-white focus:ring-[#D9531E] focus:border-[#D9531E] shadow-sm outline-none transition-all" 
+                placeholder="Search Eye, ICU, Panvel, etc...">
         </div>
 
         <!-- Filter Tabs -->
-        <div class="flex overflow-x-auto pb-2 gap-2 mb-4 hide-scrollbar" style="-webkit-overflow-scrolling: touch;">
-            <button onclick="setZoneFilter('all')" class="zone-btn active whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md ring-2 ring-offset-1 ring-[#D9531E]">All Nearby</button>
-            <button onclick="setZoneFilter('Sector 19')" class="zone-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-white text-gray-600 border border-gray-200">Sector 19 (Home)</button>
-            <button onclick="setZoneFilter('Kamothe')" class="zone-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-white text-gray-600 border border-gray-200">Rest of Kamothe</button>
-            <button onclick="setZoneFilter('Khanda Colony')" class="zone-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-white text-gray-600 border border-gray-200">Khanda Colony</button>
-            <button onclick="setZoneFilter('Panvel')" class="zone-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-white text-gray-600 border border-gray-200">Panvel</button>
+        <div class="flex overflow-x-auto pb-4 gap-2 mb-2 hide-scrollbar" style="-webkit-overflow-scrolling: touch;">
+            <button onclick="setZoneFilter('all')" class="zone-btn active whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold bg-primary text-white shadow-lg shadow-orange-200 transition-all">All</button>
+            <button onclick="setZoneFilter('Sector 19')" class="zone-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-gray-600 border border-gray-100 shadow-sm transition-all">Sector 19 (Home)</button>
+            <button onclick="setZoneFilter('Kamothe')" class="zone-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-gray-600 border border-gray-100 shadow-sm transition-all">Kamothe</button>
+            <button onclick="setZoneFilter('Khanda Colony')" class="zone-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-gray-600 border border-gray-100 shadow-sm transition-all">Khanda Colony</button>
+            <button onclick="setZoneFilter('Panvel')" class="zone-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-gray-600 border border-gray-100 shadow-sm transition-all">Panvel</button>
         </div>
 
         <!-- Result Count -->
-        <p id="result-count" class="text-xs text-gray-500 mb-2 font-bold secondary-font text-right">Loading data...</p>
+        <div class="flex justify-between items-center mb-4 px-1">
+            <span class="text-[10px] font-bold text-gray-400 uppercase secondary-font tracking-widest">Available Centers</span>
+            <p id="result-count" class="text-xs text-primary font-bold secondary-font">Loading...</p>
+        </div>
 
         <!-- Hospital List -->
         <div id="hospital-container" class="space-y-4"></div>
 
     </main>
 
-    <footer class="bg-gray-800 text-white text-center p-4 mt-auto secondary-font text-xs">
-        <p>Personal Emergency List • Mukund M. Gawale</p>
+    <footer class="bg-gray-900 text-gray-400 text-center p-6 mt-auto secondary-font">
+        <p class="text-[10px] uppercase tracking-[0.2em] mb-2 text-primary font-bold">Personal Safety Matrix</p>
+        <p class="text-xs">Compiled by Mukund M. Gawale</p>
+        <p class="text-[10px] mt-1 opacity-50 italic">MG Transformer Services & Supplies</p>
     </footer>
 
     <script>
         // --- DATA ---
         const hospitals = [
-            // ZONE 1: SECTOR 19
-            { 
-                name: "Healing Touch Eye Hospital", 
-                address: "Shop No 5/6 Satyam Heights, Plot No 81, Sector 19, Kamothe", 
-                area: "Sector 19", 
-                distance: "0.2 km", 
-                facilities: "Ophthalmology, Cataract, Eye Emergency",
-                facilities_mr: "नेत्ररोग, मोतीबिंदू, डोळ्यांची आपत्कालीन सेवा",
-                badge: "Nearest 🏠" 
-            },
-            { 
-                name: "Orchid Multispeciality Hospital", 
-                address: "First Floor B Wing, Silver Star CHS, Sector 18, Kamothe", 
-                area: "Sector 19", 
-                distance: "0.4 km", 
-                facilities: "ICU, Trauma, General Surgery, 24x7 Emergency",
-                facilities_mr: "आयसीयू, ट्राुमा केअर, जनरल सर्जरी, २४x७ आपत्कालीन सेवा"
-            },
-            { 
-                name: "Sunrise Multispeciality Hospital", 
-                address: "Shiva Kalpataru Arcade, Building No 1, Plot 01, Sector 17, Kamothe", 
-                area: "Sector 19", 
-                distance: "0.5 km", 
-                facilities: "General Medicine, ICU, Casualty, Diagnostics",
-                facilities_mr: "जनरल मेडिसिन, आयसीयू, अपघात विभाग, निदान केंद्र"
-            },
-            { 
-                name: "Life Era Multispeciality Hospital", 
-                address: "33 & 34, Sector 20, Kamothe, Navi Mumbai", 
-                area: "Sector 19", 
-                distance: "0.6 km", 
-                facilities: "Multispeciality, ICU, Orthopedics, Gynecology",
-                facilities_mr: "मल्टीस्पेशालिटी, आयसीयू, अस्थिरोग, स्त्रीरोग"
-            },
-            { 
-                name: "Jeevan Jyot Hospital", 
-                address: "Shubh Avenue Building, Ground & First Floor, Sec 21, Plot No 59 C, Kamothe", 
-                area: "Sector 19", 
-                distance: "0.8 km", 
-                facilities: "Maternity, Child Care, General Medicine",
-                facilities_mr: "प्रसूतीगृह, बालरोग, जनरल मेडिसिन"
-            },
-            { 
-                name: "New Pulse Multispeciality Hospital", 
-                address: "Shop No 5/6 Dharti Heights, Plot No 28, Sector 21, Kamothe", 
-                area: "Sector 19", 
-                distance: "0.9 km", 
-                facilities: "ICU, Trauma Care, Cardiology, Surgery",
-                facilities_mr: "आयसीयू, ट्राुमा केअर, हृदयविकार, शस्त्रक्रिया"
-            },
+            // SECTOR 19
+            { name: "Healing Touch Eye Hospital", address: "Shop 5/6 Satyam Heights, Sector 19, Kamothe", area: "Sector 19", distance: "0.2 km", facilities: "Ophthalmology, Cataract, Eye Emergency", facilities_mr: "नेत्ररोग, मोतीबिंदू, डोळ्यांची आपत्कालीन सेवा", badge: "Nearest 🏠" },
+            { name: "Orchid Multispeciality Hospital", address: "Silver Star CHS, Sector 18, Kamothe", area: "Sector 19", distance: "0.4 km", facilities: "ICU, Trauma, General Surgery, 24x7 Emergency", facilities_mr: "आयसीयू, ट्राुमा केअर, २४x७ आपत्कालीन सेवा" },
+            { name: "Sunrise Multispeciality Hospital", address: "Plot 01, Sector 17, Kamothe", area: "Sector 19", distance: "0.5 km", facilities: "General Medicine, ICU, Casualty, Diagnostics", facilities_mr: "जनरल मेडिसिन, आयसीयू, अपघात विभाग" },
+            { name: "Life Era Multispeciality Hospital", address: "Sector 20, Kamothe", area: "Sector 19", distance: "0.6 km", facilities: "Multispeciality, ICU, Orthopedics, Gynecology", facilities_mr: "मल्टीस्पेशालिटी, आयसीयू, स्त्रीरोग" },
+            { name: "Jeevan Jyot Hospital", address: "Sec 21, Plot No 59 C, Kamothe", area: "Sector 19", distance: "0.8 km", facilities: "Maternity, Child Care, General Medicine", facilities_mr: "प्रसूतीगृह, बालरोग, जनरल मेडिसिन" },
+            { name: "New Pulse Multispeciality Hospital", address: "Sector 21, Kamothe", area: "Sector 19", distance: "0.9 km", facilities: "ICU, Trauma Care, Cardiology, Surgery", facilities_mr: "आयसीयू, हृदयविकार, शस्त्रक्रिया" },
 
-            // ZONE 2: REST OF KAMOTHE
-            { 
-                name: "Medisecure Superspeciality Hospital", 
-                address: "Plot No 10/8, Sec 7, Opp SBI Bank Main Road, Kamothe", 
-                area: "Kamothe", 
-                distance: "1.5 km", 
-                facilities: "Superspeciality, Cardiac Care, Neurology, Advanced ICU",
-                facilities_mr: "सुपरस्पेशालिटी, हृदयविकार, मज्जातंतू विकार, प्रगत आयसीयू"
-            },
-            { 
-                name: "Swami Krupa Nursing Home", 
-                address: "Plot 159, Sect 14, Kamothe", 
-                area: "Kamothe", 
-                distance: "1.2 km", 
-                facilities: "Nursing Home, Maternity, General Observation",
-                facilities_mr: "नर्सिंग होम, प्रसूती सेवा, जनरल ऑब्झर्वेशन"
-            },
-            { 
-                name: "B And J Superspeciality Hospital", 
-                address: "Mhalsa Residency Plot No 6, Sector 36, Kamothe", 
-                area: "Kamothe", 
-                distance: "2.5 km", 
-                facilities: "Joint Replacement, Orthopedics, Spine Surgery",
-                facilities_mr: "सांधे प्रत्यारोपण, अस्थिरोग, मणक्याच्या शस्त्रक्रिया"
-            },
-            { 
-                name: "Mauli Accident And General Hospital", 
-                address: "Plot No 104A Sector 14, Neelkanth Height, Kamothe", 
-                area: "Kamothe", 
-                distance: "1.2 km", 
-                facilities: "Accident Care, Trauma Center, Fracture Clinic",
-                facilities_mr: "अपघात विभाग, ट्राुमा सेंटर, फ्रॅक्चर क्लिनिक"
-            },
+            // KAMOTHE
+            { name: "Medisecure Superspeciality Hospital", address: "Plot No 10/8, Sec 7, Kamothe", area: "Kamothe", distance: "1.5 km", facilities: "Superspeciality, Cardiac Care, Neurology, Advanced ICU", facilities_mr: "सुपरस्पेशालिटी, हृदयविकार, प्रगत आयसीयू" },
+            { name: "Mauli Accident & General Hospital", address: "Sector 14, Kamothe", area: "Kamothe", distance: "1.2 km", facilities: "Accident Care, Trauma Center, Fracture Clinic", facilities_mr: "अपघात विभाग, ट्राुमा सेंटर" },
+            { name: "B And J Superspeciality Hospital", address: "Sector 36, Kamothe", area: "Kamothe", distance: "2.5 km", facilities: "Joint Replacement, Orthopedics, Spine Surgery", facilities_mr: "सांधे प्रत्यारोपण, मणक्याच्या शस्त्रक्रिया" },
 
-            // ZONE 3: KHANDA COLONY
-            { 
-                name: "Ashtvinayak Hospital", 
-                address: "Plot No 10, Sector 6, Khanda Colony, New Panvel(W)", 
-                area: "Khanda Colony", 
-                distance: "1.5 km", 
-                facilities: "General Hospital, Emergency Services, ICU",
-                facilities_mr: "जनरल हॉस्पिटल, आपत्कालीन सेवा, आयसीयू"
-            },
-            { 
-                name: "More Hospital And ICU Pvt Ltd", 
-                address: "A 101 Shree Sai Shraddha Society, Plot No 12, Sector 17, Khanda Colony", 
-                area: "Khanda Colony", 
-                distance: "1.6 km", 
-                facilities: "Critical Care (ICU), General Medicine",
-                facilities_mr: "अतिदक्षता विभाग (ICU), जनरल मेडिसिन"
-            },
-            { 
-                name: "Maxx Healthcare Hospital", 
-                address: "Row House Plot 3B Near Swad Hotel, Sector 10, Khanda Colony", 
-                area: "Khanda Colony", 
-                distance: "1.8 km", 
-                facilities: "General Surgery, Medicine, Emergency",
-                facilities_mr: "जनरल सर्जरी, मेडिसिन, आपत्कालीन सेवा"
-            },
-            { 
-                name: "Thombare Hospital", 
-                address: "1st Floor Riddhi CHS, Shop 116-119, Sector 13, Khanda Colony", 
-                area: "Khanda Colony", 
-                distance: "1.7 km", 
-                facilities: "General Hospital, Nursing Care",
-                facilities_mr: "जनरल हॉस्पिटल, नर्सिंग केअर"
-            },
-            { 
-                name: "Padalkar Hospital & SICU", 
-                address: "105/204 A Neel Enclave, Sector 9, Khanda Colony", 
-                area: "Khanda Colony", 
-                distance: "1.9 km", 
-                facilities: "Surgical ICU, Orthopedics, Trauma",
-                facilities_mr: "सर्जिकल आयसीयू, अस्थिरोग, ट्राुमा"
-            },
+            // KHANDA COLONY
+            { name: "Ashtvinayak Hospital", address: "Sector 6, Khanda Colony", area: "Khanda Colony", distance: "1.5 km", facilities: "General Hospital, Emergency Services, ICU", facilities_mr: "जनरल हॉस्पिटल, आपत्कालीन सेवा" },
+            { name: "More Hospital And ICU", address: "Sector 17, Khanda Colony", area: "Khanda Colony", distance: "1.6 km", facilities: "Critical Care (ICU), General Medicine", facilities_mr: "अतिदक्षता विभाग (ICU)" },
+            { name: "Padalkar Hospital & SICU", address: "Sector 9, Khanda Colony", area: "Khanda Colony", distance: "1.9 km", facilities: "Surgical ICU, Orthopedics, Trauma", facilities_mr: "सर्जिकल आयसीयू, ट्राुमा" },
 
-            // ZONE 4: PANVEL
-            { 
-                name: "Panacea Hospital", 
-                address: "Plot No 105 & 106, Sector No 08, New Panvel East", 
-                area: "Panvel", 
-                distance: "2.5 km", 
-                facilities: "Medical Research, Multispeciality, Diagnostics",
-                facilities_mr: "वैद्यकीय संशोधन, मल्टीस्पेशालिटी, डायग्नोस्टिक्स"
-            },
-            { 
-                name: "Prism Eye Institute", 
-                address: "Plot No 63 Sector 1 (S), Behind CIDCO Office, New Panvel", 
-                area: "Panvel", 
-                distance: "3.0 km", 
-                facilities: "Advanced Eye Care, Laser Surgery, Retina Clinic",
-                facilities_mr: "प्रगत नेत्ररोग सेवा, लेसर शस्त्रक्रिया, रेटिना क्लिनिक"
-            },
-            { 
-                name: "Aadhar Multispeciality Hospital", 
-                address: "7A 1st Floor Gurusharanam Complex, Vishrali Naka, Old Panvel", 
-                area: "Panvel", 
-                distance: "3.5 km", 
-                facilities: "Multispeciality, ICU, Dialysis",
-                facilities_mr: "मल्टीस्पेशालिटी, आयसीयू, डायलिसिस"
-            },
-            { 
-                name: "Unnati Hospital And ICU", 
-                address: "J K Plaza Shivaji Chowk, Opp Durga Mata Mandir, Panvel", 
-                area: "Panvel", 
-                distance: "3.5 km", 
-                facilities: "ICU, Trauma, General Medicine",
-                facilities_mr: "आयसीयू, ट्राुमा, जनरल मेडिसिन"
-            },
-            { 
-                name: "Lifeline Hospital", 
-                address: "Shivaji Road, Opp ST Bus Stand, Panvel", 
-                area: "Panvel", 
-                distance: "3.6 km", 
-                facilities: "Trauma Center, Emergency, Medical Research",
-                facilities_mr: "ट्राुमा सेंटर, आपत्कालीन सेवा, वैद्यकीय संशोधन"
-            },
+            // PANVEL
+            { name: "Panacea Hospital", address: "Sector 08, New Panvel East", area: "Panvel", distance: "2.5 km", facilities: "Multispeciality, Diagnostics, Research", facilities_mr: "मल्टीस्पेशालिटी, डायग्नोस्टिक्स" },
+            { name: "Prism Eye Institute", address: "Sector 1 (S), New Panvel", area: "Panvel", distance: "3.0 km", facilities: "Advanced Eye Care, Laser Surgery", facilities_mr: "प्रगत नेत्ररोग सेवा, लेसर शस्त्रक्रिया" },
+            { name: "Lifeline Hospital", address: "Opp ST Bus Stand, Panvel", area: "Panvel", distance: "3.6 km", facilities: "Trauma Center, Emergency, Research", facilities_mr: "ट्राुमा सेंटर, आपत्कालीन सेवा" },
 
-            // ZONE 5: KHARGHAR
-            { 
-                name: "Medicover Hospitals", 
-                address: "Plot No 1, Sector 10, Near BOI, Kharghar", 
-                area: "Kharghar", 
-                distance: "3.5 km", 
-                facilities: "Tertiary Care, Cardiology, Neurology, Orthopedics, ICU",
-                facilities_mr: "तज्ज्ञ उपचार, हृदयविकार, मज्जातंतू विकार, अस्थिरोग, आयसीयू"
-            },
-            { 
-                name: "Mitr Healthcare", 
-                address: "74-79 Chaturbhuj CHS, Sector 12, Shilp Chowk, Kharghar", 
-                area: "Kharghar", 
-                distance: "4.0 km", 
-                facilities: "General Healthcare, OPD, Diagnostics",
-                facilities_mr: "जनरल हेल्थकेअर, ओपीडी, निदान केंद्र"
-            }
+            // KHARGHAR
+            { name: "Medicover Hospitals", address: "Sector 10, Kharghar", area: "Kharghar", distance: "3.5 km", facilities: "Tertiary Care, Cardiology, Neurology, ICU", facilities_mr: "हृदयविकार, मज्जातंतू विकार, आयसीयू" }
         ];
 
-        // --- FILTER LOGIC ---
         let currentFilter = 'all';
 
         function setZoneFilter(zone) {
             currentFilter = zone;
             document.querySelectorAll('.zone-btn').forEach(btn => {
-                btn.className = "zone-btn whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-white text-gray-600 border border-gray-200 transition";
+                btn.className = "zone-btn whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold bg-white text-gray-500 border border-gray-100 shadow-sm transition-all";
                 if(btn.textContent.includes(zone === 'Sector 19' ? 'Sector 19' : zone === 'all' ? 'All' : zone)) {
-                    btn.className = "zone-btn active whitespace-nowrap px-4 py-2 rounded-full text-xs font-bold bg-primary text-white shadow-md ring-2 ring-offset-1 ring-[#D9531E]";
+                    btn.className = "zone-btn active whitespace-nowrap px-5 py-2.5 rounded-xl text-xs font-bold bg-primary text-white shadow-lg shadow-orange-200 transition-all";
                 }
             });
             filterList();
@@ -308,45 +171,54 @@
                 const matchesZone = currentFilter === 'all' || h.area === currentFilter;
                 const matchesSearch = h.name.toLowerCase().includes(searchText) || 
                                       h.facilities.toLowerCase().includes(searchText) || 
-                                      h.facilities_mr.includes(searchText);
+                                      h.facilities_mr.toLowerCase().includes(searchText);
                 return matchesZone && matchesSearch;
             });
 
-            countLabel.textContent = `Found ${filtered.length} hospitals`;
+            countLabel.textContent = `${filtered.length} Centers Found`;
 
             if (filtered.length === 0) {
-                container.innerHTML = `<div class="text-center p-8 bg-white rounded-xl border border-gray-200"><i class="fas fa-hospital-alt text-gray-300 text-4xl mb-3"></i><p class="text-gray-500 font-bold">No matches found.</p><p class="text-xs text-gray-400">Try changing the zone or search term.</p></div>`;
+                container.innerHTML = `
+                <div class="text-center p-12 bg-white rounded-3xl border border-dashed border-gray-200">
+                    <i class="fas fa-search text-gray-200 text-5xl mb-4"></i>
+                    <p class="text-gray-400 font-bold">No results found.</p>
+                </div>`;
                 return;
             }
 
             filtered.forEach(h => {
-                const badgeHtml = h.badge ? `<span class="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded border border-green-200 mb-1 inline-block">${h.badge}</span>` : '';
+                const badgeHtml = h.badge ? `<span class="bg-[#D9531E] text-white text-[9px] font-bold px-2 py-0.5 rounded-full mb-2 inline-block pulse tracking-tighter capitalize">${h.badge}</span>` : '';
                 
                 const card = `
-                <div class="bg-white rounded-xl p-4 border-l-4 border-[#D9531E] card-shadow relative overflow-hidden transition transform active:scale-95 duration-100">
-                    <div class="flex justify-between items-start">
-                        <div class="w-[70%]">
-                            <h2 class="text-lg font-bold text-gray-800 leading-tight">${h.name}</h2>
-                            <p class="text-xs text-gray-500 secondary-font mt-1"><i class="fas fa-map-pin text-[#D9531E] mr-1"></i>${h.address}</p>
-                            <div class="mt-3 space-y-1.5">
-                                <div class="flex items-start gap-2">
-                                    <i class="fas fa-stethoscope text-[#D9531E] text-xs mt-0.5"></i>
-                                    <span class="text-xs font-semibold text-gray-700 bg-orange-50 px-2 py-0.5 rounded leading-tight">${h.facilities}</span>
+                <div class="bg-white rounded-2xl p-5 border border-gray-100 card-shadow transition transform active:scale-[0.98] duration-150">
+                    <div class="flex justify-between items-start gap-4">
+                        <div class="flex-grow">
+                            ${badgeHtml}
+                            <h2 class="text-lg font-bold text-gray-800 leading-tight mb-1">${h.name}</h2>
+                            <p class="text-[11px] text-gray-400 secondary-font flex items-center gap-1">
+                                <i class="fas fa-map-marker-alt text-primary opacity-70"></i> ${h.address}
+                            </p>
+                            
+                            <div class="mt-4 bg-orange-50/50 p-2 rounded-xl border border-orange-100/30">
+                                <div class="flex items-start gap-2 mb-1.5">
+                                    <i class="fas fa-heartbeat text-primary text-[10px] mt-1"></i>
+                                    <span class="text-xs font-semibold text-gray-700 leading-snug">${h.facilities}</span>
                                 </div>
                                 <div class="flex items-start gap-2">
-                                    <span class="text-xs mt-0.5">🚩</span>
-                                    <span class="text-xs font-semibold text-gray-600 secondary-font bg-gray-50 px-2 py-0.5 rounded border border-gray-100 leading-tight">${h.facilities_mr}</span>
+                                    <i class="fas fa-language text-gray-400 text-[10px] mt-1"></i>
+                                    <span class="text-xs text-burnt secondary-font font-medium leading-snug">${h.facilities_mr}</span>
                                 </div>
                             </div>
                         </div>
-                        <div class="w-[30%] text-right flex flex-col items-end">
-                            ${badgeHtml}
-                            <span class="text-xl font-bold text-gray-700">${h.distance}</span>
-                            <span class="text-[10px] text-gray-400 uppercase tracking-wide">Approx</span>
+                        
+                        <div class="flex flex-col items-end min-w-[70px]">
+                            <span class="text-xl font-bold text-primary tracking-tighter">${h.distance}</span>
+                            <span class="text-[9px] text-gray-300 font-bold uppercase tracking-widest -mt-1">dist.</span>
+                            
                             <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(h.name + ' ' + h.address)}" 
                                target="_blank"
-                               class="mt-3 bg-[#D9531E] text-white text-xs font-bold px-3 py-2 rounded-lg shadow hover:bg-[#b03e12] flex items-center gap-1 w-full justify-center">
-                               <i class="fas fa-location-arrow"></i> Map
+                               class="mt-6 emergency-btn text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg shadow-orange-100">
+                               <i class="fas fa-location-arrow text-lg"></i>
                             </a>
                         </div>
                     </div>
@@ -357,6 +229,13 @@
 
         window.onload = function() {
             setZoneFilter('all');
+            
+            // Register a dummy service worker to make it "Installable" as a PWA
+            if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                    navigator.serviceWorker.register('data:text/javascript;base64,' + btoa('self.addEventListener("fetch", (e) => { e.respondWith(fetch(e.request)); });'));
+                });
+            }
         };
     </script>
 </body>
