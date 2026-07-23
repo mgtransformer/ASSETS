@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>MUKUND MOHAN GAWALE - MG Transformer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Fredoka:wght@400;500;600;700&family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest" crossorigin="anonymous"></script>
+    <style>
+        :root {
+            --gold-gradient: linear-gradient(135deg, #FFD700 0%, #FFF8D6 25%, #D4AF37 50%, #FFF8D6 75%, #B8860B 100%);
+            --charcoal-radial: radial-gradient(circle at top, #2C2C2C 0%, #0D0D0D 100%);
+        }
+        body {
+            background-color: #050505;
+            font-family: 'Fredoka', sans-serif;
+            color: white;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-montserrat { font-family: 'Montserrat', sans-serif; }
+        
+        .gold-emboss {
+            background: var(--gold-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 2px 0px rgba(0,0,0,0.9)); 
+            font-weight: 700;
+        }
+
+        .gold-btn {
+            background: var(--gold-gradient);
+            box-shadow: 0 4px 20px rgba(184, 134, 11, 0.5);
+            color: #000 !important;
+            font-weight: 800;
+        }
+
+        .outline-gold-btn {
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            background: rgba(255, 215, 0, 0.05);
+            color: #FFD700;
+        }
+
+        .animate-gold-box-glow { animation: gold-box-pulse 3s ease-in-out infinite; }
+        @keyframes gold-box-pulse {
+            0%, 100% { box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); border-color: rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.6); border-color: rgba(255, 215, 0, 0.9); }
+        }
+
+        .animate-red-dot-glow { animation: red-dot-pulse 2s ease-in-out infinite; }
+        @keyframes red-dot-pulse {
+            0%, 100% { box-shadow: 0 0 5px rgba(220, 38, 38, 0.5); transform: scale(1); }
+            50% { box-shadow: 0 0 15px rgba(220, 38, 38, 1); transform: scale(1.3); }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+        }
+
+        .onyx-tab {
+            background: linear-gradient(145deg, #222222, #0a0a0a);
+            border: 1px solid rgba(212, 175, 55, 0.3); 
+            box-shadow: 0 8px 16px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease;
+        }
+        .onyx-tab:active { transform: scale(0.96); }
+
+        .midnight-slate-panel {
+            background: linear-gradient(135deg, #020617 0%, #0F172A 100%);
+            border: 1px solid rgba(148, 163, 184, 0.25);
+        }
+
+        .platinum-text { color: #F1F5F9; } 
+
+        .card-wrapper {
+            margin-top: env(safe-area-inset-top, 0);
+            margin-bottom: env(safe-area-inset-bottom, 2rem);
+            width: 100%;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-start min-h-screen p-0 sm:p-6">
+
+    <div id="capture-area" class="card-wrapper w-full max-w-[500px] sm:rounded-[4rem] shadow-2xl overflow-hidden border-x border-b border-[#333] sm:border flex flex-col relative" style="background: var(--charcoal-radial);">
+        
+        <!-- Branding Header -->
+        <div class="p-6 sm:p-8 pt-12 flex flex-col items-center gap-6">
+            <div class="w-full flex justify-between items-center gap-3 px-2 sm:px-0">
+                <div class="bg-white p-2 sm:p-3 rounded-2xl shadow-2xl border border-[#333] shrink-0">
+                    <img id="logo-img" src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" crossorigin="anonymous" alt="MG Transformer Logo" class="h-14 sm:h-16 w-auto object-contain">
+                </div>
+                <div class="text-right">
+                    <h1 class="text-[20px] sm:text-[22px] font-bold font-cinzel gold-emboss tracking-tight leading-none uppercase">MUKUND M. GAWALE</h1>
+                    <p class="text-[12px] font-bold font-cinzel uppercase tracking-[0.4em] text-gray-400 mt-2 sm:mt-3">Founder</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 24/7 Status -->
+        <div class="px-6 sm:px-8 mb-8 flex justify-center">
+            <div class="flex items-center gap-3 px-8 py-3 bg-yellow-950/20 rounded-full border border-yellow-500 animate-gold-box-glow">
+                <div class="relative flex h-3 w-3 animate-red-dot-glow">
+                    <span class="absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-red-600"></span>
+                </div>
+                <span class="text-[12px] font-bold uppercase gold-emboss tracking-[0.2em] font-cinzel">24/7 Elite Technical Support</span>
+            </div>
+        </div>
+
+        <!-- Quick Contact Actions -->
+        <div class="px-6 sm:px-8 grid grid-cols-3 gap-4 mb-10">
+            <a href="https://wa.me/918898517528" class="flex flex-col items-center gap-2 group">
+                <div class="w-16 h-16 glass-card p-4 text-[#FFD700] rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform border border-yellow-500/20">
+                    <svg viewBox="0 0 24 24" class="w-full h-full" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L0 24l6.335-1.662c1.72.94 3.659 1.437 5.634 1.437h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path></svg>
+                </div>
+                <span class="text-[12px] font-bold text-gray-400 uppercase tracking-widest">WhatsApp</span>
+            </a>
+            <a href="tel:+918898517528" class="flex flex-col items-center gap-2 group">
+                <div class="w-16 h-16 glass-card p-4 text-[#FFD700] rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform border border-yellow-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="phone" class="w-full h-full"><path d="M13.832 16.568a1 1 0 0 0 1.213-.303l.355-.465A2 2 0 0 1 17 15h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2A18 18 0 0 1 2 4a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3a2 2 0 0 1-.8 1.6l-.468.351a1 1 0 0 0-.292 1.233 14 14 0 0 0 6.392 6.384"></path></svg>
+                </div>
+                <span class="text-[12px] font-bold text-gray-400 uppercase tracking-widest text-center">Direct Call</span>
+            </a>
+            <a href="mailto:mukund.gawale@mgtransformer.com" class="flex flex-col items-center gap-2 group">
+                <div class="w-16 h-16 glass-card p-4 text-[#FFD700] rounded-2xl flex items-center justify-center shadow-lg group-active:scale-95 transition-transform border border-yellow-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="mail" class="w-full h-full"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"></path><rect x="2" y="4" width="20" height="16" rx="2"></rect></svg>
+                </div>
+                <span class="text-[12px] font-bold text-gray-400 uppercase tracking-widest">Email</span>
+            </a>
+        </div>
+
+        <div class="px-6 sm:px-8 mb-12 space-y-4">
+            <div class="grid grid-cols-2 gap-3">
+                <a href="https://www.mgtransformer.com" target="_blank" class="flex items-center justify-center gap-2 py-4 onyx-tab rounded-xl border-yellow-600/40">
+                    <i data-lucide="globe" class="w-5 h-5 text-yellow-500"></i>
+                    <span class="text-[15px] font-normal gold-emboss">mgtransformer.com</span>
+                </a>
+                <a href="https://www.mgtransformer.in" target="_blank" class="flex items-center justify-center gap-2 py-4 onyx-tab rounded-xl border-yellow-600/40">
+                    <i data-lucide="globe" class="w-5 h-5 text-yellow-500"></i>
+                    <span class="text-[15px] font-normal gold-emboss">mgtransformer.in</span>
+                </a>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <a href="mailto:mukund.gawale@mgtransformer.com" class="flex items-center justify-center gap-2 py-4 onyx-tab rounded-xl border border-white/10 group text-center">
+                    <span class="text-[13px] font-normal platinum-text tracking-tight group-hover:text-white transition-colors">mukund.gawale@mgtransformer.com</span>
+                </a>
+                <a href="mailto:mgtransformer.mumbai@gmail.com" class="flex items-center justify-center gap-2 py-4 onyx-tab rounded-xl border border-white/10 group text-center">
+                    <span class="text-[13px] font-normal platinum-text tracking-tight group-hover:text-white transition-colors">mgtransformer.mumbai@gmail.com</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="px-6 sm:px-8 mb-14">
+            <div class="flex flex-col items-center gap-3 mb-8 text-center">
+                <div class="p-3 bg-yellow-950/20 rounded-xl border border-yellow-600/30">
+                    <i data-lucide="settings" class="w-7 h-7 text-[#FFD700]"></i>
+                </div>
+                <h3 class="text-[15px] font-bold font-cinzel text-gray-300 uppercase tracking-[0.3em] border-b border-yellow-900/30 pb-3">Technical Portfolio</h3>
+            </div>
+            <div id="services-grid" class="grid grid-cols-2 gap-3 sm:gap-4 px-1"></div>
+        </div>
+
+        <div class="px-6 sm:px-8 mb-14">
+            <div class="flex flex-col items-center gap-3 mb-8 text-center">
+                <div class="p-3 bg-yellow-950/20 rounded-xl border border-yellow-600/30">
+                    <i data-lucide="navigation" class="w-7 h-7 text-[#FFD700]"></i>
+                </div>
+                <h3 class="text-[15px] font-bold font-cinzel text-gray-300 uppercase tracking-[0.3em]">National Operational Reach</h3>
+            </div>
+            <div id="hubs-grid" class="glass-card rounded-[2.5rem] p-6 sm:p-8 grid grid-cols-2 gap-3 shadow-inner"></div>
+        </div>
+
+        <div class="px-6 sm:px-8 pb-14 flex flex-col gap-8 bg-black/60 pt-14 rounded-t-[4rem] border-t border-white/5 relative overflow-hidden">
+            <div class="midnight-slate-panel flex flex-col items-center gap-5 p-8 rounded-[2.5rem] relative z-10 border border-white/10 shadow-2xl">
+                <div class="flex items-center justify-center w-14 h-14 bg-slate-900 rounded-full border border-yellow-500/30 shadow-inner">
+                    <i data-lucide="map-pin" class="w-7 h-7 text-[#FFD700]"></i>
+                </div>
+                <div class="text-center">
+                    <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.4em] mb-4 font-cinzel">Epicenter of Strategic Operations</p>
+                    <div class="w-12 h-1 bg-yellow-600/50 mx-auto mb-5 rounded-full"></div>
+                    <p class="text-[14px] font-bold leading-relaxed platinum-text font-montserrat px-1">
+                        Office No. 6 &amp; 7, Gr. Floor, Suryadarshan Residency, Plot 42/43, Sec-20, Kamothe, Navi Mumbai - 410209
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-5 relative z-20">
+                <button onclick="saveVCard()" class="gold-btn w-full py-7 rounded-[2.5rem] flex flex-col items-center justify-center gap-1 uppercase tracking-[0.1em] sm:tracking-[0.2em] active:scale-95 transition-all">
+                    <div class="flex items-center gap-3">
+                        <i data-lucide="user-plus" class="w-6 h-6"></i>
+                        <span class="text-[14px] sm:text-[15px]">Save Contact to Phone</span>
+                    </div>
+                </button>
+                
+                <button id="export-action-btn" onclick="exportHTML()" class="outline-gold-btn w-full py-4 rounded-[2.5rem] flex items-center justify-center gap-3 uppercase tracking-[0.1em] text-[11px] active:scale-95 transition-all font-bold" style="display: none;">
+                    <i data-lucide="download" class="w-4 h-4"></i>
+                    Save Card as HTML File
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-12 flex flex-col items-center gap-6 opacity-40 font-montserrat text-center pb-16">
+        <p class="text-[12px] font-bold text-gray-500 uppercase tracking-[0.5em]">National Digital Identity Management</p>
+        <div class="flex gap-10 items-center">
+            <i data-lucide="shield-check" class="w-6 h-6 text-gray-400"></i>
+            <i data-lucide="globe" class="w-6 h-6 text-gray-400"></i>
+        </div>
+    </div>
+
+    <script>
+        function renderContent() {
+            const portfolio = [
+                "Diagnostics & Routine Testing", "Comprehensive AMCs", "Non-Comprehensive AMCs", "On-Site Overhauling",
+                "Oil Filtration & Testings", "Dehydration of Insulation", "Specialized Painting", "Dry Type Maintenance",
+                "Forced Cooling Projects", "SFRA & Tan-Delta Testing", "Partial Discharge Analysis", "RLA & Health Indexing",
+                "Installation & Commissioning", "HT / LT Panel Maintenance", "Thermography Audits", "Life Extension Projects"
+            ];
+
+            const regionalHubs = [
+                { name: "MAHARASHTRA", epicenter: true }, { name: "MUMBAI", epicenter: true },
+                { name: "DELHI (NCR)" }, { name: "GUJARAT" }, { name: "RAJASTHAN" },
+                { name: "MADHYA PRADESH" }, { name: "GOA" }, { name: "KARNATAKA" },
+                { name: "TELANGANA" }, { name: "ANDHRA PRADESH" }, { name: "TAMIL NADU" },
+                { name: "WEST BENGAL" }, { name: "MANIPUR" }, { name: "HIMACHAL PRADESH" }
+            ];
+
+            const sGrid = document.getElementById('services-grid');
+            const rGrid = document.getElementById('hubs-grid');
+            
+            if (sGrid) sGrid.innerHTML = '';
+            if (rGrid) rGrid.innerHTML = '';
+
+            portfolio.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'flex flex-col items-center justify-center gap-3 onyx-tab p-4 rounded-2xl text-center min-h-[105px] sm:min-h-[115px]';
+                div.innerHTML = `<div class="p-1.5 bg-yellow-950/20 rounded-full"><i data-lucide="zap" class="w-5 h-5 text-yellow-500"></i></div>
+                                <span class="text-[12.5px] font-bold gold-emboss leading-tight uppercase tracking-widest">${item}</span>`;
+                sGrid.appendChild(div);
+            });
+
+            regionalHubs.forEach(hub => {
+                const div = document.createElement('div');
+                div.className = `flex items-center gap-3 p-3.5 rounded-xl border ${hub.epicenter ? 'border-yellow-600/40 bg-yellow-950/20' : 'border-white/5 bg-white/[0.03]'}`;
+                div.innerHTML = `<div class="w-2.5 h-2.5 rounded-full ${hub.epicenter ? 'bg-yellow-500 animate-pulse shadow-[0_0_15px_rgba(255,215,0,0.7)]' : 'bg-slate-700'}"></div>
+                                <span class="text-[12.5px] font-bold tracking-widest ${hub.epicenter ? 'gold-emboss' : 'text-slate-400'}">${hub.name}</span>`;
+                rGrid.appendChild(div);
+            });
+
+            lucide.createIcons();
+        }
+
+        window.addEventListener('DOMContentLoaded', renderContent);
+
+        async function saveVCard() {
+            const btn = document.querySelector('button[onclick="saveVCard()"]');
+            const originalHtml = btn.innerHTML;
+            btn.innerHTML = '<div class="flex items-center gap-3"><span class="text-[14px] sm:text-[15px]">Saving Contact...</span></div>';
+            
+            try {
+                const imgElement = document.getElementById('logo-img');
+                const canvas = document.createElement('canvas');
+                canvas.width = 300;
+                canvas.height = 300;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = "#ffffff";
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                const ratio = Math.min(260 / imgElement.naturalWidth, 260 / imgElement.naturalHeight);
+                const w = imgElement.naturalWidth * ratio;
+                const h = imgElement.naturalHeight * ratio;
+                ctx.drawImage(imgElement, (300-w)/2, (300-h)/2, w, h);
+                
+                const dataURL = canvas.toDataURL('image/jpeg', 0.9);
+                const base64Data = dataURL.split(',')[1];
+                
+                const v = `BEGIN:VCARD\nVERSION:3.0\nFN:Mukund M. Gawale (MG Transformer)\nORG:MG TRANSFORMER SERVICES AND SUPPLIES\nTITLE:Founder\nTEL;TYPE=CELL,VOICE:+918898517528\nTEL;TYPE=CELL,VOICE:+918591327528\nEMAIL;TYPE=WORK,INTERNET:mukund.gawale@mgtransformer.com\nEMAIL;TYPE=HOME,INTERNET:mgtransformer.mumbai@gmail.com\nADR;TYPE=WORK:;;Office No. 6 & 7 Gr. Floor Suryadarshan Residency Plot 42/43 Sec-20 Kamothe;Navi Mumbai;Maharashtra;410209;India\nURL:https://www.mgtransformer.com\nPHOTO;ENCODING=b;TYPE=JPEG:${base64Data}\nEND:VCARD`;
+
+                const blob = new Blob([v], { type: 'text/vcard;charset=utf-8' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'Mukund_M_Gawale_MG.vcf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                window.URL.revokeObjectURL(url);
+                
+            } catch (error) {
+                console.error("VCard generation failed:", error);
+                alert("Failed to save contact photo. Saving text-only contact.");
+                const vBasic = `BEGIN:VCARD\nVERSION:3.0\nFN:Mukund M. Gawale (MG Transformer)\nORG:MG TRANSFORMER SERVICES AND SUPPLIES\nTITLE:Founder\nTEL;TYPE=CELL,VOICE:+918898517528\nTEL;TYPE=CELL,VOICE:+918591327528\nEMAIL;TYPE=WORK,INTERNET:mukund.gawale@mgtransformer.com\nEMAIL;TYPE=HOME,INTERNET:mgtransformer.mumbai@gmail.com\nADR;TYPE=WORK:;;Office No. 6 & 7 Gr. Floor Suryadarshan Residency Plot 42/43 Sec-20 Kamothe;Navi Mumbai;Maharashtra;410209;India\nURL:https://www.mgtransformer.com\nEND:VCARD`;
+                const blob = new Blob([vBasic], { type: 'text/vcard;charset=utf-8' });
+                const url = window.URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = 'Mukund_M_Gawale_MG.vcf';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } finally {
+                btn.innerHTML = originalHtml;
+            }
+        }
+
+        function exportHTML() {
+            const btn = document.getElementById('export-action-btn');
+            if (btn) btn.style.display = 'none';
+            const htmlContent = document.documentElement.outerHTML;
+            if (btn) btn.style.display = 'flex'; 
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'MG_Transformer_Digital_Card.html';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
