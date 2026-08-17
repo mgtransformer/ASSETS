@@ -1,0 +1,20 @@
+{
+  "name": "MG Routine Test Smart App",
+  "short_name": "MG Test App",
+  "start_url": "/MG_ROUTINE_TEST_SMART_APP.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#D9531E",
+  "icons": [
+    {
+      "src": "/MG_LOGO_WITH_NAME-removebg-preview.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/MG_LOGO_WITH_NAME-removebg-preview.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
