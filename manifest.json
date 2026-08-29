@@ -1,7 +1,7 @@
 {
   "name": "MG Routine Test Smart App",
   "short_name": "MG Test App",
-  "start_url": "/MG_ROUTINE_TEST_SMART_APP.html",
+  "start_url": "/transformer_routine_test_pwa.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#D9531E",
