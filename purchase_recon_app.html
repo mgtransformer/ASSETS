@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Purchase Bills Reconciliation PRO</title>
     
-    <!-- PWA & Mobile App Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -13,10 +12,10 @@
     <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=PR&background=0ea5e9&color=fff&size=256">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Export Libraries -->
+    <!-- Export & Excel Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -36,32 +35,63 @@
             }
         }
     </script>
+    
     <style>
         body { background-color: #f8fafc; color: #0f172a; }
-        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
-        .table-container { overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 0.5rem; }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        
+        /* Table Layout Rules */
+        .table-wrapper { 
+            max-height: calc(100vh - 280px); 
+            overflow-y: auto; 
+            overflow-x: auto; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
+            border-radius: 0.5rem; 
+            border: 1px solid #e2e8f0;
+        }
+        table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1800px; }
+        
+        /* Resizable columns constraint */
+        th { 
+            position: sticky; top: 0; z-index: 10; 
+            background-color: #f8fafc; font-weight: 700; color: #334155; 
+            font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; 
+            border: 1px solid #e2e8f0; padding: 0.75rem; text-align: left;
+            resize: horizontal; overflow: hidden; /* Advanced Feature: Resizable Columns */
+        }
+        
+        td { 
+            border: 1px solid #e2e8f0; padding: 0.75rem; 
+            font-size: 0.875rem; /* Better readability */
+            background-color: #ffffff; 
+            white-space: nowrap; 
+        }
+        
+        /* Row Colors based on payment status */
+        tr.paid-row td { background-color: #f0fdf4 !important; } /* Light Green */
+        tr.unpaid-row td { background-color: #fef2f2 !important; } /* Light Red */
+        tr:hover td { filter: brightness(0.97); }
+
+        .col-num { text-align: right; font-variant-numeric: tabular-nums; }
+        .col-center { text-align: center; }
+        
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1300px; }
-        th, td { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; white-space: nowrap; }
-        th { background-color: #f8fafc; font-weight: 600; color: #334155; position: sticky; top: 0; z-index: 10; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-        td { font-size: 0.875rem; background-color: #ffffff; }
-        tr:hover td { background-color: #f1f5f9; }
-        .col-num { text-align: right; font-variant-numeric: tabular-nums; }
-        .col-center { text-align: center; }
+        
         .scan-line { position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, transparent, #0ea5e9, transparent); animation: scan 2s infinite linear; opacity: 0; }
         @keyframes scan { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
         .modal-backdrop { backdrop-filter: blur(5px); }
 
         @media print {
             body { background-color: #ffffff; }
-            header, .glass-panel, .no-print, .modal-backdrop { display: none !important; }
+            header, .glass-panel, .no-print, .modal-backdrop, #dashboard_section { display: none !important; }
             main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
-            .table-container { box-shadow: none !important; border: none !important; overflow: visible !important; }
+            .table-wrapper { max-height: none !important; box-shadow: none !important; border: none !important; overflow: visible !important; }
             table { min-width: 100% !important; border: 1px solid #000; }
-            th, td { border: 1px solid #000 !important; padding: 6px !important; font-size: 10px !important; white-space: normal !important; color: #000 !important; }
+            th, td { border: 1px solid #000 !important; padding: 6px !important; font-size: 10px !important; white-space: normal !important; color: #000 !important; background-color: #fff !important; }
             th { position: static !important; background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             @page { size: landscape; margin: 10mm; }
         }
@@ -69,9 +99,8 @@
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <!-- HEADER -->
     <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
-        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <div class="bg-brand-600 text-white p-2 rounded-lg no-print">
                     <i class="fa-solid fa-file-invoice-dollar text-xl"></i>
@@ -85,93 +114,119 @@
                 </div>
             </div>
             
-            <div class="flex items-center gap-3">
-                <!-- NEW API MODAL BUTTON -->
-                <button onclick="window.openApiModal()" class="no-print bg-amber-50 text-amber-700 hover:bg-amber-100 px-4 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm border border-amber-200 mr-2">
-                    <i class="fa-solid fa-key text-amber-500"></i> Configure Sync & APIs
+            <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
+                <!-- Toggle Analytics Button -->
+                <button onclick="window.toggleAnalytics()" id="btn_toggle_analytics" class="no-print bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm border border-indigo-200">
+                    <i class="fa-solid fa-chart-line"></i> View Analytics
+                </button>
+                
+                <button onclick="window.openApiModal()" class="no-print bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm border border-amber-200">
+                    <i class="fa-solid fa-key text-amber-500"></i> Configure APIs
                 </button>
 
                 <button onclick="window.downloadHTMLBackup()" class="no-print bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm border border-slate-300">
-                    <i class="fa-solid fa-download"></i> Backup Tool
+                    <i class="fa-solid fa-download"></i> Backup
                 </button>
-                <div class="no-print flex items-center gap-2">
+                
+                <div class="no-print flex items-center gap-2 border-l pl-3 border-slate-200">
                     <select id="export_format" class="text-sm border border-slate-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white shadow-sm font-medium">
                         <option value="pdf">PDF Document</option>
                         <option value="xlsx">Excel (XLSX)</option>
                         <option value="csv">CSV File</option>
-                        <option value="json">JSON Data</option>
-                        <option value="txt">Text Table</option>
                     </select>
-                    <button onclick="window.exportData()" class="bg-slate-800 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-slate-700 transition flex items-center gap-2 shadow-sm">
-                        <i class="fa-solid fa-file-export"></i> Export
-                    </button>
-                    <button onclick="window.print()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-1.5 rounded-md text-sm font-medium transition flex items-center gap-2 shadow-sm ml-1">
-                        <i class="fa-solid fa-print"></i> Print
+                    <button onclick="window.exportData()" class="bg-slate-800 text-white px-3 py-1.5 rounded-md text-sm font-medium hover:bg-slate-700 transition shadow-sm">
+                        Export
                     </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <main class="flex-grow max-w-[1600px] mx-auto w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+    <main class="flex-grow max-w-[1800px] mx-auto w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
 
-        <!-- AI INPUT SECTION -->
         <section class="glass-panel rounded-xl p-5 shadow-sm border border-brand-100 relative overflow-hidden">
-            <div id="ai_loading_indicator" class="absolute inset-0 bg-white/80 z-20 hidden flex-col items-center justify-center backdrop-blur-sm">
+            <div id="ai_loading_indicator" class="absolute inset-0 bg-white/90 z-20 hidden flex-col items-center justify-center backdrop-blur-sm">
                 <i class="fa-solid fa-microchip fa-bounce text-4xl text-brand-500 mb-3"></i>
-                <h3 class="text-lg font-bold text-slate-800">AI is analyzing & categorizing...</h3>
-                <p class="text-sm text-slate-500 mt-1">Extracting vendor details, items, amounts, and GST.</p>
+                <h3 class="text-lg font-bold text-slate-800" id="ai_loading_title">AI is analyzing & categorizing...</h3>
+                <p class="text-sm text-slate-600 font-medium mt-1" id="ai_loading_sub">Extracting accurate vendor details, items, math alignments...</p>
                 <div class="w-64 h-2 bg-slate-200 rounded-full mt-4 overflow-hidden relative">
                     <div class="scan-line block opacity-100"></div>
                 </div>
             </div>
 
-            <div class="flex flex-col md:flex-row gap-4 items-start">
-                <div class="bg-brand-50 border border-brand-200 text-brand-700 p-3 rounded-lg flex-shrink-0">
-                    <i class="fa-solid fa-robot text-2xl"></i>
-                </div>
-                
-                <div class="flex-grow w-full space-y-3">
+            <div class="flex flex-col xl:flex-row gap-5 items-start xl:items-center justify-between w-full">
+                <!-- AI Copilot Area -->
+                <div class="flex-grow w-full xl:w-2/3 space-y-3">
                     <div class="flex justify-between items-center">
                         <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                            Smart Data Entry Copilot
-                            <span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold"><i class="fa-solid fa-cloud-arrow-up"></i> Cloud Ready</span>
+                            <i class="fa-solid fa-robot text-brand-600 text-lg"></i> Smart Data Entry Copilot
                         </h2>
-                        <button onclick="window.openManualEntry()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1 rounded-md text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                        <button onclick="window.openManualEntry()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-md text-sm font-bold transition flex items-center gap-2 shadow-sm">
                             <i class="fa-solid fa-keyboard"></i> Manual Entry
                         </button>
                     </div>
                     
-                    <textarea id="ai_prompt" rows="2" class="w-full text-sm border border-slate-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-inner resize-none" placeholder="Drop files here, click 'Attach Bills', or paste bill text data. Tool automatically stores compressed bill copies."></textarea>
+                    <textarea id="ai_prompt" rows="2" class="w-full text-sm border border-slate-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-inner resize-none font-medium" placeholder="Drop files here, click 'Attach Bills', or paste bill text data. Ensure crisp captures."></textarea>
                     
-                    <div class="flex flex-wrap items-center justify-between gap-3">
-                        <div class="flex gap-2">
-                            <input type="file" id="file_input" multiple accept="image/*,.pdf" class="hidden">
-                            <input type="file" id="native_camera_input" accept="image/*" capture="environment" class="hidden">
-                            <button onclick="document.getElementById('file_input').click()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-1.5 rounded-md text-sm font-medium transition flex items-center gap-2 shadow-sm">
-                                <i class="fa-solid fa-paperclip text-brand-500"></i> Attach Bills
-                            </button>
-                            
-                            <button onclick="window.openCamera()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-1.5 rounded-md text-sm font-medium transition flex items-center gap-2 shadow-sm">
-                                <i class="fa-solid fa-camera text-brand-500"></i> Capture Photo
-                            </button>
-                            
-                            <span id="file_badge" class="hidden items-center bg-brand-100 text-brand-800 text-xs font-bold px-2.5 py-1 rounded-md border border-brand-200">
-                                <span id="file_count">0</span> files queued
-                                <i class="fa-solid fa-xmark ml-2 cursor-pointer hover:text-red-500" onclick="window.clearFiles()"></i>
-                            </span>
-                        </div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <input type="file" id="file_input" multiple accept="image/*,.pdf" class="hidden">
+                        <input type="file" id="native_camera_input" accept="image/*" capture="environment" class="hidden">
                         
-                        <button onclick="window.processAI()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-1.5 rounded-md text-sm font-bold transition flex items-center gap-2 shadow-md">
+                        <button onclick="document.getElementById('file_input').click()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-2 rounded-md text-sm font-semibold transition shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-paperclip text-brand-500"></i> Attach Bills
+                        </button>
+                        
+                        <button onclick="window.openCamera()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-2 rounded-md text-sm font-semibold transition shadow-sm flex items-center gap-2">
+                            <i class="fa-solid fa-camera text-brand-500"></i> Capture Photo
+                        </button>
+                        
+                        <span id="file_badge" class="hidden items-center bg-brand-100 text-brand-800 text-xs font-bold px-3 py-1.5 rounded-md border border-brand-200">
+                            <span id="file_count">0</span> files queued
+                            <i class="fa-solid fa-xmark ml-2 cursor-pointer hover:text-red-500 text-sm" onclick="window.clearFiles()"></i>
+                        </span>
+
+                        <div class="flex-grow"></div>
+                        
+                        <button onclick="window.processAI()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2 rounded-md text-sm font-bold transition flex items-center gap-2 shadow-md">
                             <i class="fa-solid fa-wand-magic-sparkles"></i> Process with AI
                         </button>
                     </div>
                 </div>
+
+                <!-- Advanced Actions Divider -->
+                <div class="hidden xl:block w-px h-32 bg-slate-200"></div>
+
+                <!-- Advanced Actions Area -->
+                <div class="w-full xl:w-1/3 flex flex-col gap-3">
+                    <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider mb-1 flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-amber-500"></i> Advanced Tools
+                    </h2>
+                    
+                    <!-- Scan Payment -->
+                    <input type="file" id="payment_scan_input" accept="image/*,.pdf" class="hidden">
+                    <button onclick="document.getElementById('payment_scan_input').click()" class="bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-50 px-4 py-2 rounded-md text-sm font-semibold transition flex items-center justify-between shadow-sm w-full">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-receipt text-emerald-600"></i> Scan Payment Receipt</span>
+                        <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+                    </button>
+                    
+                    <!-- GSTR-2B Import -->
+                    <input type="file" id="gstr2b_input" accept=".xlsx, .xls" class="hidden">
+                    <button onclick="document.getElementById('gstr2b_input').click()" class="bg-white border border-blue-300 text-blue-800 hover:bg-blue-50 px-4 py-2 rounded-md text-sm font-semibold transition flex items-center justify-between shadow-sm w-full">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-file-excel text-blue-600"></i> Match Govt GSTR-2B</span>
+                        <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+                    </button>
+
+                    <!-- Bulk Import -->
+                    <input type="file" id="bulk_import_input" accept=".csv, .xlsx, .xls" class="hidden">
+                    <button onclick="document.getElementById('bulk_import_input').click()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-md text-sm font-semibold transition flex items-center justify-between shadow-sm w-full">
+                        <span class="flex items-center gap-2"><i class="fa-solid fa-upload text-slate-600"></i> Bulk Import History (Excel)</span>
+                        <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
+                    </button>
+                </div>
             </div>
         </section>
 
-        <!-- DASHBOARD -->
-        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <section id="dashboard_section" class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 transition-all duration-300">
             <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
                     <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Purchases</p>
@@ -179,15 +234,20 @@
                 </div>
                 <div class="bg-blue-50 text-blue-600 p-3 rounded-lg"><i class="fa-solid fa-wallet text-xl"></i></div>
             </div>
-            
             <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Net Taxable Amount</p>
-                    <h3 class="text-2xl font-bold text-slate-800" id="dash_total_net">₹0.00</h3>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Paid</p>
+                    <h3 class="text-2xl font-bold text-emerald-600" id="dash_total_paid">₹0.00</h3>
                 </div>
-                <div class="bg-emerald-50 text-emerald-600 p-3 rounded-lg"><i class="fa-solid fa-chart-pie text-xl"></i></div>
+                <div class="bg-emerald-50 text-emerald-600 p-3 rounded-lg"><i class="fa-solid fa-money-bill-wave text-xl"></i></div>
             </div>
-            
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Outstanding</p>
+                    <h3 class="text-2xl font-bold text-red-600" id="dash_total_balance">₹0.00</h3>
+                </div>
+                <div class="bg-red-50 text-red-600 p-3 rounded-lg"><i class="fa-solid fa-file-invoice text-xl"></i></div>
+            </div>
             <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
                 <div>
                     <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Input Tax (GST)</p>
@@ -195,21 +255,13 @@
                 </div>
                 <div class="bg-orange-50 text-orange-600 p-3 rounded-lg"><i class="fa-solid fa-landmark text-xl"></i></div>
             </div>
-            
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
-                <div>
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Bills Processed</p>
-                    <h3 class="text-2xl font-bold text-slate-800" id="dash_bill_count">0</h3>
-                </div>
-                <div class="bg-purple-50 text-purple-600 p-3 rounded-lg"><i class="fa-solid fa-file-lines text-xl"></i></div>
-            </div>
         </section>
 
-        <!-- TABLE SECTION -->
         <section class="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full">
             <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
                 <div class="flex items-center gap-2">
                     <h2 class="text-lg font-bold text-slate-800">Purchase Directory</h2>
+                    <span class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded font-semibold" id="table_count_badge">0 Records</span>
                 </div>
                 
                 <div class="flex flex-wrap items-center gap-3 no-print">
@@ -220,7 +272,6 @@
                     
                     <select id="fy_filter" onchange="window.updateMonthOptions(); window.renderTable()" class="text-sm border border-brand-300 text-brand-900 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-brand-500 focus:outline-none bg-brand-50 font-bold shadow-sm">
                         <option value="all">All Financial Years</option>
-                        <option value="FY2020-21">FY 2020-21</option>
                         <option value="FY2021-22">FY 2021-22</option>
                         <option value="FY2022-23">FY 2022-23</option>
                         <option value="FY2023-24">FY 2023-24</option>
@@ -239,31 +290,31 @@
                     <select id="category_filter" onchange="window.renderTable()" class="text-sm border border-slate-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white font-medium max-w-[160px] truncate">
                         <option value="all">All Categories</option>
                     </select>
-
-                    <button onclick="window.clearAllData()" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-md text-sm font-medium transition border border-transparent hover:border-red-200 flex items-center gap-2 shadow-sm ml-2">
-                        <i class="fa-solid fa-trash-can"></i> Clear All
-                    </button>
                 </div>
             </div>
 
-            <div class="table-container flex-grow bg-white">
+            <div class="table-wrapper bg-white">
                 <table id="recon_table">
                     <thead>
                         <tr>
                             <th class="w-12 col-center">Sr.</th>
                             <th class="w-16 col-center no-print">File</th>
+                            <th class="w-24 cursor-pointer hover:bg-slate-100" onclick="window.sortTable('timestamp')">ADDED <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
                             <th class="w-32 cursor-pointer hover:bg-slate-100" onclick="window.sortTable('gstin')">GSTIN <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
                             <th class="cursor-pointer hover:bg-slate-100" onclick="window.sortTable('vendorName')">VENDOR NAME <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
                             <th class="w-40 cursor-pointer hover:bg-slate-100" onclick="window.sortTable('category')">CATEGORY / ITEM <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
-                            <th class="w-24">INVOICE NO</th>
-                            <th class="w-24 cursor-pointer hover:bg-slate-100" onclick="window.sortTable('invoiceDate')">DATE <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
-                            <th class="w-32 col-num cursor-pointer hover:bg-slate-100" onclick="window.sortTable('grossAmount')">GROSS AMOUNT <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
+                            <th class="w-28">INVOICE NO</th>
+                            <th class="w-28 cursor-pointer hover:bg-slate-100" onclick="window.sortTable('invoiceDate')">DATE <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
+                            <th class="w-32 col-num cursor-pointer hover:bg-slate-100" onclick="window.sortTable('grossAmount')">GROSS AMT <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
                             <th class="w-16 col-center bg-slate-50">% TAX</th>
                             <th class="w-28 col-num">NET TAXABLE</th>
                             <th class="w-24 col-num">IGST</th>
                             <th class="w-24 col-num">CGST</th>
                             <th class="w-24 col-num">SGST</th>
-                            <th class="w-12 col-center no-print">Act</th>
+                            <th class="w-28 col-num text-emerald-700">PAID AMT</th>
+                            <th class="w-28 col-num text-red-700">BALANCE</th>
+                            <th class="w-32 col-center bg-slate-50">GSTR-2B</th>
+                            <th class="w-20 col-center no-print">ACT</th>
                         </tr>
                     </thead>
                     <tbody id="table_body">
@@ -271,26 +322,28 @@
                     </tbody>
                     <tfoot class="bg-slate-50 font-bold text-slate-800 border-t-2 border-slate-300">
                         <tr>
-                            <td colspan="7" class="text-right py-3 pr-4 uppercase tracking-wider text-xs">Total</td>
+                            <td colspan="8" class="text-right py-3 pr-4 uppercase tracking-wider text-xs">Page Total</td>
                             <td class="col-num py-3 text-brand-700" id="foot_gross">0.00</td>
                             <td></td>
                             <td class="col-num py-3 text-brand-700" id="foot_net">0.00</td>
                             <td class="col-num py-3 text-brand-700" id="foot_igst">0.00</td>
                             <td class="col-num py-3 text-brand-700" id="foot_cgst">0.00</td>
                             <td class="col-num py-3 text-brand-700" id="foot_sgst">0.00</td>
+                            <td class="col-num py-3 text-emerald-700" id="foot_paid">0.00</td>
+                            <td class="col-num py-3 text-red-700" id="foot_balance">0.00</td>
+                            <td></td>
                             <td class="no-print"></td>
                         </tr>
                     </tfoot>
                 </table>
-                <div id="empty_state" class="hidden flex-col items-center justify-center py-16 text-slate-400">
-                    <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
-                    <p class="text-sm font-medium">Directory is empty. Use AI or Manual Entry to add bills.</p>
+                <div id="empty_state" class="hidden flex-col items-center justify-center py-16 text-slate-400 w-full absolute left-0 right-0 z-0">
+                    <i class="fa-solid fa-folder-open text-5xl mb-4 text-slate-300"></i>
+                    <p class="text-base font-medium text-slate-500">Directory is empty. Use AI or Manual Entry to add bills.</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- MODALS -->
 
     <!-- API Configuration Modal -->
     <div id="api-keys-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[90] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
@@ -300,7 +353,7 @@
                 <button onclick="window.closeApiModal()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="p-6 space-y-5">
-                <div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg text-xs">
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg text-xs font-medium">
                     <i class="fa-solid fa-info-circle mr-1"></i> Keys are kept safely in your browser memory.
                 </div>
                 
@@ -315,7 +368,7 @@
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-slate-700 uppercase flex items-center gap-2">
                         <i class="fa-solid fa-cloud text-slate-400"></i> Firebase API Key 
-                        <span class="bg-slate-100 text-slate-500 text-[9px] px-1.5 py-0.5 rounded font-bold">CLOUD SYNC (Optional)</span>
+                        <span class="bg-slate-100 text-slate-500 text-[9px] px-1.5 py-0.5 rounded font-bold">CLOUD SYNC</span>
                     </label>
                     <input type="password" id="modal_firebase_key" class="w-full border border-slate-300 rounded p-2.5 text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none" placeholder="AIzaSy...">
                 </div>
@@ -323,9 +376,8 @@
                 <div class="space-y-1 mt-4 pt-4 border-t border-slate-100">
                     <label class="text-xs font-bold text-slate-700 uppercase flex items-center gap-2">
                         <i class="fa-solid fa-sync text-slate-400"></i> Cross-Device Sync PIN
-                        <span class="bg-green-100 text-green-700 text-[9px] px-1.5 py-0.5 rounded font-bold">NEW</span>
                     </label>
-                    <p class="text-[10px] text-slate-500 mb-1 leading-tight">Enter a secret word or PIN (e.g., "MySecret123"). Use the same PIN on your phone and PC to see the same data.</p>
+                    <p class="text-[10px] text-slate-500 mb-1 leading-tight font-medium">Enter a secret word or PIN (e.g., "MySecret123"). Use the same PIN on your phone and PC to see the same data.</p>
                     <input type="text" id="modal_sync_pin" class="w-full border border-slate-300 rounded p-2.5 text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Enter a secure PIN...">
                 </div>
 
@@ -348,15 +400,17 @@
 
     <!-- Manual Entry Modal -->
     <div id="manual-modal" class="fixed inset-0 bg-slate-900/60 hidden z-[60] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
-        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 flex flex-col max-h-[90vh]">
+        <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full mx-4 flex flex-col max-h-[95vh]">
             <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-xl">
-                <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-keyboard text-emerald-600 mr-2"></i> Manual Bill Entry</h3>
+                <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-keyboard text-emerald-600 mr-2"></i> <span id="man_modal_title">Manual Bill Entry</span></h3>
                 <button onclick="window.closeManualEntry()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
             <div class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-5">
+                <input type="hidden" id="man_editing_id" value="">
+                
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-slate-600 uppercase">GSTIN</label>
-                    <input type="text" id="man_gstin" class="w-full border border-slate-300 rounded p-2 text-sm font-mono uppercase" placeholder="27AAABC1234Z1">
+                    <input type="text" id="man_gstin" class="w-full border border-slate-300 rounded p-2 text-sm font-mono uppercase font-semibold" placeholder="27AAABC1234Z1">
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-slate-600 uppercase">Vendor Name</label>
@@ -364,22 +418,24 @@
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-slate-600 uppercase">Category / Item</label>
-                    <input type="text" id="man_category" class="w-full border border-slate-300 rounded p-2 text-sm" placeholder="e.g. Paint, Hardware">
+                    <input type="text" id="man_category" class="w-full border border-slate-300 rounded p-2 text-sm font-medium" placeholder="e.g. Paint, Hardware">
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-slate-600 uppercase">Invoice Number</label>
-                    <input type="text" id="man_inv_no" class="w-full border border-slate-300 rounded p-2 text-sm font-mono">
+                    <input type="text" id="man_inv_no" class="w-full border border-slate-300 rounded p-2 text-sm font-mono font-semibold">
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-slate-600 uppercase">Invoice Date</label>
-                    <input type="date" id="man_inv_date" class="w-full border border-slate-300 rounded p-2 text-sm">
+                    <input type="date" id="man_inv_date" class="w-full border border-slate-300 rounded p-2 text-sm font-medium">
                 </div>
+                
                 <div class="space-y-1 md:col-span-2 mt-2 pt-4 border-t border-slate-200">
-                    <h4 class="text-sm font-bold text-slate-800 mb-2">Financial Calculations</h4>
+                    <h4 class="text-sm font-bold text-slate-800 mb-2">Financial & Payment Calculations</h4>
                 </div>
+                
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-emerald-600 uppercase">Basic Amount (Net Taxable)</label>
-                    <input type="number" id="man_basic" oninput="window.calcManualMath()" class="w-full border border-emerald-300 rounded p-2 text-sm font-bold text-slate-800" placeholder="0.00">
+                    <input type="number" id="man_basic" oninput="window.calcManualMath()" class="w-full border border-emerald-300 rounded p-2 text-sm font-bold text-slate-800" placeholder="0.00" step="0.01">
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-slate-600 uppercase">Tax %</label>
@@ -394,14 +450,24 @@
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-slate-600 uppercase">Tax Type</label>
                     <div class="flex gap-4 mt-1">
-                        <label class="flex items-center gap-1 text-sm"><input type="radio" name="man_tax_type" value="intra" checked onchange="window.calcManualMath()"> CGST/SGST</label>
-                        <label class="flex items-center gap-1 text-sm"><input type="radio" name="man_tax_type" value="inter" onchange="window.calcManualMath()"> IGST</label>
+                        <label class="flex items-center gap-1 text-sm font-medium cursor-pointer"><input type="radio" name="man_tax_type" value="intra" checked onchange="window.calcManualMath()"> CGST/SGST</label>
+                        <label class="flex items-center gap-1 text-sm font-medium cursor-pointer"><input type="radio" name="man_tax_type" value="inter" onchange="window.calcManualMath()"> IGST</label>
                     </div>
                 </div>
                 <div class="space-y-1">
                     <label class="text-xs font-bold text-brand-600 uppercase">Total Gross Amount</label>
                     <input type="text" id="man_gross" readonly class="w-full border border-slate-200 bg-slate-50 rounded p-2 text-sm font-bold text-brand-700">
                 </div>
+                
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-emerald-600 uppercase">Amount Paid (₹)</label>
+                    <input type="number" id="man_paid" oninput="window.calcManualMath()" class="w-full border border-emerald-300 bg-emerald-50 rounded p-2 text-sm font-bold text-emerald-800" placeholder="0.00" step="0.01">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-red-600 uppercase">Balance Due (₹)</label>
+                    <input type="text" id="man_balance" readonly class="w-full border border-slate-200 bg-red-50 rounded p-2 text-sm font-bold text-red-700">
+                </div>
+
             </div>
             <div class="p-4 border-t border-slate-200 bg-slate-50 rounded-b-xl flex justify-end gap-3">
                 <button onclick="window.closeManualEntry()" class="px-4 py-2 rounded text-sm font-medium text-slate-600 hover:bg-slate-200">Cancel</button>
@@ -413,20 +479,32 @@
     </div>
 
     <!-- File Viewer Modal -->
-    <div id="file-viewer-modal" class="fixed inset-0 bg-slate-900/90 hidden z-[70] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
-        <div class="relative w-full max-w-4xl h-[90vh] flex flex-col bg-white rounded-xl overflow-hidden shadow-2xl mx-4">
-            <div class="p-3 bg-slate-800 text-white flex justify-between items-center shrink-0">
-                <h3 class="font-medium text-sm flex items-center gap-2"><i class="fa-solid fa-file-invoice"></i> Attached Document</h3>
-                <button onclick="window.closeFileViewer()" class="text-slate-300 hover:text-red-400 bg-slate-700 hover:bg-slate-600 rounded p-1 px-2"><i class="fa-solid fa-xmark"></i> Close</button>
+    <div id="file-viewer-modal" class="fixed inset-0 bg-slate-900/95 hidden z-[70] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div class="relative w-full max-w-5xl h-[95vh] flex flex-col bg-slate-800 rounded-xl overflow-hidden shadow-2xl mx-4 border border-slate-700">
+            <div class="p-3 bg-slate-900 text-white flex justify-between items-center shrink-0 border-b border-slate-700">
+                <h3 class="font-semibold text-sm flex items-center gap-2"><i class="fa-solid fa-file-invoice text-brand-400"></i> Document Viewer</h3>
+                
+                <!-- Viewer Controls -->
+                <div class="flex items-center gap-2 bg-slate-800 rounded-lg p-1">
+                    <button onclick="window.zoomViewer(0.2)" class="hover:bg-slate-700 p-1.5 px-3 rounded text-slate-300 transition" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    <button onclick="window.zoomViewer(-0.2)" class="hover:bg-slate-700 p-1.5 px-3 rounded text-slate-300 transition" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <button onclick="window.resetViewer()" class="hover:bg-slate-700 p-1.5 px-3 rounded text-slate-300 transition text-xs font-bold uppercase tracking-wider">Reset</button>
+                    <div class="w-px h-5 bg-slate-600 mx-1"></div>
+                    <button id="viewer_download_btn" class="hover:bg-slate-700 p-1.5 px-3 rounded text-slate-300 transition" title="Download"><i class="fa-solid fa-download"></i></button>
+                </div>
+
+                <button onclick="window.closeFileViewer()" class="text-slate-300 hover:text-white bg-red-600/80 hover:bg-red-600 rounded p-1.5 px-3 font-bold text-xs uppercase tracking-wider transition"><i class="fa-solid fa-xmark mr-1"></i> Close</button>
             </div>
-            <div id="file-viewer-content" class="flex-grow bg-slate-100 overflow-auto flex items-center justify-center p-4">
-                <!-- Content injected here (img or iframe) -->
+            <div class="flex-grow overflow-auto flex items-center justify-center p-4 relative" id="file-viewer-container">
+                <div id="file-viewer-content" style="transform: scale(1); transform-origin: center center; transition: transform 0.2s ease;" class="max-w-full max-h-full">
+                    <!-- Content injected here (img or iframe) -->
+                </div>
             </div>
         </div>
     </div>
 
     <!-- Camera Modal -->
-    <div id="camera-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[60] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+    <div id="camera-modal" class="fixed inset-0 bg-slate-900/90 hidden z-[60] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
         <div class="bg-white rounded-xl p-4 max-w-lg w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300">
             <div class="flex justify-between items-center mb-4">
                 <h3 class="font-bold text-lg text-slate-800">Scan Bill</h3>
@@ -446,19 +524,18 @@
     </div>
 
     <!-- Custom Alert Modal -->
-    <div id="alert-modal" class="fixed inset-0 bg-slate-900/50 hidden z-[80] flex items-center justify-center opacity-0 transition-opacity">
-        <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-xl text-center">
-            <div id="alert-icon" class="text-4xl mb-3"></div>
-            <h3 id="alert-title" class="text-lg font-bold text-slate-800 mb-2"></h3>
-            <p id="alert-message" class="text-sm text-slate-600 mb-5"></p>
-            <div class="flex flex-col gap-2">
-                <button id="alert-confirm-btn" class="bg-brand-600 text-white px-6 py-2 rounded-md font-medium hover:bg-brand-700 transition w-full hidden">Confirm</button>
-                <button id="alert-cancel-btn" onclick="window.closeAlert()" class="bg-slate-200 text-slate-800 px-6 py-2 rounded-md font-medium hover:bg-slate-300 transition w-full">Close</button>
+    <div id="alert-modal" class="fixed inset-0 bg-slate-900/60 hidden z-[100] flex items-center justify-center opacity-0 transition-opacity">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-2xl text-center border border-slate-200">
+            <div id="alert-icon" class="text-5xl mb-4"></div>
+            <h3 id="alert-title" class="text-xl font-bold text-slate-800 mb-2"></h3>
+            <p id="alert-message" class="text-sm text-slate-600 mb-6 font-medium"></p>
+            <div class="flex flex-col gap-3">
+                <button id="alert-confirm-btn" class="bg-brand-600 text-white px-6 py-2.5 rounded-md font-bold hover:bg-brand-700 transition w-full hidden shadow-sm">Confirm</button>
+                <button id="alert-cancel-btn" onclick="window.closeAlert()" class="bg-slate-100 text-slate-800 px-6 py-2.5 rounded-md font-bold hover:bg-slate-200 transition w-full border border-slate-300">Close</button>
             </div>
         </div>
     </div>
 
-    <!-- MAIN LOGIC (Firebase + Logic) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -467,15 +544,15 @@
         // Global State
         let billsData = [];
         window.pendingFiles = []; 
-        let sortConfig = { key: 'invoiceDate', direction: 'desc' };
+        let sortConfig = { key: 'timestamp', direction: 'desc' };
         
         window.sessionGeminiKey = '';
         window.sessionFirebaseKey = '';
         window.sessionSyncPin = '';
+        window.viewerZoomLevel = 1;
+        window.currentViewingFile = null;
 
-        // ==========================================
-        // HARDCODED FIREBASE CONFIGURATION
-        // ==========================================
+        // Firebase Configuration (Mandatory structure)
         const MY_FIREBASE_CONFIG = {
             authDomain: "purchase-recon-app.firebaseapp.com",
             projectId: "purchase-recon-app",
@@ -533,12 +610,22 @@
             });
         }
 
-        // --- API KEY MODAL LOGIC ---
+        // --- STREAMING_CHUNK:API Key Modal & UI Toggles Logic ---
+        window.toggleAnalytics = function() {
+            const sec = document.getElementById('dashboard_section');
+            if (sec.classList.contains('hidden')) {
+                sec.classList.remove('hidden');
+                document.getElementById('btn_toggle_analytics').innerHTML = '<i class="fa-solid fa-chart-line"></i> Hide Analytics';
+            } else {
+                sec.classList.add('hidden');
+                document.getElementById('btn_toggle_analytics').innerHTML = '<i class="fa-solid fa-chart-line"></i> View Analytics';
+            }
+        }
+
         window.openApiModal = function() {
             const modal = document.getElementById('api-keys-modal');
             const content = document.getElementById('api-keys-modal-content');
             
-            // Populate current keys
             document.getElementById('modal_gemini_key').value = localStorage.getItem('recon_gemini_key') || window.sessionGeminiKey;
             document.getElementById('modal_firebase_key').value = localStorage.getItem('recon_firebase_key') || window.sessionFirebaseKey;
             document.getElementById('modal_sync_pin').value = localStorage.getItem('recon_sync_pin') || window.sessionSyncPin;
@@ -577,49 +664,32 @@
                 localStorage.setItem('recon_save_keys', 'false');
             }
 
-            // Save in session memory regardless
             window.sessionGeminiKey = geminiKey;
             window.sessionFirebaseKey = firebaseKey;
             window.sessionSyncPin = syncPin;
 
             window.closeApiModal();
-            window.showCustomAlert("Settings Saved", "Your API keys and Sync PIN have been configured.", "success");
+            window.showCustomAlert("Settings Saved", "Your APIs and PIN configuration have been updated securely.", "success");
             
-            // Re-run initialization to apply Firebase key / Sync PIN if it changed
-            if(firebaseKey || syncPin) {
-                initApp();
-            }
+            if(firebaseKey || syncPin) initApp();
         }
 
-        function getActiveGeminiKey() {
-            return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_gemini_key') : window.sessionGeminiKey) || '';
-        }
+        function getActiveGeminiKey() { return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_gemini_key') : window.sessionGeminiKey) || ''; }
+        function getActiveFirebaseKey() { return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_firebase_key') : window.sessionFirebaseKey) || ''; }
+        function getActiveSyncPin() { return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_sync_pin') : window.sessionSyncPin) || ''; }
 
-        function getActiveFirebaseKey() {
-            return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_firebase_key') : window.sessionFirebaseKey) || '';
-        }
-
-        function getActiveSyncPin() {
-            return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_sync_pin') : window.sessionSyncPin) || '';
-        }
-
-        // --- APP INITIALIZATION ---
+        // --- STREAMING_CHUNK:App Initialization and Syncing ---
         let unsubscribeSnapshot = null;
 
         async function initApp() {
             try {
                 document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connecting...';
-                
                 const fbKey = getActiveFirebaseKey();
                 
-                if (!fbKey) {
-                    throw new Error("No Firebase API Key provided.");
-                }
+                if (!fbKey) throw new Error("No Firebase API Key provided.");
 
-                // Inject API Key into config dynamically
                 const config = { ...MY_FIREBASE_CONFIG, apiKey: fbKey };
                 
-                // Initialize only once if possible, or use existing
                 if (!app) {
                     app = initializeApp(config);
                     auth = getAuth(app);
@@ -631,37 +701,30 @@
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         const customPin = getActiveSyncPin();
-                        
-                        // Use PIN to group devices, fallback to unique anon UID
                         userId = customPin ? `custom_sync_${customPin}` : user.uid;
 
                         billsCollectionPath = `artifacts/${appId}/users/${userId}/bills`;
                         filesCollectionPath = `artifacts/${appId}/users/${userId}/bill_files`;
-                        document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-cloud text-green-600"></i> Synced to Cloud';
+                        document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-cloud text-green-600"></i> Cloud Synced';
                         setupRealtimeSync();
                     }
                 });
             } catch (e) {
                 console.warn("Falling back to Local Storage: ", e.message);
-                document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-hard-drive text-amber-500"></i> Local Device Data';
+                document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-hard-drive text-amber-500"></i> Local Only';
                 
-                // Clear any cloud references if initialization failed
                 db = null; userId = null;
-                
                 await initLocalDB();
                 
                 if (window.__PORTABLE_BACKUP__) {
                     const data = window.__PORTABLE_BACKUP__;
                     billsData = data.bills || [];
                     localStorage.setItem('smart_recon_bills', JSON.stringify(billsData));
-                    
                     if (data.files && data.files.length > 0) {
-                        for(let f of data.files) {
-                            await saveLocalFile(f.id, f.data, f.mimeType);
-                        }
+                        for(let f of data.files) await saveLocalFile(f.id, f.data, f.mimeType);
                     }
-                    window.showCustomAlert("Backup Restored", "Successfully loaded all entries and bill images from this HTML file.", "success");
-                    window.__PORTABLE_BACKUP__ = null; // Free memory
+                    window.showCustomAlert("Backup Restored", "Loaded entries & images from HTML backup.", "success");
+                    window.__PORTABLE_BACKUP__ = null; 
                 } else {
                     billsData = JSON.parse(localStorage.getItem('smart_recon_bills')) || [];
                 }
@@ -673,14 +736,9 @@
 
         function setupRealtimeSync() {
             if (!userId || !db) return;
-            
-            // Clean up previous listener if pin changed
-            if (unsubscribeSnapshot) {
-                unsubscribeSnapshot();
-            }
+            if (unsubscribeSnapshot) unsubscribeSnapshot();
 
             const q = collection(db, billsCollectionPath);
-            
             unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
                 billsData = [];
                 snapshot.forEach((doc) => {
@@ -689,12 +747,30 @@
                 window.updateMonthOptions();
                 window.renderTable();
             }, (error) => {
-                console.error("Firestore sync error:", error);
-                window.showCustomAlert("Sync Error", "Failed to sync data with cloud.", "error");
+                console.error("Firestore error:", error);
             });
         }
 
+        // Core Duplicate Detection Logic
+        function isDuplicate(newBill) {
+            return billsData.some(b => 
+                b.id !== newBill.id && // exclude self if editing
+                b.gstin && newBill.gstin && b.gstin.toUpperCase() === newBill.gstin.toUpperCase() &&
+                b.invoiceNumber && newBill.invoiceNumber && b.invoiceNumber.toUpperCase() === newBill.invoiceNumber.toUpperCase() &&
+                Math.abs((Number(b.grossAmount) || 0) - (Number(newBill.grossAmount) || 0)) <= 1.00
+            );
+        }
+
         async function saveBillToCloud(bill) {
+            if(isDuplicate(bill)) {
+                throw new Error(`Duplicate detected for Bill No: ${bill.invoiceNumber} (GSTIN: ${bill.gstin}). Skipping to maintain data integrity.`);
+            }
+
+            // Defaults
+            bill.paidAmount = bill.paidAmount || 0;
+            bill.balance = Math.max(0, (Number(bill.grossAmount) || 0) - bill.paidAmount);
+            bill.gstr2bStatus = bill.gstr2bStatus || 'Pending';
+
             if (db && userId) {
                 const docRef = doc(db, billsCollectionPath, bill.id);
                 await setDoc(docRef, bill);
@@ -715,11 +791,25 @@
             }
         }
 
+        // --- STREAMING_CHUNK:Filtering and Date Logic ---
         window.parseDate = function(dateStr) {
             if (!dateStr) return null;
             const parts = dateStr.split('/');
             if (parts.length === 3) return new Date(parts[2], parts[1] - 1, parts[0]);
             return new Date(dateStr);
+        }
+
+        window.formatDateForInput = function(dateStr) {
+            if (!dateStr) return '';
+            const parts = dateStr.split('/');
+            if(parts.length === 3) return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            return '';
+        }
+
+        window.formatTimestamp = function(ms) {
+            if(!ms) return '-';
+            const d = new Date(ms);
+            return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth()+1).toString().padStart(2, '0')}/${d.getFullYear()}`;
         }
 
         window.getFY = function(dateStr) {
@@ -767,6 +857,7 @@
             if (sortedCats.includes(currentSelection)) catSelect.value = currentSelection;
         }
 
+        // --- STREAMING_CHUNK:Table Rendering & Analytics ---
         window.renderTable = function() {
             populateCategoryFilter();
             const tbody = document.getElementById('table_body');
@@ -803,9 +894,10 @@
                 filteredData.sort((a, b) => {
                     let valA = a[sortConfig.key];
                     let valB = b[sortConfig.key];
-                    if (sortConfig.key === 'invoiceDate') {
-                        valA = window.parseDate(valA) || new Date(0);
-                        valB = window.parseDate(valB) || new Date(0);
+                    if (sortConfig.key === 'invoiceDate' || sortConfig.key === 'timestamp') {
+                        valA = sortConfig.key === 'invoiceDate' ? window.parseDate(valA) : valA;
+                        valB = sortConfig.key === 'invoiceDate' ? window.parseDate(valB) : valB;
+                        if (!valA) valA = 0; if(!valB) valB = 0;
                     } else if (typeof valA === 'string') {
                         valA = valA.toLowerCase(); valB = valB.toLowerCase();
                     }
@@ -815,7 +907,7 @@
                 });
             }
 
-            let totals = { gross: 0, net: 0, igst: 0, cgst: 0, sgst: 0 };
+            let t = { gross: 0, net: 0, igst: 0, cgst: 0, sgst: 0, paid: 0, balance: 0 };
 
             if (filteredData.length === 0) {
                 document.getElementById('empty_state').classList.remove('hidden');
@@ -823,31 +915,50 @@
                 document.getElementById('empty_state').classList.add('hidden');
                 
                 filteredData.forEach((bill, index) => {
-                    totals.gross += Number(bill.grossAmount) || 0;
-                    totals.net += Number(bill.netTaxableAmount) || 0;
-                    totals.igst += Number(bill.igst) || 0;
-                    totals.cgst += Number(bill.cgst) || 0;
-                    totals.sgst += Number(bill.sgst) || 0;
+                    t.gross += Number(bill.grossAmount) || 0;
+                    t.net += Number(bill.netTaxableAmount) || 0;
+                    t.igst += Number(bill.igst) || 0;
+                    t.cgst += Number(bill.cgst) || 0;
+                    t.sgst += Number(bill.sgst) || 0;
+                    t.paid += Number(bill.paidAmount) || 0;
+                    t.balance += Number(bill.balance) || 0;
 
-                    const hasFile = bill.hasFile ? `<button onclick="window.viewFile('${bill.id}')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded" title="View Document"><i class="fa-solid fa-image"></i></button>` : `<span class="text-slate-300"><i class="fa-solid fa-file-slash"></i></span>`;
+                    const hasFile = bill.hasFile ? `<button onclick="window.viewFile('${bill.id}')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded transition" title="View Document"><i class="fa-solid fa-image text-lg"></i></button>` : `<span class="text-slate-300"><i class="fa-solid fa-file-slash"></i></span>`;
+
+                    let gstr2bBadge = `<span class="text-[10px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase border border-slate-200">Pending</span>`;
+                    if(bill.gstr2bStatus === 'Matched') gstr2bBadge = `<span class="text-[10px] font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded uppercase border border-green-200"><i class="fa-solid fa-check"></i> Matched</span>`;
+                    else if(bill.gstr2bStatus === 'Amount Mismatch') gstr2bBadge = `<span class="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded uppercase border border-amber-200"><i class="fa-solid fa-triangle-exclamation"></i> Mismatch</span>`;
+                    else if(bill.gstr2bStatus === 'Missing in 2B') gstr2bBadge = `<span class="text-[10px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded uppercase border border-red-200"><i class="fa-solid fa-xmark"></i> Missing</span>`;
+
+                    let rowClass = "";
+                    if(bill.balance === 0 && bill.grossAmount > 0) rowClass = "paid-row";
+                    else if(bill.balance > 0) rowClass = "unpaid-row";
 
                     const tr = document.createElement('tr');
+                    tr.className = `transition-colors duration-150 ${rowClass}`;
                     tr.innerHTML = `
-                        <td class="col-center text-slate-500">${index + 1}</td>
+                        <td class="col-center text-slate-500 font-semibold">${index + 1}</td>
                         <td class="col-center no-print">${hasFile}</td>
-                        <td class="font-mono text-xs font-semibold">${bill.gstin || '-'}</td>
-                        <td class="font-semibold text-slate-800 truncate max-w-[200px]" title="${bill.vendorName || ''}">${bill.vendorName || '-'}</td>
-                        <td class="truncate max-w-[200px]" title="${bill.category || ''}"><span class="text-[10px] font-bold text-brand-700 bg-brand-50 uppercase tracking-wider px-2 py-0.5 rounded border border-brand-200">${bill.category || 'Uncategorized'}</span></td>
-                        <td class="font-mono text-xs">${bill.invoiceNumber || '-'}</td>
-                        <td class="font-mono text-xs">${bill.invoiceDate || '-'}</td>
-                        <td class="col-num font-bold text-slate-800">${(Number(bill.grossAmount)||0).toFixed(2)}</td>
-                        <td class="col-center bg-slate-50 font-semibold">${(Number(bill.taxPercent)||0).toFixed(0)}%</td>
-                        <td class="col-num">${(Number(bill.netTaxableAmount)||0).toFixed(2)}</td>
+                        <td class="text-xs text-slate-500 font-medium">${window.formatTimestamp(bill.timestamp)}</td>
+                        <td class="font-mono text-sm font-semibold">${bill.gstin || '-'}</td>
+                        <td class="font-bold text-slate-800 truncate max-w-[250px]" title="${bill.vendorName || ''}">${bill.vendorName || '-'}</td>
+                        <td class="truncate max-w-[200px]" title="${bill.category || ''}"><span class="text-xs font-bold text-brand-700 bg-brand-50 uppercase tracking-wider px-2 py-0.5 rounded border border-brand-200">${bill.category || 'Uncategorized'}</span></td>
+                        <td class="font-mono text-sm font-semibold">${bill.invoiceNumber || '-'}</td>
+                        <td class="font-mono text-sm text-slate-700">${bill.invoiceDate || '-'}</td>
+                        <td class="col-num font-bold text-slate-900">${(Number(bill.grossAmount)||0).toFixed(2)}</td>
+                        <td class="col-center bg-slate-50 font-bold text-slate-600">${(Number(bill.taxPercent)||0).toFixed(0)}%</td>
+                        <td class="col-num font-medium">${(Number(bill.netTaxableAmount)||0).toFixed(2)}</td>
                         <td class="col-num text-slate-500">${(Number(bill.igst)||0).toFixed(2)}</td>
                         <td class="col-num text-slate-500">${(Number(bill.cgst)||0).toFixed(2)}</td>
                         <td class="col-num text-slate-500">${(Number(bill.sgst)||0).toFixed(2)}</td>
-                        <td class="col-center no-print">
-                            <button onclick="window.confirmDelete('${bill.id}')" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded transition" title="Delete">
+                        <td class="col-num font-bold text-emerald-700">${(Number(bill.paidAmount)||0).toFixed(2)}</td>
+                        <td class="col-num font-bold text-red-700">${(Number(bill.balance)||0).toFixed(2)}</td>
+                        <td class="col-center">${gstr2bBadge}</td>
+                        <td class="col-center no-print space-x-1">
+                            <button onclick="window.editBill('${bill.id}')" class="text-slate-400 hover:text-brand-600 hover:bg-brand-50 p-1.5 rounded transition" title="Edit">
+                                <i class="fa-solid fa-pen"></i>
+                            </button>
+                            <button onclick="window.confirmDelete('${bill.id}')" class="text-slate-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded transition" title="Delete">
                                 <i class="fa-solid fa-trash"></i>
                             </button>
                         </td>
@@ -856,17 +967,21 @@
                 });
             }
 
-            document.getElementById('foot_gross').textContent = totals.gross.toFixed(2);
-            document.getElementById('foot_net').textContent = totals.net.toFixed(2);
-            document.getElementById('foot_igst').textContent = totals.igst.toFixed(2);
-            document.getElementById('foot_cgst').textContent = totals.cgst.toFixed(2);
-            document.getElementById('foot_sgst').textContent = totals.sgst.toFixed(2);
+            document.getElementById('foot_gross').textContent = t.gross.toFixed(2);
+            document.getElementById('foot_net').textContent = t.net.toFixed(2);
+            document.getElementById('foot_igst').textContent = t.igst.toFixed(2);
+            document.getElementById('foot_cgst').textContent = t.cgst.toFixed(2);
+            document.getElementById('foot_sgst').textContent = t.sgst.toFixed(2);
+            document.getElementById('foot_paid').textContent = t.paid.toFixed(2);
+            document.getElementById('foot_balance').textContent = t.balance.toFixed(2);
 
             const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
-            document.getElementById('dash_total_gross').textContent = formatter.format(totals.gross);
-            document.getElementById('dash_total_net').textContent = formatter.format(totals.net);
-            document.getElementById('dash_total_tax').textContent = formatter.format(totals.igst + totals.cgst + totals.sgst);
-            document.getElementById('dash_bill_count').textContent = filteredData.length;
+            document.getElementById('dash_total_gross').textContent = formatter.format(t.gross);
+            document.getElementById('dash_total_paid').textContent = formatter.format(t.paid);
+            document.getElementById('dash_total_balance').textContent = formatter.format(t.balance);
+            document.getElementById('dash_total_tax').textContent = formatter.format(t.igst + t.cgst + t.sgst);
+            
+            document.getElementById('table_count_badge').innerHTML = `<i class="fa-solid fa-database mr-1"></i> ${filteredData.length} Records`;
         }
 
         window.sortTable = function(key) {
@@ -875,42 +990,45 @@
             window.renderTable();
         }
 
-        window.confirmDelete = function(id) {
-            window.showCustomAlert("Confirm Deletion", "Are you sure you want to delete this bill? This cannot be undone.", "info", async function() {
-                if(db && userId) {
-                    await deleteDoc(doc(db, billsCollectionPath, id));
-                    await deleteDoc(doc(db, filesCollectionPath, id)).catch(() => {});
-                } else {
-                    billsData = billsData.filter(b => b.id !== id);
-                    localStorage.setItem('smart_recon_bills', JSON.stringify(billsData));
-                    await deleteLocalFile(id);
-                    window.renderTable();
-                }
-            });
-        }
-
-        window.clearAllData = function() {
-            window.showCustomAlert("WARNING", "Are you sure you want to delete ALL entries and bill images? This cannot be undone.", "error", async function() {
-                billsData = [];
-                localStorage.removeItem('smart_recon_bills');
-                
-                if (localDb) {
-                    await new Promise((resolve) => {
-                        const tx = localDb.transaction('files', 'readwrite');
-                        tx.objectStore('files').clear();
-                        tx.oncomplete = () => resolve();
-                    });
-                }
-                
-                window.renderTable();
-                window.showCustomAlert("Cleared", "All purchase directory data and files have been removed.", "success");
-            });
-        }
-
+        // --- STREAMING_CHUNK:Manual Entry & Edits ---
         window.openManualEntry = function() {
+            document.getElementById('man_modal_title').textContent = "Manual Bill Entry";
+            document.getElementById('man_editing_id').value = '';
             document.querySelectorAll('#manual-modal input:not([type="radio"])').forEach(el => el.value = '');
             document.getElementById('man_tax_pct').value = '18';
             document.querySelector('input[name="man_tax_type"][value="intra"]').checked = true;
+            document.getElementById('manual-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('manual-modal').classList.remove('opacity-0'), 10);
+        }
+
+        window.editBill = function(id) {
+            const bill = billsData.find(b => b.id === id);
+            if(!bill) return;
+
+            document.getElementById('man_modal_title').textContent = "Edit Bill Record";
+            document.getElementById('man_editing_id').value = bill.id;
+            
+            document.getElementById('man_gstin').value = bill.gstin || '';
+            document.getElementById('man_vendor').value = bill.vendorName || '';
+            document.getElementById('man_category').value = bill.category || '';
+            document.getElementById('man_inv_no').value = bill.invoiceNumber || '';
+            document.getElementById('man_inv_date').value = window.formatDateForInput(bill.invoiceDate);
+            document.getElementById('man_basic').value = bill.netTaxableAmount || '';
+            
+            let taxPct = (bill.taxPercent || 0).toString();
+            let select = document.getElementById('man_tax_pct');
+            if(!Array.from(select.options).some(o => o.value === taxPct)) {
+                select.innerHTML += `<option value="${taxPct}">${taxPct}%</option>`;
+            }
+            select.value = taxPct;
+
+            if((bill.igst || 0) > 0) document.querySelector('input[name="man_tax_type"][value="inter"]').checked = true;
+            else document.querySelector('input[name="man_tax_type"][value="intra"]').checked = true;
+            
+            document.getElementById('man_paid').value = bill.paidAmount || 0;
+            
+            window.calcManualMath();
+
             document.getElementById('manual-modal').classList.remove('hidden');
             setTimeout(() => document.getElementById('manual-modal').classList.remove('opacity-0'), 10);
         }
@@ -924,24 +1042,26 @@
             const basic = parseFloat(document.getElementById('man_basic').value) || 0;
             const pct = parseFloat(document.getElementById('man_tax_pct').value) || 0;
             const gross = basic + (basic * (pct / 100));
+            const paid = parseFloat(document.getElementById('man_paid').value) || 0;
+            
             document.getElementById('man_gross').value = gross.toFixed(2);
+            document.getElementById('man_balance').value = Math.max(0, gross - paid).toFixed(2);
         }
 
-        window.saveManualEntry = function() {
+        window.saveManualEntry = async function() {
+            const editId = document.getElementById('man_editing_id').value;
             const basic = parseFloat(document.getElementById('man_basic').value) || 0;
             const pct = parseFloat(document.getElementById('man_tax_pct').value) || 0;
             const taxAmt = basic * (pct / 100);
             const isInter = document.querySelector('input[name="man_tax_type"]:checked').value === 'inter';
+            const paid = parseFloat(document.getElementById('man_paid').value) || 0;
             
             const rawDate = document.getElementById('man_inv_date').value;
             let formattedDate = '';
-            if (rawDate) {
-                const [y, m, d] = rawDate.split('-');
-                formattedDate = `${d}/${m}/${y}`;
-            }
+            if (rawDate) { const [y, m, d] = rawDate.split('-'); formattedDate = `${d}/${m}/${y}`; }
 
-            const bill = {
-                id: 'bill_man_' + Date.now(),
+            let bill = {
+                id: editId || ('bill_man_' + Date.now()),
                 gstin: document.getElementById('man_gstin').value.toUpperCase(),
                 vendorName: document.getElementById('man_vendor').value,
                 category: document.getElementById('man_category').value,
@@ -953,19 +1073,33 @@
                 igst: isInter ? taxAmt : 0,
                 cgst: isInter ? 0 : taxAmt / 2,
                 sgst: isInter ? 0 : taxAmt / 2,
+                paidAmount: paid,
+                balance: (basic + taxAmt) - paid,
                 hasFile: false,
                 timestamp: Date.now()
             };
 
-            saveBillToCloud(bill);
-            window.closeManualEntry();
-            window.showCustomAlert("Success", "Manual entry added successfully.", "success");
+            if (editId) {
+                const existing = billsData.find(b => b.id === editId);
+                if (existing) {
+                    bill.hasFile = existing.hasFile;
+                    bill.timestamp = existing.timestamp; // keep original added date
+                    bill.gstr2bStatus = existing.gstr2bStatus;
+                }
+            }
+
+            try {
+                await saveBillToCloud(bill);
+                window.closeManualEntry();
+                window.showCustomAlert("Success", editId ? "Entry updated successfully." : "Manual entry added successfully.", "success");
+            } catch(e) {
+                window.showCustomAlert("Error", e.message, "error");
+            }
         }
 
+        // --- STREAMING_CHUNK:File Processing and Compression ---
         async function compressImage(file) {
-            if (!file.type.startsWith('image/')) {
-                return await fileToBase64(file);
-            }
+            if (!file.type.startsWith('image/')) return await fileToBase64(file);
             return new Promise((resolve) => {
                 const reader = new FileReader();
                 reader.readAsDataURL(file);
@@ -974,17 +1108,16 @@
                     img.src = e.target.result;
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        const MAX = 800;
+                        const MAX = 1200; // Increased resolution for better OCR
                         let w = img.width, h = img.height;
                         if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } 
                         else { if (h > MAX) { w *= MAX / h; h = MAX; } }
                         canvas.width = w; canvas.height = h;
                         const ctx = canvas.getContext('2d');
-                        
-                        ctx.filter = 'grayscale(100%) contrast(1.2)';
+                        ctx.filter = 'grayscale(100%) contrast(1.1)';
                         ctx.drawImage(img, 0, 0, w, h);
-                        
-                        resolve(canvas.toDataURL('image/jpeg', 0.4).split(',')[1]);
+                        // Quality 0.7 for good balance
+                        resolve(canvas.toDataURL('image/jpeg', 0.7).split(',')[1]);
                     };
                 };
             });
@@ -1000,8 +1133,7 @@
         }
 
         document.getElementById('file_input').addEventListener('change', async (e) => {
-            const files = e.target.files;
-            for (let file of files) {
+            for (let file of e.target.files) {
                 try {
                     const compressedBase64 = await compressImage(file);
                     if (compressedBase64) {
@@ -1016,25 +1148,6 @@
             updateFileBadge();
         });
 
-        document.getElementById('native_camera_input').addEventListener('change', async (e) => {
-            const files = e.target.files;
-            if (files && files.length > 0) {
-                const file = files[0];
-                try {
-                    const compressedBase64 = await compressImage(file);
-                    if (compressedBase64) {
-                        window.pendingFiles.push({
-                            mimeType: 'image/jpeg',
-                            data: compressedBase64,
-                            name: 'Camera_Snapshot.jpg'
-                        });
-                        updateFileBadge();
-                    }
-                } catch (err) { console.error(err); }
-            }
-            e.target.value = '';
-        });
-
         function updateFileBadge() {
             const badge = document.getElementById('file_badge');
             const count = document.getElementById('file_count');
@@ -1045,74 +1158,46 @@
                 badge.classList.add('hidden'); badge.classList.remove('inline-flex');
             }
         }
-
         window.clearFiles = function() {
-            window.pendingFiles = [];
-            document.getElementById('file_input').value = '';
-            updateFileBadge();
+            window.pendingFiles = []; document.getElementById('file_input').value = ''; updateFileBadge();
         }
 
+        // Camera functions
         let videoStream = null;
         window.openCamera = async function() {
             try {
-                if (!window.isSecureContext && location.protocol !== 'http:') {
-                    throw new Error("Insecure context requires native camera fallback");
-                }
-                
                 videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                
                 const modal = document.getElementById('camera-modal');
-                modal.classList.remove('hidden');
-                setTimeout(() => modal.classList.remove('opacity-0'), 10);
-                
+                modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10);
                 document.getElementById('camera-stream').srcObject = videoStream;
-            } catch (err) {
-                document.getElementById('native_camera_input').click();
-            }
+            } catch (err) { document.getElementById('native_camera_input').click(); }
         }
         window.closeCamera = function() {
             const modal = document.getElementById('camera-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 300);
+            modal.classList.add('opacity-0'); setTimeout(() => modal.classList.add('hidden'), 300);
             if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
         }
         window.takeSnapshot = function() {
             const video = document.getElementById('camera-stream');
             const canvas = document.getElementById('camera-canvas');
+            const MAX = 1200;
+            let w = video.videoWidth, h = video.videoHeight;
+            if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+            canvas.width = w; canvas.height = h;
+            canvas.getContext('2d').drawImage(video, 0, 0, w, h);
             
-            const MAX = 1000;
-            let w = video.videoWidth;
-            let h = video.videoHeight;
-            if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } 
-            else { if (h > MAX) { w *= MAX / h; h = MAX; } }
-            
-            canvas.width = w; 
-            canvas.height = h;
-            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            const data = canvas.toDataURL('image/jpeg', 0.5).split(',')[1];
-            window.pendingFiles.push({ mimeType: 'image/jpeg', data: data, name: 'Camera_Snapshot.jpg' });
-            updateFileBadge();
-            window.closeCamera();
+            const name = 'Camera_' + Date.now() + '.jpg';
+            window.pendingFiles.push({ mimeType: 'image/jpeg', data: canvas.toDataURL('image/jpeg', 0.7).split(',')[1], name: name });
+            updateFileBadge(); window.closeCamera();
         }
 
+        // --- STREAMING_CHUNK:AI Processing for Bills ---
         window.processAI = async function() {
             const textPrompt = document.getElementById('ai_prompt').value.trim();
-            if (window.pendingFiles.length === 0 && !textPrompt) {
-                window.showCustomAlert("Input Required", "Please attach files, capture a photo, or paste data.", "error");
-                return;
-            }
-
-            if (window.pendingFiles.length > 15) {
-                window.showCustomAlert("Batch Size Too Large", "To ensure high accuracy and avoid free-tier timeout limits, please process a maximum of 10-15 bills at a time. Clear some files and try again.", "error");
-                return;
-            }
-
+            if (window.pendingFiles.length === 0 && !textPrompt) return window.showCustomAlert("Input Required", "Please attach files or paste data.", "error");
+            if (window.pendingFiles.length > 15) return window.showCustomAlert("Batch Size Limit", "Process max 15 bills at a time.", "error");
             const dynamicApiKey = getActiveGeminiKey();
-            if (!dynamicApiKey) {
-                window.showCustomAlert("Gemini API Key Required", "Please click 'Configure Sync & APIs' at the top right to paste your Gemini API Key before processing.", "error");
-                return;
-            }
+            if (!dynamicApiKey) return window.showCustomAlert("API Key Missing", "Configure Gemini API Key first.", "error");
 
             const loader = document.getElementById('ai_loading_indicator');
             loader.classList.remove('hidden'); loader.classList.add('flex');
@@ -1121,34 +1206,30 @@
                 let parts = [];
                 const strictInstructions = `You are a strict, highly accurate accounting data extraction AI. 
 Extract data into a JSON object containing an array named "bills". Keys MUST be exact:
+- 'fileName' (string, CRITICAL: match the EXACT filename provided in the document delimiter below)
 - 'gstin' (string, e.g. "27AABC1234Z1")
 - 'vendorName' (string)
-- 'category' (string, CRITICAL: DO NOT use generic words like "Service", "Items", or "Uncategorized". Extract the exact main item name or highly specific nature of service. Examples: "Crane Hire", "Copper Wires", "Filter Machine", "Paint", "Legal Fees", "Hotel Lodging", "Air Ticket". Be highly intelligent.)
+- 'category' (string, CRITICAL: DO NOT use generic words like "Service". Extract the exact major item description/nature of service. E.g., "Crane Hire", "Copper Wires", "Legal Fees".)
 - 'invoiceNumber' (string)
 - 'invoiceDate' (string EXACTLY "DD/MM/YYYY")
 - 'grossAmount' (number)
-- 'taxPercent' (number, deduce if not explicit e.g. 5, 12, 18, 28)
+- 'taxPercent' (number, deduce if missing e.g. 5, 12, 18, 28)
 - 'netTaxableAmount' (number)
 - 'igst' (number)
 - 'cgst' (number)
 - 'sgst' (number)
 
-RULES: Math must align (Net + Tax = Gross). If missing amounts but % exists, calc them (Interstate=IGST, Intrastate=CGST/SGST). Use 0 for missing numbers. Output ONLY pure JSON.
+RULES: Math must align (Net + Tax = Gross). If missing amounts but % exists, calc them. Output ONLY pure JSON.
 User context: ${textPrompt}`;
                 
                 parts.push({ text: strictInstructions });
                 window.pendingFiles.forEach(file => {
+                    parts.push({ text: `--- Start of Document: ${file.name} ---` });
                     parts.push({ inlineData: { mimeType: file.mimeType, data: file.data } });
                 });
 
-                const payload = {
-                    contents: [{ role: "user", parts: parts }],
-                    generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
-                };
-
-                const response = await fetch(`${API_URL}?key=${dynamicApiKey}`, {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-                });
+                const payload = { contents: [{ role: "user", parts: parts }], generationConfig: { responseMimeType: "application/json", temperature: 0.1 } };
+                const response = await fetch(`${API_URL}?key=${dynamicApiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
                 const data = await response.json();
 
                 if (data.error) throw new Error(data.error.message);
@@ -1156,81 +1237,278 @@ User context: ${textPrompt}`;
                 if (data.candidates && data.candidates[0].content.parts[0].text) {
                     const parsedData = JSON.parse(data.candidates[0].content.parts[0].text);
                     if (parsedData && parsedData.bills && Array.isArray(parsedData.bills)) {
-                        
+                        let successCount = 0;
+                        let skipCount = 0;
+
                         for (let i = 0; i < parsedData.bills.length; i++) {
                             const bill = parsedData.bills[i];
-                            const id = 'bill_ai_' + Date.now() + i;
-                            bill.id = id;
+                            bill.id = 'bill_ai_' + Date.now() + i;
                             bill.timestamp = Date.now();
                             
-                            if (window.pendingFiles.length > 0) {
-                                const fileIndex = Math.min(i, window.pendingFiles.length - 1);
-                                const fileObj = window.pendingFiles[fileIndex];
-                                
-                                const isLocal = !(db && userId);
-                                const sizeLimit = isLocal ? 10000000 : 950000; 
-                                
-                                if (fileObj.data.length < sizeLimit) { 
+                            // Map file accurately using fileName
+                            const matchedFile = window.pendingFiles.find(f => f.name === bill.fileName);
+                            
+                            if (matchedFile) {
+                                const sizeLimit = !(db && userId) ? 10000000 : 950000; 
+                                if (matchedFile.data.length < sizeLimit) { 
                                     bill.hasFile = true;
-                                    await saveFileToCloud(id, fileObj.data, fileObj.mimeType);
-                                } else {
-                                    bill.hasFile = false;
-                                    console.warn("File too large to save.");
-                                }
-                            } else {
-                                bill.hasFile = false;
+                                    await saveFileToCloud(bill.id, matchedFile.data, matchedFile.mimeType);
+                                } else bill.hasFile = false;
+                            } else bill.hasFile = false;
+
+                            try {
+                                await saveBillToCloud(bill);
+                                successCount++;
+                            } catch(e) {
+                                console.warn(e.message);
+                                skipCount++;
                             }
-                            await saveBillToCloud(bill);
                         }
                         
                         window.clearFiles();
                         document.getElementById('ai_prompt').value = '';
-                        window.showCustomAlert("Success", `Added ${parsedData.bills.length} bill(s).`, "success");
+                        let msg = `Added ${successCount} bill(s).`;
+                        if(skipCount > 0) msg += ` Skipped ${skipCount} exact duplicates to prevent errors.`;
+                        window.showCustomAlert("Process Complete", msg, "success");
                     } else throw new Error("Invalid AI format.");
                 } else throw new Error("Empty AI response.");
 
             } catch (err) {
-                console.error(err);
-                window.showCustomAlert("Failed", err.message, "error");
+                console.error(err); window.showCustomAlert("Failed", err.message, "error");
+            } finally { loader.classList.add('hidden'); loader.classList.remove('flex'); }
+        }
+
+        // --- STREAMING_CHUNK:AI Payment Scanner ---
+        document.getElementById('payment_scan_input').addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            e.target.value = '';
+
+            const dynamicApiKey = getActiveGeminiKey();
+            if (!dynamicApiKey) return window.showCustomAlert("API Key Missing", "Configure Gemini API Key to use this feature.", "error");
+
+            try {
+                const isImage = file.type.startsWith('image/');
+                const mimeTypeToUse = isImage ? 'image/jpeg' : file.type;
+                const b64 = await compressImage(file);
+                
+                const loader = document.getElementById('ai_loading_indicator');
+                document.getElementById('ai_loading_title').textContent = "Scanning Payment Receipt...";
+                document.getElementById('ai_loading_sub').textContent = "Matching vendor and amounts with pending bills.";
+                loader.classList.remove('hidden'); loader.classList.add('flex');
+
+                const payload = {
+                    contents: [{ role: "user", parts: [
+                        { text: "Extract payment details from this receipt. Return ONLY a JSON object with: 'vendorName' (string), 'amountPaid' (number)." },
+                        { inlineData: { mimeType: mimeTypeToUse, data: b64 } }
+                    ]}],
+                    generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
+                };
+                const res = await fetch(`${API_URL}?key=${dynamicApiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                
+                if (data.error) throw new Error(data.error.message);
+                
+                const result = JSON.parse(data.candidates[0].content.parts[0].text);
+                if(result.vendorName && result.amountPaid) {
+                    
+                    // Fuzzy match vendor with balance
+                    const potentialBills = billsData.filter(b => b.balance > 0 && b.vendorName && b.vendorName.toLowerCase().includes(result.vendorName.toLowerCase()));
+                    
+                    if(potentialBills.length > 0) {
+                        // Pick closest amount or first
+                        let target = potentialBills.find(b => b.balance >= result.amountPaid) || potentialBills[0];
+                        
+                        window.showCustomAlert(
+                            "Payment Match Found",
+                            `Vendor: ${target.vendorName}\nBill Inv: ${target.invoiceNumber}\nBalance: ₹${target.balance.toFixed(2)}\n\nApply ₹${result.amountPaid} payment to this bill?`,
+                            "info",
+                            async () => {
+                                target.paidAmount = (Number(target.paidAmount)||0) + result.amountPaid;
+                                target.balance = Math.max(0, target.grossAmount - target.paidAmount);
+                                await saveBillToCloud(target);
+                                window.showCustomAlert("Applied", "Payment saved successfully.", "success");
+                            }
+                        );
+                    } else {
+                        window.showCustomAlert("No Match Found", `Could not find an unpaid bill for vendor: ${result.vendorName}`, "error");
+                    }
+                } else throw new Error("Could not extract payment info.");
+
+            } catch(e) {
+                window.showCustomAlert("Scan Error", e.message, "error");
             } finally {
+                const loader = document.getElementById('ai_loading_indicator');
                 loader.classList.add('hidden'); loader.classList.remove('flex');
             }
+        });
+
+        // --- STREAMING_CHUNK:GSTR-2B matching & Bulk Import ---
+        document.getElementById('gstr2b_input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            e.target.value = '';
+
+            const reader = new FileReader();
+            reader.onload = async (evt) => {
+                try {
+                    const workbook = XLSX.read(evt.target.result, {type: 'binary'});
+                    const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const rows = XLSX.utils.sheet_to_json(firstSheet);
+
+                    let matchC = 0, mismatchC = 0, checkC = 0;
+                    
+                    rows.forEach(row => {
+                        let keys = Object.keys(row);
+                        let gstinKey = keys.find(k => k.toLowerCase().includes('gstin'));
+                        let invKey = keys.find(k => k.toLowerCase().includes('invoice num') || k.toLowerCase().includes('document det'));
+                        let amtKey = keys.find(k => k.toLowerCase().includes('invoice val') || k.toLowerCase().includes('gross'));
+
+                        if(gstinKey && invKey && amtKey) {
+                            checkC++;
+                            let gstin = (row[gstinKey]||'').toString().trim().toUpperCase();
+                            let invNo = (row[invKey]||'').toString().trim();
+                            let amt = parseFloat(row[amtKey]) || 0;
+
+                            let matched = billsData.find(b => b.gstin === gstin && b.invoiceNumber === invNo);
+                            if(matched) {
+                                if(Math.abs(Number(matched.grossAmount) - amt) <= 1.00) { matched.gstr2bStatus = 'Matched'; matchC++; }
+                                else { matched.gstr2bStatus = 'Amount Mismatch'; mismatchC++; }
+                                saveBillToCloud(matched).catch(()=>{});
+                            }
+                        }
+                    });
+
+                    // Mark un-matched as missing
+                    billsData.forEach(b => {
+                        if(b.gstr2bStatus === 'Pending') {
+                            b.gstr2bStatus = 'Missing in 2B';
+                            saveBillToCloud(b).catch(()=>{});
+                        }
+                    });
+
+                    window.showCustomAlert("GSTR-2B Sync Complete", `Analyzed ${checkC} Govt rows.\nMatched: ${matchC}\nMismatches: ${mismatchC}`, "success");
+                } catch(err) { window.showCustomAlert("Error", "Could not process GSTR-2B file.", "error"); }
+            };
+            reader.readAsBinaryString(file);
+        });
+
+        document.getElementById('bulk_import_input').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            e.target.value = '';
+            
+            const reader = new FileReader();
+            reader.onload = async (evt) => {
+                try {
+                    const workbook = XLSX.read(evt.target.result, {type: 'binary'});
+                    const rows = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                    let added = 0, skips = 0;
+
+                    for(let i=0; i<rows.length; i++) {
+                        let row = rows[i];
+                        let keys = Object.keys(row);
+                        let g = (k) => { let match = keys.find(x => x.toLowerCase().includes(k)); return match ? row[match] : ''; }
+                        
+                        let basic = parseFloat(g('net') || g('taxable')) || 0;
+                        let gross = parseFloat(g('gross') || g('total') || g('val')) || 0;
+                        if(gross === 0) continue;
+
+                        let bill = {
+                            id: 'bill_bulk_' + Date.now() + i,
+                            gstin: g('gstin').toString().trim().toUpperCase(),
+                            vendorName: g('name') || g('vendor') || g('party'),
+                            category: g('cat') || g('item') || 'Bulk Import',
+                            invoiceNumber: g('inv') || g('bill').toString(),
+                            invoiceDate: g('date'),
+                            grossAmount: gross,
+                            taxPercent: parseFloat(g('%') || g('rate')) || 0,
+                            netTaxableAmount: basic || gross, // fallback
+                            igst: parseFloat(g('igst')) || 0,
+                            cgst: parseFloat(g('cgst')) || 0,
+                            sgst: parseFloat(g('sgst')) || 0,
+                            hasFile: false,
+                            timestamp: Date.now(),
+                            paidAmount: 0,
+                            balance: gross,
+                            gstr2bStatus: 'Pending'
+                        };
+
+                        if(!isDuplicate(bill)) {
+                            await saveBillToCloud(bill);
+                            added++;
+                        } else skips++;
+                    }
+                    window.showCustomAlert("Bulk Import Complete", `Successfully imported ${added} entries.\nSkipped ${skips} duplicates.`, "success");
+                } catch(err) { window.showCustomAlert("Error", "Failed to import bulk data.", "error"); }
+            };
+            reader.readAsBinaryString(file);
+        });
+
+        // --- STREAMING_CHUNK:Document Viewer & Deletions ---
+        window.confirmDelete = function(id) {
+            window.showCustomAlert("Confirm Deletion", "Delete this bill? This cannot be undone.", "error", async function() {
+                if(db && userId) {
+                    await deleteDoc(doc(db, billsCollectionPath, id));
+                    await deleteDoc(doc(db, filesCollectionPath, id)).catch(() => {});
+                } else {
+                    billsData = billsData.filter(b => b.id !== id);
+                    localStorage.setItem('smart_recon_bills', JSON.stringify(billsData));
+                    await deleteLocalFile(id);
+                    window.renderTable();
+                }
+            });
         }
 
         window.viewFile = async function(id) {
             const modal = document.getElementById('file-viewer-modal');
             const contentDiv = document.getElementById('file-viewer-content');
-            contentDiv.innerHTML = '<div class="text-slate-500 flex flex-col items-center"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i><p>Loading document...</p></div>';
+            window.viewerZoomLevel = 1;
+            contentDiv.style.transform = `scale(1)`;
+            contentDiv.innerHTML = '<div class="text-slate-400 flex flex-col items-center"><i class="fa-solid fa-circle-notch fa-spin text-4xl mb-3"></i><p>Loading high-res document...</p></div>';
             
             modal.classList.remove('hidden');
             setTimeout(() => modal.classList.remove('opacity-0'), 10);
 
             try {
                 let fileData = null;
-                
                 if (db && userId) {
                     const docSnap = await getDoc(doc(db, filesCollectionPath, id));
                     if (docSnap.exists()) fileData = docSnap.data();
-                } else {
-                    fileData = await getLocalFile(id);
-                }
+                } else fileData = await getLocalFile(id);
 
                 if (fileData) {
+                    window.currentViewingFile = fileData;
                     const src = `data:${fileData.mimeType};base64,${fileData.data}`;
+                    
+                    document.getElementById('viewer_download_btn').onclick = () => {
+                        const ext = fileData.mimeType.split('/')[1] || 'jpeg';
+                        downloadFileUrl(src, `Document_${id}.${ext}`);
+                    };
+
                     if (fileData.mimeType.startsWith('image/')) {
-                        contentDiv.innerHTML = `<img src="${src}" class="max-w-full max-h-full object-contain rounded shadow-lg">`;
+                        contentDiv.innerHTML = `<img src="${src}" class="max-w-full h-auto object-contain shadow-2xl border border-slate-700 bg-white">`;
                     } else if (fileData.mimeType === 'application/pdf') {
-                        contentDiv.innerHTML = `<iframe src="${src}" class="w-full h-full border-0 rounded shadow-lg"></iframe>`;
-                    } else {
-                        contentDiv.innerHTML = `<p class="text-slate-700">Unsupported file format.</p>`;
-                    }
+                        contentDiv.innerHTML = `<iframe src="${src}" class="w-[80vw] h-[85vh] border-0 bg-white shadow-2xl"></iframe>`;
+                    } else contentDiv.innerHTML = `<p class="text-slate-400">Unsupported format.</p>`;
                 } else {
-                    contentDiv.innerHTML = `<div class="text-center text-slate-500"><i class="fa-solid fa-file-circle-xmark text-4xl mb-3 text-slate-300"></i><p>File not found. It may have been deleted or was too large to save initially.</p></div>`;
+                    contentDiv.innerHTML = `<div class="text-center text-slate-500"><i class="fa-solid fa-file-circle-xmark text-5xl mb-3 text-slate-600"></i><p>File missing or deleted.</p></div>`;
+                    document.getElementById('viewer_download_btn').onclick = null;
                 }
             } catch (e) {
-                console.error(e);
                 contentDiv.innerHTML = `<p class="text-red-500 font-bold">Error loading file.</p>`;
             }
+        }
+
+        window.zoomViewer = function(delta) {
+            window.viewerZoomLevel += delta;
+            if(window.viewerZoomLevel < 0.2) window.viewerZoomLevel = 0.2;
+            if(window.viewerZoomLevel > 5) window.viewerZoomLevel = 5;
+            document.getElementById('file-viewer-content').style.transform = `scale(${window.viewerZoomLevel})`;
+        }
+        window.resetViewer = function() {
+            window.viewerZoomLevel = 1;
+            document.getElementById('file-viewer-content').style.transform = `scale(1)`;
         }
 
         window.closeFileViewer = function() {
@@ -1241,143 +1519,86 @@ User context: ${textPrompt}`;
             }, 300);
         }
 
+        // --- STREAMING_CHUNK:Exporting & Utilities ---
         window.exportData = function() {
             if (billsData.length === 0) return window.showCustomAlert("Empty", "No data to export.", "info");
-            
             const format = document.getElementById('export_format').value;
-            const headers = ["Sr. No.", "GSTIN", "VENDOR NAME", "CATEGORY", "INV NO", "DATE", "GROSS", "% TAX", "NET TAXABLE", "IGST", "CGST", "SGST"];
+            const headers = ["Sr.", "ADDED", "GSTIN", "VENDOR NAME", "CATEGORY", "INV NO", "DATE", "GROSS", "% TAX", "NET", "IGST", "CGST", "SGST", "PAID", "BALANCE", "2B STATUS"];
             
-            const searchTerm = document.getElementById('search_input').value.toLowerCase();
-            const fyFilter = document.getElementById('fy_filter').value;
-            const monthFilter = document.getElementById('month_filter').value;
-            const catFilter = document.getElementById('category_filter').value;
-            
-            let exportDataList = billsData.filter(bill => {
-                 const searchString = Object.values(bill).join(' ').toLowerCase();
-                 if(!searchString.includes(searchTerm)) return false;
-                 if(fyFilter !== 'all' && window.getFY(bill.invoiceDate) !== fyFilter) return false;
-                 if(monthFilter !== 'all' && bill.invoiceDate) {
-                     const parts = bill.invoiceDate.split('/');
-                     const check = fyFilter === 'all' ? parts[1] : `${parts[1]}-${parts[2]}`;
-                     if(check !== monthFilter) return false;
-                 }
-                 if(catFilter !== 'all' && (bill.category || 'Uncategorized') !== catFilter) return false;
-                 return true;
-            });
-            
-            if(sortConfig.key) {
-                exportDataList.sort((a, b) => {
-                    let vA = a[sortConfig.key], vB = b[sortConfig.key];
-                    if (sortConfig.key === 'invoiceDate') { vA = window.parseDate(vA) || new Date(0); vB = window.parseDate(vB) || new Date(0); }
-                    if (vA < vB) return sortConfig.direction === 'asc' ? -1 : 1;
-                    if (vA > vB) return sortConfig.direction === 'asc' ? 1 : -1;
-                    return 0;
-                });
-            }
-
-            let t = { gross: 0, net: 0, igst: 0, cgst: 0, sgst: 0 };
-            const exportRows = exportDataList.map((b, i) => {
-                t.gross += Number(b.grossAmount)||0; t.net += Number(b.netTaxableAmount)||0;
-                t.igst += Number(b.igst)||0; t.cgst += Number(b.cgst)||0; t.sgst += Number(b.sgst)||0;
+            let t = { gross: 0, net: 0, igst: 0, cgst: 0, sgst: 0, paid: 0, balance: 0 };
+            const exportRows = billsData.map((b, i) => {
+                t.gross+=Number(b.grossAmount)||0; t.net+=Number(b.netTaxableAmount)||0;
+                t.igst+=Number(b.igst)||0; t.cgst+=Number(b.cgst)||0; t.sgst+=Number(b.sgst)||0;
+                t.paid+=Number(b.paidAmount)||0; t.balance+=Number(b.balance)||0;
+                
                 return [
-                    i + 1, b.gstin || '', b.vendorName || '', b.category || '', b.invoiceNumber || '', b.invoiceDate || '',
+                    i + 1, window.formatTimestamp(b.timestamp), b.gstin || '', b.vendorName || '', b.category || '', b.invoiceNumber || '', b.invoiceDate || '',
                     (Number(b.grossAmount)||0).toFixed(2), (Number(b.taxPercent)||0)+'%', (Number(b.netTaxableAmount)||0).toFixed(2),
-                    (Number(b.igst)||0).toFixed(2), (Number(b.cgst)||0).toFixed(2), (Number(b.sgst)||0).toFixed(2)
+                    (Number(b.igst)||0).toFixed(2), (Number(b.cgst)||0).toFixed(2), (Number(b.sgst)||0).toFixed(2),
+                    (Number(b.paidAmount)||0).toFixed(2), (Number(b.balance)||0).toFixed(2), b.gstr2bStatus || 'Pending'
                 ];
             });
 
-            exportRows.push(["", "", "", "", "", "TOTALS:", t.gross.toFixed(2), "", t.net.toFixed(2), t.igst.toFixed(2), t.cgst.toFixed(2), t.sgst.toFixed(2)]);
+            exportRows.push(["", "", "", "", "", "", "TOTALS:", t.gross.toFixed(2), "", t.net.toFixed(2), t.igst.toFixed(2), t.cgst.toFixed(2), t.sgst.toFixed(2), t.paid.toFixed(2), t.balance.toFixed(2), ""]);
 
-            const fileName = `PurchaseRecon_${new Date().toISOString().split('T')[0]}`;
+            const fileName = `PurchaseRecon_Export_${Date.now()}`;
 
             if (format === 'pdf') {
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF('l', 'pt', 'a4');
-                doc.text("Purchase Bills Reconciliation", 40, 40);
+                const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'pt', 'a4');
+                doc.text("Purchase Bills Directory", 40, 40);
                 doc.autoTable({
-                    head: [headers],
-                    body: exportRows,
-                    startY: 60,
-                    styles: { fontSize: 8 },
-                    headStyles: { fillColor: [2, 132, 199] },
-                    footStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold' },
-                    willDrawCell: function(data) {
-                        if (data.row.index === exportRows.length - 1) {
-                            doc.setFillColor(241, 245, 249);
-                            doc.setTextColor(15, 23, 42);
-                            doc.setFont(undefined, 'bold');
-                        }
-                    }
+                    head: [headers], body: exportRows, startY: 60, styles: { fontSize: 7 },
+                    headStyles: { fillColor: [2, 132, 199] }, footStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold' },
+                    willDrawCell: function(data) { if(data.row.index === exportRows.length - 1) { doc.setFillColor(241, 245, 249); doc.setTextColor(0,0,0); doc.setFont(undefined, 'bold'); } }
                 });
                 doc.save(`${fileName}.pdf`);
-            }
-            else if (format === 'csv') {
-                let csvContent = headers.join(",") + "\n";
-                exportRows.forEach(row => { csvContent += row.map(c => `"${c}"`).join(",") + "\n"; });
-                downloadFile(csvContent, 'text/csv;charset=utf-8;', `${fileName}.csv`);
+            } else if (format === 'csv') {
+                let csv = headers.join(",") + "\n";
+                exportRows.forEach(row => { csv += row.map(c => `"${c}"`).join(",") + "\n"; });
+                downloadBlob(new Blob([csv], { type: 'text/csv;charset=utf-8;' }), `${fileName}.csv`);
             } else if (format === 'xlsx') {
                 const ws = XLSX.utils.aoa_to_sheet([headers, ...exportRows]);
-                const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Purchases");
+                const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data");
                 XLSX.writeFile(wb, `${fileName}.xlsx`);
-            } else if (format === 'json') {
-                downloadFile(JSON.stringify(exportDataList, null, 2), 'application/json;charset=utf-8;', `${fileName}.json`);
-            } else if (format === 'txt') {
-                let txtContent = headers.join("\t") + "\n";
-                exportRows.forEach(row => { txtContent += row.join("\t") + "\n"; });
-                downloadFile(txtContent, 'text/plain;charset=utf-8;', `${fileName}.txt`);
             }
         }
 
         window.downloadHTMLBackup = async function() {
-            window.showCustomAlert("Preparing Backup", "Packing your app, database, and all bill images into a single portable HTML file. This may take a few moments depending on image count...", "info");
-            
+            window.showCustomAlert("Preparing Backup", "Packing app, data, and bill images into a single portable HTML file...", "info");
             setTimeout(async () => {
                 try {
                     let allFiles = [];
                     if (localDb) {
-                        allFiles = await new Promise((resolve) => {
-                            const tx = localDb.transaction('files', 'readonly');
-                            const req = tx.objectStore('files').getAll();
-                            req.onsuccess = () => resolve(req.result);
-                            req.onerror = () => resolve([]);
+                        allFiles = await new Promise((res) => {
+                            const req = localDb.transaction('files', 'readonly').objectStore('files').getAll();
+                            req.onsuccess = () => res(req.result); req.onerror = () => res([]);
                         });
                     }
-
                     const backupData = { bills: billsData, files: allFiles };
                     
-                    const scriptId = 'portable-backup-data';
-                    let oldScript = document.getElementById(scriptId);
-                    if(oldScript) oldScript.remove();
-
-                    const scriptTag = document.createElement('script');
-                    scriptTag.id = scriptId;
-                    const safeJson = JSON.stringify(backupData).replace(/<\/script>/g, '<\\/script>');
-                    scriptTag.textContent = `window.__PORTABLE_BACKUP__ = ${safeJson};`;
+                    let oldScript = document.getElementById('portable-backup-data'); if(oldScript) oldScript.remove();
+                    const scriptTag = document.createElement('script'); scriptTag.id = 'portable-backup-data';
+                    scriptTag.textContent = `window.__PORTABLE_BACKUP__ = ${JSON.stringify(backupData).replace(/<\/script>/g, '<\\/script>')};`;
                     document.body.appendChild(scriptTag);
-
-                    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
                     
+                    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
                     document.body.removeChild(scriptTag);
                     
-                    const dateStr = new Date().toISOString().split('T')[0];
-                    downloadFile(html, 'text/html;charset=utf-8;', `ReconTool_Portable_Backup_${dateStr}.html`);
+                    downloadBlob(new Blob([html], { type: 'text/html;charset=utf-8;' }), `ReconTool_Backup_${Date.now()}.html`);
                     window.closeAlert();
-                } catch(e) {
-                    console.error(e);
-                    window.showCustomAlert("Backup Failed", "Could not generate portable backup.", "error");
-                }
+                } catch(e) { window.showCustomAlert("Backup Failed", e.message, "error"); }
             }, 500);
         }
 
-        function downloadFile(content, mimeType, fileName) {
-            const b = new Blob([content], { type: mimeType });
-            const a = document.createElement("a");
-            a.href = URL.createObjectURL(b); a.download = fileName;
+        function downloadBlob(blob, name) {
+            const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+        function downloadFileUrl(dataUrl, name) {
+            const a = document.createElement("a"); a.href = dataUrl; a.download = name;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
-        // Custom Alert System with callback support
         window.showCustomAlert = function(title, message, type = 'info', confirmCallback = null) {
             const modal = document.getElementById('alert-modal');
             const iconEl = document.getElementById('alert-icon');
@@ -1386,23 +1607,16 @@ User context: ${textPrompt}`;
             document.getElementById('alert-title').textContent = title;
             document.getElementById('alert-message').textContent = message;
             
-            if (type === 'error') iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
+            if (type === 'error') iconEl.innerHTML = '<i class="fa-solid fa-triangle-exclamation text-red-500"></i>';
             else if (type === 'success') iconEl.innerHTML = '<i class="fa-solid fa-circle-check text-green-500"></i>';
             else iconEl.innerHTML = '<i class="fa-solid fa-circle-info text-blue-500"></i>';
 
             if (confirmCallback) {
                 confirmBtn.classList.remove('hidden');
-                confirmBtn.onclick = () => {
-                    confirmCallback();
-                    window.closeAlert();
-                };
-            } else {
-                confirmBtn.classList.add('hidden');
-                confirmBtn.onclick = null;
-            }
+                confirmBtn.onclick = () => { confirmCallback(); window.closeAlert(); };
+            } else { confirmBtn.classList.add('hidden'); confirmBtn.onclick = null; }
 
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+            modal.classList.remove('hidden'); setTimeout(() => modal.classList.remove('opacity-0'), 10);
         }
 
         window.closeAlert = function() {
@@ -1410,7 +1624,6 @@ User context: ${textPrompt}`;
             setTimeout(() => document.getElementById('alert-modal').classList.add('hidden'), 300);
         }
 
-        // Run Init
         initApp();
     </script>
 </body>
