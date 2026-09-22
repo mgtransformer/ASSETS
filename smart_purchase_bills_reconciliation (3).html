@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Purchase Bills Reconciliation PRO</title>
+    
+    <!-- PWA & Mobile App Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0ea5e9">
+    <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=PR&background=0ea5e9&color=fff&size=256">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Export Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    colors: {
+                        brand: { 50: '#f0f9ff', 100: '#e0f2fe', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1', 900: '#0c4a6e' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; color: #0f172a; }
+        .glass-panel { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(226, 232, 240, 0.8); }
+        .table-container { overflow-x: auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border-radius: 0.5rem; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1300px; }
+        th, td { border: 1px solid #e2e8f0; padding: 0.5rem 0.75rem; text-align: left; white-space: nowrap; }
+        th { background-color: #f8fafc; font-weight: 600; color: #334155; position: sticky; top: 0; z-index: 10; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+        td { font-size: 0.875rem; background-color: #ffffff; }
+        tr:hover td { background-color: #f1f5f9; }
+        .col-num { text-align: right; font-variant-numeric: tabular-nums; }
+        .col-center { text-align: center; }
+        .scan-line { position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, transparent, #0ea5e9, transparent); animation: scan 2s infinite linear; opacity: 0; }
+        @keyframes scan { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .modal-backdrop { backdrop-filter: blur(5px); }
+
+        @media print {
+            body { background-color: #ffffff; }
+            header, .glass-panel, .no-print, .modal-backdrop { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
+            .table-container { box-shadow: none !important; border: none !important; overflow: visible !important; }
+            table { min-width: 100% !important; border: 1px solid #000; }
+            th, td { border: 1px solid #000 !important; padding: 6px !important; font-size: 10px !important; white-space: normal !important; color: #000 !important; }
+            th { position: static !important; background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            @page { size: landscape; margin: 10mm; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- HEADER -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="bg-brand-600 text-white p-2 rounded-lg no-print">
+                    <i class="fa-solid fa-file-invoice-dollar text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800 leading-tight">Purchase Recon <span class="text-brand-600 text-sm font-semibold px-2 py-0.5 bg-brand-50 rounded-full ml-2 no-print">PRO</span></h1>
+                    <p class="text-xs text-slate-500 font-medium tracking-wide flex items-center gap-2">
+                        Smart Directory & AI Extractor 
+                        <span id="cloud-status" class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded text-[10px]"><i class="fa-solid fa-spinner fa-spin"></i> Connecting...</span>
+                    </p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <!-- NEW API MODAL BUTTON -->
+                <button onclick="window.openApiModal()" class="no-print bg-amber-50 text-amber-700 hover:bg-amber-100 px-4 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm border border-amber-200 mr-2">
+                    <i class="fa-solid fa-key text-amber-500"></i> Configure Sync & APIs
+                </button>
+
+                <button onclick="window.downloadHTMLBackup()" class="no-print bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm border border-slate-300">
+                    <i class="fa-solid fa-download"></i> Backup Tool
+                </button>
+                <div class="no-print flex items-center gap-2">
+                    <select id="export_format" class="text-sm border border-slate-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white shadow-sm font-medium">
+                        <option value="pdf">PDF Document</option>
+                        <option value="xlsx">Excel (XLSX)</option>
+                        <option value="csv">CSV File</option>
+                        <option value="json">JSON Data</option>
+                        <option value="txt">Text Table</option>
+                    </select>
+                    <button onclick="window.exportData()" class="bg-slate-800 text-white px-4 py-1.5 rounded-md text-sm font-medium hover:bg-slate-700 transition flex items-center gap-2 shadow-sm">
+                        <i class="fa-solid fa-file-export"></i> Export
+                    </button>
+                    <button onclick="window.print()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-1.5 rounded-md text-sm font-medium transition flex items-center gap-2 shadow-sm ml-1">
+                        <i class="fa-solid fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-grow max-w-[1600px] mx-auto w-full p-4 sm:p-6 lg:p-8 flex flex-col gap-6">
+
+        <!-- AI INPUT SECTION -->
+        <section class="glass-panel rounded-xl p-5 shadow-sm border border-brand-100 relative overflow-hidden">
+            <div id="ai_loading_indicator" class="absolute inset-0 bg-white/80 z-20 hidden flex-col items-center justify-center backdrop-blur-sm">
+                <i class="fa-solid fa-microchip fa-bounce text-4xl text-brand-500 mb-3"></i>
+                <h3 class="text-lg font-bold text-slate-800">AI is analyzing & categorizing...</h3>
+                <p class="text-sm text-slate-500 mt-1">Extracting vendor details, items, amounts, and GST.</p>
+                <div class="w-64 h-2 bg-slate-200 rounded-full mt-4 overflow-hidden relative">
+                    <div class="scan-line block opacity-100"></div>
+                </div>
+            </div>
+
+            <div class="flex flex-col md:flex-row gap-4 items-start">
+                <div class="bg-brand-50 border border-brand-200 text-brand-700 p-3 rounded-lg flex-shrink-0">
+                    <i class="fa-solid fa-robot text-2xl"></i>
+                </div>
+                
+                <div class="flex-grow w-full space-y-3">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-sm font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
+                            Smart Data Entry Copilot
+                            <span class="bg-green-100 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-bold"><i class="fa-solid fa-cloud-arrow-up"></i> Cloud Ready</span>
+                        </h2>
+                        <button onclick="window.openManualEntry()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1 rounded-md text-xs font-bold transition flex items-center gap-1 shadow-sm">
+                            <i class="fa-solid fa-keyboard"></i> Manual Entry
+                        </button>
+                    </div>
+                    
+                    <textarea id="ai_prompt" rows="2" class="w-full text-sm border border-slate-300 rounded-md p-3 focus:outline-none focus:ring-2 focus:ring-brand-500 shadow-inner resize-none" placeholder="Drop files here, click 'Attach Bills', or paste bill text data. Tool automatically stores compressed bill copies."></textarea>
+                    
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex gap-2">
+                            <input type="file" id="file_input" multiple accept="image/*,.pdf" class="hidden">
+                            <input type="file" id="native_camera_input" accept="image/*" capture="environment" class="hidden">
+                            <button onclick="document.getElementById('file_input').click()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-1.5 rounded-md text-sm font-medium transition flex items-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-paperclip text-brand-500"></i> Attach Bills
+                            </button>
+                            
+                            <button onclick="window.openCamera()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-1.5 rounded-md text-sm font-medium transition flex items-center gap-2 shadow-sm">
+                                <i class="fa-solid fa-camera text-brand-500"></i> Capture Photo
+                            </button>
+                            
+                            <span id="file_badge" class="hidden items-center bg-brand-100 text-brand-800 text-xs font-bold px-2.5 py-1 rounded-md border border-brand-200">
+                                <span id="file_count">0</span> files queued
+                                <i class="fa-solid fa-xmark ml-2 cursor-pointer hover:text-red-500" onclick="window.clearFiles()"></i>
+                            </span>
+                        </div>
+                        
+                        <button onclick="window.processAI()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-1.5 rounded-md text-sm font-bold transition flex items-center gap-2 shadow-md">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i> Process with AI
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- DASHBOARD -->
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Purchases</p>
+                    <h3 class="text-2xl font-bold text-slate-800" id="dash_total_gross">₹0.00</h3>
+                </div>
+                <div class="bg-blue-50 text-blue-600 p-3 rounded-lg"><i class="fa-solid fa-wallet text-xl"></i></div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Net Taxable Amount</p>
+                    <h3 class="text-2xl font-bold text-slate-800" id="dash_total_net">₹0.00</h3>
+                </div>
+                <div class="bg-emerald-50 text-emerald-600 p-3 rounded-lg"><i class="fa-solid fa-chart-pie text-xl"></i></div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Input Tax (GST)</p>
+                    <h3 class="text-2xl font-bold text-slate-800" id="dash_total_tax">₹0.00</h3>
+                </div>
+                <div class="bg-orange-50 text-orange-600 p-3 rounded-lg"><i class="fa-solid fa-landmark text-xl"></i></div>
+            </div>
+            
+            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Bills Processed</p>
+                    <h3 class="text-2xl font-bold text-slate-800" id="dash_bill_count">0</h3>
+                </div>
+                <div class="bg-purple-50 text-purple-600 p-3 rounded-lg"><i class="fa-solid fa-file-lines text-xl"></i></div>
+            </div>
+        </section>
+
+        <!-- TABLE SECTION -->
+        <section class="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col h-full">
+            <div class="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-lg font-bold text-slate-800">Purchase Directory</h2>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-3 no-print">
+                    <div class="relative">
+                        <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="search_input" oninput="window.renderTable()" placeholder="Search ANY detail..." class="pl-9 pr-3 py-1.5 text-sm border border-slate-300 rounded-md focus:ring-2 focus:ring-brand-500 focus:outline-none w-56">
+                    </div>
+                    
+                    <select id="fy_filter" onchange="window.updateMonthOptions(); window.renderTable()" class="text-sm border border-brand-300 text-brand-900 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-brand-500 focus:outline-none bg-brand-50 font-bold shadow-sm">
+                        <option value="all">All Financial Years</option>
+                        <option value="FY2020-21">FY 2020-21</option>
+                        <option value="FY2021-22">FY 2021-22</option>
+                        <option value="FY2022-23">FY 2022-23</option>
+                        <option value="FY2023-24">FY 2023-24</option>
+                        <option value="FY2024-25">FY 2024-25</option>
+                        <option value="FY2025-26">FY 2025-26</option>
+                        <option value="FY2026-27">FY 2026-27</option>
+                        <option value="FY2027-28">FY 2027-28</option>
+                        <option value="FY2028-29">FY 2028-29</option>
+                        <option value="FY2029-30">FY 2029-30</option>
+                    </select>
+
+                    <select id="month_filter" onchange="window.renderTable()" class="text-sm border border-slate-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white font-medium min-w-[140px]">
+                        <option value="all">All Months</option>
+                    </select>
+
+                    <select id="category_filter" onchange="window.renderTable()" class="text-sm border border-slate-300 rounded-md px-3 py-1.5 focus:ring-2 focus:ring-brand-500 focus:outline-none bg-white font-medium max-w-[160px] truncate">
+                        <option value="all">All Categories</option>
+                    </select>
+
+                    <button onclick="window.clearAllData()" class="text-red-600 hover:bg-red-50 px-3 py-1.5 rounded-md text-sm font-medium transition border border-transparent hover:border-red-200 flex items-center gap-2 shadow-sm ml-2">
+                        <i class="fa-solid fa-trash-can"></i> Clear All
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container flex-grow bg-white">
+                <table id="recon_table">
+                    <thead>
+                        <tr>
+                            <th class="w-12 col-center">Sr.</th>
+                            <th class="w-16 col-center no-print">File</th>
+                            <th class="w-32 cursor-pointer hover:bg-slate-100" onclick="window.sortTable('gstin')">GSTIN <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
+                            <th class="cursor-pointer hover:bg-slate-100" onclick="window.sortTable('vendorName')">VENDOR NAME <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
+                            <th class="w-40 cursor-pointer hover:bg-slate-100" onclick="window.sortTable('category')">CATEGORY / ITEM <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
+                            <th class="w-24">INVOICE NO</th>
+                            <th class="w-24 cursor-pointer hover:bg-slate-100" onclick="window.sortTable('invoiceDate')">DATE <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
+                            <th class="w-32 col-num cursor-pointer hover:bg-slate-100" onclick="window.sortTable('grossAmount')">GROSS AMOUNT <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
+                            <th class="w-16 col-center bg-slate-50">% TAX</th>
+                            <th class="w-28 col-num">NET TAXABLE</th>
+                            <th class="w-24 col-num">IGST</th>
+                            <th class="w-24 col-num">CGST</th>
+                            <th class="w-24 col-num">SGST</th>
+                            <th class="w-12 col-center no-print">Act</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table_body">
+                        <!-- Data will be populated here -->
+                    </tbody>
+                    <tfoot class="bg-slate-50 font-bold text-slate-800 border-t-2 border-slate-300">
+                        <tr>
+                            <td colspan="7" class="text-right py-3 pr-4 uppercase tracking-wider text-xs">Total</td>
+                            <td class="col-num py-3 text-brand-700" id="foot_gross">0.00</td>
+                            <td></td>
+                            <td class="col-num py-3 text-brand-700" id="foot_net">0.00</td>
+                            <td class="col-num py-3 text-brand-700" id="foot_igst">0.00</td>
+                            <td class="col-num py-3 text-brand-700" id="foot_cgst">0.00</td>
+                            <td class="col-num py-3 text-brand-700" id="foot_sgst">0.00</td>
+                            <td class="no-print"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+                <div id="empty_state" class="hidden flex-col items-center justify-center py-16 text-slate-400">
+                    <i class="fa-solid fa-folder-open text-4xl mb-3"></i>
+                    <p class="text-sm font-medium">Directory is empty. Use AI or Manual Entry to add bills.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- MODALS -->
+
+    <!-- API Configuration Modal -->
+    <div id="api-keys-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[90] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 flex flex-col transform transition-transform duration-300 scale-95" id="api-keys-modal-content">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-xl">
+                <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-shield-halved text-brand-600 mr-2"></i> Configure Settings</h3>
+                <button onclick="window.closeApiModal()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 space-y-5">
+                <div class="bg-amber-50 border border-amber-200 text-amber-800 p-3 rounded-lg text-xs">
+                    <i class="fa-solid fa-info-circle mr-1"></i> Keys are kept safely in your browser memory.
+                </div>
+                
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-700 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-microchip text-slate-400"></i> Gemini API Key 
+                        <span class="bg-slate-100 text-slate-500 text-[9px] px-1.5 py-0.5 rounded font-bold">DATA EXTRACTION</span>
+                    </label>
+                    <input type="password" id="modal_gemini_key" class="w-full border border-slate-300 rounded p-2.5 text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none" placeholder="AIzaSy...">
+                </div>
+                
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-700 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-cloud text-slate-400"></i> Firebase API Key 
+                        <span class="bg-slate-100 text-slate-500 text-[9px] px-1.5 py-0.5 rounded font-bold">CLOUD SYNC (Optional)</span>
+                    </label>
+                    <input type="password" id="modal_firebase_key" class="w-full border border-slate-300 rounded p-2.5 text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none" placeholder="AIzaSy...">
+                </div>
+
+                <div class="space-y-1 mt-4 pt-4 border-t border-slate-100">
+                    <label class="text-xs font-bold text-slate-700 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-sync text-slate-400"></i> Cross-Device Sync PIN
+                        <span class="bg-green-100 text-green-700 text-[9px] px-1.5 py-0.5 rounded font-bold">NEW</span>
+                    </label>
+                    <p class="text-[10px] text-slate-500 mb-1 leading-tight">Enter a secret word or PIN (e.g., "MySecret123"). Use the same PIN on your phone and PC to see the same data.</p>
+                    <input type="text" id="modal_sync_pin" class="w-full border border-slate-300 rounded p-2.5 text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none" placeholder="Enter a secure PIN...">
+                </div>
+
+                <div class="flex items-start gap-2 pt-2 border-t border-slate-100">
+                    <input type="checkbox" id="save_keys_local" class="mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 cursor-pointer w-4 h-4" checked>
+                    <label for="save_keys_local" class="text-xs text-slate-600 cursor-pointer leading-tight">
+                        <strong class="text-slate-800">Save settings securely in this browser.</strong><br>
+                        Prevents you from having to paste them every time.
+                    </label>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-200 bg-slate-50 rounded-b-xl flex justify-end gap-3">
+                <button onclick="window.closeApiModal()" class="px-4 py-2 rounded text-sm font-medium text-slate-600 hover:bg-slate-200">Cancel</button>
+                <button onclick="window.saveApiKeys()" class="px-6 py-2 rounded text-sm font-bold text-white bg-brand-600 hover:bg-brand-700 shadow flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Save Settings
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Entry Modal -->
+    <div id="manual-modal" class="fixed inset-0 bg-slate-900/60 hidden z-[60] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 flex flex-col max-h-[90vh]">
+            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-xl">
+                <h3 class="font-bold text-lg text-slate-800"><i class="fa-solid fa-keyboard text-emerald-600 mr-2"></i> Manual Bill Entry</h3>
+                <button onclick="window.closeManualEntry()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase">GSTIN</label>
+                    <input type="text" id="man_gstin" class="w-full border border-slate-300 rounded p-2 text-sm font-mono uppercase" placeholder="27AAABC1234Z1">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase">Vendor Name</label>
+                    <input type="text" id="man_vendor" class="w-full border border-slate-300 rounded p-2 text-sm font-semibold" placeholder="Vendor Company Ltd">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase">Category / Item</label>
+                    <input type="text" id="man_category" class="w-full border border-slate-300 rounded p-2 text-sm" placeholder="e.g. Paint, Hardware">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase">Invoice Number</label>
+                    <input type="text" id="man_inv_no" class="w-full border border-slate-300 rounded p-2 text-sm font-mono">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase">Invoice Date</label>
+                    <input type="date" id="man_inv_date" class="w-full border border-slate-300 rounded p-2 text-sm">
+                </div>
+                <div class="space-y-1 md:col-span-2 mt-2 pt-4 border-t border-slate-200">
+                    <h4 class="text-sm font-bold text-slate-800 mb-2">Financial Calculations</h4>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-emerald-600 uppercase">Basic Amount (Net Taxable)</label>
+                    <input type="number" id="man_basic" oninput="window.calcManualMath()" class="w-full border border-emerald-300 rounded p-2 text-sm font-bold text-slate-800" placeholder="0.00">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase">Tax %</label>
+                    <select id="man_tax_pct" onchange="window.calcManualMath()" class="w-full border border-slate-300 rounded p-2 text-sm font-semibold">
+                        <option value="18">18%</option>
+                        <option value="28">28%</option>
+                        <option value="12">12%</option>
+                        <option value="5">5%</option>
+                        <option value="0">0%</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-slate-600 uppercase">Tax Type</label>
+                    <div class="flex gap-4 mt-1">
+                        <label class="flex items-center gap-1 text-sm"><input type="radio" name="man_tax_type" value="intra" checked onchange="window.calcManualMath()"> CGST/SGST</label>
+                        <label class="flex items-center gap-1 text-sm"><input type="radio" name="man_tax_type" value="inter" onchange="window.calcManualMath()"> IGST</label>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-xs font-bold text-brand-600 uppercase">Total Gross Amount</label>
+                    <input type="text" id="man_gross" readonly class="w-full border border-slate-200 bg-slate-50 rounded p-2 text-sm font-bold text-brand-700">
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-200 bg-slate-50 rounded-b-xl flex justify-end gap-3">
+                <button onclick="window.closeManualEntry()" class="px-4 py-2 rounded text-sm font-medium text-slate-600 hover:bg-slate-200">Cancel</button>
+                <button onclick="window.saveManualEntry()" class="px-6 py-2 rounded text-sm font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Save Entry
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- File Viewer Modal -->
+    <div id="file-viewer-modal" class="fixed inset-0 bg-slate-900/90 hidden z-[70] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div class="relative w-full max-w-4xl h-[90vh] flex flex-col bg-white rounded-xl overflow-hidden shadow-2xl mx-4">
+            <div class="p-3 bg-slate-800 text-white flex justify-between items-center shrink-0">
+                <h3 class="font-medium text-sm flex items-center gap-2"><i class="fa-solid fa-file-invoice"></i> Attached Document</h3>
+                <button onclick="window.closeFileViewer()" class="text-slate-300 hover:text-red-400 bg-slate-700 hover:bg-slate-600 rounded p-1 px-2"><i class="fa-solid fa-xmark"></i> Close</button>
+            </div>
+            <div id="file-viewer-content" class="flex-grow bg-slate-100 overflow-auto flex items-center justify-center p-4">
+                <!-- Content injected here (img or iframe) -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Camera Modal -->
+    <div id="camera-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[60] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div class="bg-white rounded-xl p-4 max-w-lg w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-bold text-lg text-slate-800">Scan Bill</h3>
+                <button onclick="window.closeCamera()" class="text-slate-400 hover:text-red-500"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            <div class="relative bg-black rounded-lg overflow-hidden aspect-[3/4] flex items-center justify-center">
+                <video id="camera-stream" autoplay playsinline class="w-full h-full object-cover"></video>
+                <div class="absolute inset-0 border-2 border-brand-500/50 m-4 rounded pointer-events-none border-dashed"></div>
+            </div>
+            <div class="mt-4 flex justify-center gap-4">
+                <button onclick="window.takeSnapshot()" class="bg-brand-600 text-white rounded-full h-14 w-14 flex items-center justify-center hover:bg-brand-700 shadow-lg hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-camera text-xl"></i>
+                </button>
+            </div>
+            <canvas id="camera-canvas" class="hidden"></canvas>
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="alert-modal" class="fixed inset-0 bg-slate-900/50 hidden z-[80] flex items-center justify-center opacity-0 transition-opacity">
+        <div class="bg-white rounded-lg p-6 max-w-sm w-full mx-4 shadow-xl text-center">
+            <div id="alert-icon" class="text-4xl mb-3"></div>
+            <h3 id="alert-title" class="text-lg font-bold text-slate-800 mb-2"></h3>
+            <p id="alert-message" class="text-sm text-slate-600 mb-5"></p>
+            <div class="flex flex-col gap-2">
+                <button id="alert-confirm-btn" class="bg-brand-600 text-white px-6 py-2 rounded-md font-medium hover:bg-brand-700 transition w-full hidden">Confirm</button>
+                <button id="alert-cancel-btn" onclick="window.closeAlert()" class="bg-slate-200 text-slate-800 px-6 py-2 rounded-md font-medium hover:bg-slate-300 transition w-full">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN LOGIC (Firebase + Logic) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global State
+        let billsData = [];
+        window.pendingFiles = []; 
+        let sortConfig = { key: 'invoiceDate', direction: 'desc' };
+        
+        window.sessionGeminiKey = '';
+        window.sessionFirebaseKey = '';
+        window.sessionSyncPin = '';
+
+        // ==========================================
+        // HARDCODED FIREBASE CONFIGURATION
+        // ==========================================
+        const MY_FIREBASE_CONFIG = {
+            authDomain: "purchase-recon-app.firebaseapp.com",
+            projectId: "purchase-recon-app",
+            storageBucket: "purchase-recon-app.firebasestorage.app",
+            messagingSenderId: "315987453777",
+            appId: "1:315987453777:web:37c216fed45e15a0489570"
+        };
+        
+        const appId = 'purchase-recon-app';
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent";
+
+        let app, db, auth, userId;
+        let billsCollectionPath = '';
+        let filesCollectionPath = '';
+
+        // --- LOCAL DB FALLBACK (IndexedDB for Files) ---
+        let localDb = null;
+        function initLocalDB() {
+            return new Promise((resolve, reject) => {
+                const req = indexedDB.open('SmartReconDB', 1);
+                req.onupgradeneeded = (e) => {
+                    const db = e.target.result;
+                    if (!db.objectStoreNames.contains('files')) db.createObjectStore('files', { keyPath: 'id' });
+                };
+                req.onsuccess = (e) => { localDb = e.target.result; resolve(); };
+                req.onerror = (e) => reject(e);
+            });
+        }
+
+        async function getLocalFile(id) {
+            return new Promise((resolve) => {
+                if (!localDb) return resolve(null);
+                const tx = localDb.transaction('files', 'readonly');
+                const req = tx.objectStore('files').get(id);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => resolve(null);
+            });
+        }
+
+        async function saveLocalFile(id, data, mimeType) {
+            return new Promise((resolve) => {
+                if (!localDb) return resolve();
+                const tx = localDb.transaction('files', 'readwrite');
+                tx.objectStore('files').put({ id, data, mimeType });
+                tx.oncomplete = () => resolve();
+            });
+        }
+        
+        async function deleteLocalFile(id) {
+            return new Promise((resolve) => {
+                if (!localDb) return resolve();
+                const tx = localDb.transaction('files', 'readwrite');
+                tx.objectStore('files').delete(id);
+                tx.oncomplete = () => resolve();
+            });
+        }
+
+        // --- API KEY MODAL LOGIC ---
+        window.openApiModal = function() {
+            const modal = document.getElementById('api-keys-modal');
+            const content = document.getElementById('api-keys-modal-content');
+            
+            // Populate current keys
+            document.getElementById('modal_gemini_key').value = localStorage.getItem('recon_gemini_key') || window.sessionGeminiKey;
+            document.getElementById('modal_firebase_key').value = localStorage.getItem('recon_firebase_key') || window.sessionFirebaseKey;
+            document.getElementById('modal_sync_pin').value = localStorage.getItem('recon_sync_pin') || window.sessionSyncPin;
+            document.getElementById('save_keys_local').checked = localStorage.getItem('recon_save_keys') !== 'false';
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                content.classList.remove('scale-95');
+            }, 10);
+        }
+
+        window.closeApiModal = function() {
+            const modal = document.getElementById('api-keys-modal');
+            const content = document.getElementById('api-keys-modal-content');
+            modal.classList.add('opacity-0');
+            content.classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        window.saveApiKeys = function() {
+            const geminiKey = document.getElementById('modal_gemini_key').value.trim();
+            const firebaseKey = document.getElementById('modal_firebase_key').value.trim();
+            const syncPin = document.getElementById('modal_sync_pin').value.trim();
+            const saveLocal = document.getElementById('save_keys_local').checked;
+
+            if (saveLocal) {
+                if(geminiKey) localStorage.setItem('recon_gemini_key', geminiKey);
+                if(firebaseKey) localStorage.setItem('recon_firebase_key', firebaseKey);
+                if(syncPin) localStorage.setItem('recon_sync_pin', syncPin);
+                localStorage.setItem('recon_save_keys', 'true');
+            } else {
+                localStorage.removeItem('recon_gemini_key');
+                localStorage.removeItem('recon_firebase_key');
+                localStorage.removeItem('recon_sync_pin');
+                localStorage.setItem('recon_save_keys', 'false');
+            }
+
+            // Save in session memory regardless
+            window.sessionGeminiKey = geminiKey;
+            window.sessionFirebaseKey = firebaseKey;
+            window.sessionSyncPin = syncPin;
+
+            window.closeApiModal();
+            window.showCustomAlert("Settings Saved", "Your API keys and Sync PIN have been configured.", "success");
+            
+            // Re-run initialization to apply Firebase key / Sync PIN if it changed
+            if(firebaseKey || syncPin) {
+                initApp();
+            }
+        }
+
+        function getActiveGeminiKey() {
+            return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_gemini_key') : window.sessionGeminiKey) || '';
+        }
+
+        function getActiveFirebaseKey() {
+            return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_firebase_key') : window.sessionFirebaseKey) || '';
+        }
+
+        function getActiveSyncPin() {
+            return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_sync_pin') : window.sessionSyncPin) || '';
+        }
+
+        // --- APP INITIALIZATION ---
+        let unsubscribeSnapshot = null;
+
+        async function initApp() {
+            try {
+                document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connecting...';
+                
+                const fbKey = getActiveFirebaseKey();
+                
+                if (!fbKey) {
+                    throw new Error("No Firebase API Key provided.");
+                }
+
+                // Inject API Key into config dynamically
+                const config = { ...MY_FIREBASE_CONFIG, apiKey: fbKey };
+                
+                // Initialize only once if possible, or use existing
+                if (!app) {
+                    app = initializeApp(config);
+                    auth = getAuth(app);
+                    db = getFirestore(app);
+                }
+
+                await signInAnonymously(auth);
+
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        const customPin = getActiveSyncPin();
+                        
+                        // Use PIN to group devices, fallback to unique anon UID
+                        userId = customPin ? `custom_sync_${customPin}` : user.uid;
+
+                        billsCollectionPath = `artifacts/${appId}/users/${userId}/bills`;
+                        filesCollectionPath = `artifacts/${appId}/users/${userId}/bill_files`;
+                        document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-cloud text-green-600"></i> Synced to Cloud';
+                        setupRealtimeSync();
+                    }
+                });
+            } catch (e) {
+                console.warn("Falling back to Local Storage: ", e.message);
+                document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-hard-drive text-amber-500"></i> Local Device Data';
+                
+                // Clear any cloud references if initialization failed
+                db = null; userId = null;
+                
+                await initLocalDB();
+                
+                if (window.__PORTABLE_BACKUP__) {
+                    const data = window.__PORTABLE_BACKUP__;
+                    billsData = data.bills || [];
+                    localStorage.setItem('smart_recon_bills', JSON.stringify(billsData));
+                    
+                    if (data.files && data.files.length > 0) {
+                        for(let f of data.files) {
+                            await saveLocalFile(f.id, f.data, f.mimeType);
+                        }
+                    }
+                    window.showCustomAlert("Backup Restored", "Successfully loaded all entries and bill images from this HTML file.", "success");
+                    window.__PORTABLE_BACKUP__ = null; // Free memory
+                } else {
+                    billsData = JSON.parse(localStorage.getItem('smart_recon_bills')) || [];
+                }
+
+                window.updateMonthOptions();
+                window.renderTable();
+            }
+        }
+
+        function setupRealtimeSync() {
+            if (!userId || !db) return;
+            
+            // Clean up previous listener if pin changed
+            if (unsubscribeSnapshot) {
+                unsubscribeSnapshot();
+            }
+
+            const q = collection(db, billsCollectionPath);
+            
+            unsubscribeSnapshot = onSnapshot(q, (snapshot) => {
+                billsData = [];
+                snapshot.forEach((doc) => {
+                    billsData.push({ id: doc.id, ...doc.data() });
+                });
+                window.updateMonthOptions();
+                window.renderTable();
+            }, (error) => {
+                console.error("Firestore sync error:", error);
+                window.showCustomAlert("Sync Error", "Failed to sync data with cloud.", "error");
+            });
+        }
+
+        async function saveBillToCloud(bill) {
+            if (db && userId) {
+                const docRef = doc(db, billsCollectionPath, bill.id);
+                await setDoc(docRef, bill);
+            } else {
+                const existing = billsData.findIndex(b => b.id === bill.id);
+                if (existing >= 0) billsData[existing] = bill; else billsData.push(bill);
+                localStorage.setItem('smart_recon_bills', JSON.stringify(billsData));
+                window.renderTable();
+            }
+        }
+
+        async function saveFileToCloud(id, base64Data, mimeType) {
+            if (db && userId) {
+                const docRef = doc(db, filesCollectionPath, id);
+                await setDoc(docRef, { data: base64Data, mimeType: mimeType });
+            } else {
+                await saveLocalFile(id, base64Data, mimeType);
+            }
+        }
+
+        window.parseDate = function(dateStr) {
+            if (!dateStr) return null;
+            const parts = dateStr.split('/');
+            if (parts.length === 3) return new Date(parts[2], parts[1] - 1, parts[0]);
+            return new Date(dateStr);
+        }
+
+        window.getFY = function(dateStr) {
+            const d = window.parseDate(dateStr);
+            if (!d || isNaN(d)) return null;
+            const month = d.getMonth() + 1;
+            const year = d.getFullYear();
+            return month >= 4 ? `FY${year}-${(year + 1).toString().slice(-2)}` : `FY${year - 1}-${year.toString().slice(-2)}`;
+        }
+
+        window.updateMonthOptions = function() {
+            const fySelect = document.getElementById('fy_filter').value;
+            const monthSelect = document.getElementById('month_filter');
+            monthSelect.innerHTML = '<option value="all">All Months</option>';
+            
+            if (fySelect === 'all') {
+                const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+                monthNames.forEach((name, i) => {
+                    const m = (i + 1).toString().padStart(2, '0');
+                    monthSelect.innerHTML += `<option value="${m}">${name}</option>`;
+                });
+            } else {
+                const startYear = parseInt(fySelect.substring(2, 6));
+                const endYear = startYear + 1;
+                const fyMonths = [
+                    { val: `04-${startYear}`, label: `April ${startYear}` }, { val: `05-${startYear}`, label: `May ${startYear}` },
+                    { val: `06-${startYear}`, label: `June ${startYear}` }, { val: `07-${startYear}`, label: `July ${startYear}` },
+                    { val: `08-${startYear}`, label: `August ${startYear}` }, { val: `09-${startYear}`, label: `September ${startYear}` },
+                    { val: `10-${startYear}`, label: `October ${startYear}` }, { val: `11-${startYear}`, label: `November ${startYear}` },
+                    { val: `12-${startYear}`, label: `December ${startYear}` }, { val: `01-${endYear}`, label: `January ${endYear}` },
+                    { val: `02-${endYear}`, label: `February ${endYear}` }, { val: `03-${endYear}`, label: `March ${endYear}` }
+                ];
+                fyMonths.forEach(m => monthSelect.innerHTML += `<option value="${m.val}">${m.label}</option>`);
+            }
+        }
+
+        function populateCategoryFilter() {
+            const catSelect = document.getElementById('category_filter');
+            const currentSelection = catSelect.value;
+            const categories = new Set(billsData.map(b => b.category || 'Uncategorized'));
+            const sortedCats = Array.from(categories).sort();
+            
+            catSelect.innerHTML = '<option value="all">All Categories</option>';
+            sortedCats.forEach(cat => catSelect.innerHTML += `<option value="${cat}">${cat}</option>`);
+            if (sortedCats.includes(currentSelection)) catSelect.value = currentSelection;
+        }
+
+        window.renderTable = function() {
+            populateCategoryFilter();
+            const tbody = document.getElementById('table_body');
+            const searchTerm = document.getElementById('search_input').value.toLowerCase();
+            const fyFilter = document.getElementById('fy_filter').value;
+            const monthFilter = document.getElementById('month_filter').value;
+            const categoryFilter = document.getElementById('category_filter').value;
+            
+            tbody.innerHTML = '';
+            
+            let filteredData = billsData.filter(bill => {
+                const searchString = Object.values(bill).join(' ').toLowerCase();
+                const matchesSearch = searchString.includes(searchTerm);
+                
+                const billFY = window.getFY(bill.invoiceDate);
+                const matchesFY = (fyFilter === 'all') || (billFY === fyFilter);
+
+                let matchesMonth = true;
+                if (monthFilter !== 'all' && bill.invoiceDate) {
+                    const parts = bill.invoiceDate.split('/');
+                    if (parts.length === 3) {
+                        if (fyFilter === 'all') matchesMonth = (parts[1] === monthFilter);
+                        else matchesMonth = (`${parts[1]}-${parts[2]}` === monthFilter);
+                    } else matchesMonth = false;
+                }
+
+                const cat = bill.category || 'Uncategorized';
+                const matchesCat = (categoryFilter === 'all') || (cat === categoryFilter);
+
+                return matchesSearch && matchesFY && matchesMonth && matchesCat;
+            });
+
+            if (sortConfig.key) {
+                filteredData.sort((a, b) => {
+                    let valA = a[sortConfig.key];
+                    let valB = b[sortConfig.key];
+                    if (sortConfig.key === 'invoiceDate') {
+                        valA = window.parseDate(valA) || new Date(0);
+                        valB = window.parseDate(valB) || new Date(0);
+                    } else if (typeof valA === 'string') {
+                        valA = valA.toLowerCase(); valB = valB.toLowerCase();
+                    }
+                    if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+                    if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            let totals = { gross: 0, net: 0, igst: 0, cgst: 0, sgst: 0 };
+
+            if (filteredData.length === 0) {
+                document.getElementById('empty_state').classList.remove('hidden');
+            } else {
+                document.getElementById('empty_state').classList.add('hidden');
+                
+                filteredData.forEach((bill, index) => {
+                    totals.gross += Number(bill.grossAmount) || 0;
+                    totals.net += Number(bill.netTaxableAmount) || 0;
+                    totals.igst += Number(bill.igst) || 0;
+                    totals.cgst += Number(bill.cgst) || 0;
+                    totals.sgst += Number(bill.sgst) || 0;
+
+                    const hasFile = bill.hasFile ? `<button onclick="window.viewFile('${bill.id}')" class="text-blue-500 hover:bg-blue-50 p-1.5 rounded" title="View Document"><i class="fa-solid fa-image"></i></button>` : `<span class="text-slate-300"><i class="fa-solid fa-file-slash"></i></span>`;
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td class="col-center text-slate-500">${index + 1}</td>
+                        <td class="col-center no-print">${hasFile}</td>
+                        <td class="font-mono text-xs font-semibold">${bill.gstin || '-'}</td>
+                        <td class="font-semibold text-slate-800 truncate max-w-[200px]" title="${bill.vendorName || ''}">${bill.vendorName || '-'}</td>
+                        <td class="truncate max-w-[200px]" title="${bill.category || ''}"><span class="text-[10px] font-bold text-brand-700 bg-brand-50 uppercase tracking-wider px-2 py-0.5 rounded border border-brand-200">${bill.category || 'Uncategorized'}</span></td>
+                        <td class="font-mono text-xs">${bill.invoiceNumber || '-'}</td>
+                        <td class="font-mono text-xs">${bill.invoiceDate || '-'}</td>
+                        <td class="col-num font-bold text-slate-800">${(Number(bill.grossAmount)||0).toFixed(2)}</td>
+                        <td class="col-center bg-slate-50 font-semibold">${(Number(bill.taxPercent)||0).toFixed(0)}%</td>
+                        <td class="col-num">${(Number(bill.netTaxableAmount)||0).toFixed(2)}</td>
+                        <td class="col-num text-slate-500">${(Number(bill.igst)||0).toFixed(2)}</td>
+                        <td class="col-num text-slate-500">${(Number(bill.cgst)||0).toFixed(2)}</td>
+                        <td class="col-num text-slate-500">${(Number(bill.sgst)||0).toFixed(2)}</td>
+                        <td class="col-center no-print">
+                            <button onclick="window.confirmDelete('${bill.id}')" class="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded transition" title="Delete">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            document.getElementById('foot_gross').textContent = totals.gross.toFixed(2);
+            document.getElementById('foot_net').textContent = totals.net.toFixed(2);
+            document.getElementById('foot_igst').textContent = totals.igst.toFixed(2);
+            document.getElementById('foot_cgst').textContent = totals.cgst.toFixed(2);
+            document.getElementById('foot_sgst').textContent = totals.sgst.toFixed(2);
+
+            const formatter = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
+            document.getElementById('dash_total_gross').textContent = formatter.format(totals.gross);
+            document.getElementById('dash_total_net').textContent = formatter.format(totals.net);
+            document.getElementById('dash_total_tax').textContent = formatter.format(totals.igst + totals.cgst + totals.sgst);
+            document.getElementById('dash_bill_count').textContent = filteredData.length;
+        }
+
+        window.sortTable = function(key) {
+            if (sortConfig.key === key) sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+            else { sortConfig.key = key; sortConfig.direction = 'asc'; }
+            window.renderTable();
+        }
+
+        window.confirmDelete = function(id) {
+            window.showCustomAlert("Confirm Deletion", "Are you sure you want to delete this bill? This cannot be undone.", "info", async function() {
+                if(db && userId) {
+                    await deleteDoc(doc(db, billsCollectionPath, id));
+                    await deleteDoc(doc(db, filesCollectionPath, id)).catch(() => {});
+                } else {
+                    billsData = billsData.filter(b => b.id !== id);
+                    localStorage.setItem('smart_recon_bills', JSON.stringify(billsData));
+                    await deleteLocalFile(id);
+                    window.renderTable();
+                }
+            });
+        }
+
+        window.clearAllData = function() {
+            window.showCustomAlert("WARNING", "Are you sure you want to delete ALL entries and bill images? This cannot be undone.", "error", async function() {
+                billsData = [];
+                localStorage.removeItem('smart_recon_bills');
+                
+                if (localDb) {
+                    await new Promise((resolve) => {
+                        const tx = localDb.transaction('files', 'readwrite');
+                        tx.objectStore('files').clear();
+                        tx.oncomplete = () => resolve();
+                    });
+                }
+                
+                window.renderTable();
+                window.showCustomAlert("Cleared", "All purchase directory data and files have been removed.", "success");
+            });
+        }
+
+        window.openManualEntry = function() {
+            document.querySelectorAll('#manual-modal input:not([type="radio"])').forEach(el => el.value = '');
+            document.getElementById('man_tax_pct').value = '18';
+            document.querySelector('input[name="man_tax_type"][value="intra"]').checked = true;
+            document.getElementById('manual-modal').classList.remove('hidden');
+            setTimeout(() => document.getElementById('manual-modal').classList.remove('opacity-0'), 10);
+        }
+
+        window.closeManualEntry = function() {
+            document.getElementById('manual-modal').classList.add('opacity-0');
+            setTimeout(() => document.getElementById('manual-modal').classList.add('hidden'), 300);
+        }
+
+        window.calcManualMath = function() {
+            const basic = parseFloat(document.getElementById('man_basic').value) || 0;
+            const pct = parseFloat(document.getElementById('man_tax_pct').value) || 0;
+            const gross = basic + (basic * (pct / 100));
+            document.getElementById('man_gross').value = gross.toFixed(2);
+        }
+
+        window.saveManualEntry = function() {
+            const basic = parseFloat(document.getElementById('man_basic').value) || 0;
+            const pct = parseFloat(document.getElementById('man_tax_pct').value) || 0;
+            const taxAmt = basic * (pct / 100);
+            const isInter = document.querySelector('input[name="man_tax_type"]:checked').value === 'inter';
+            
+            const rawDate = document.getElementById('man_inv_date').value;
+            let formattedDate = '';
+            if (rawDate) {
+                const [y, m, d] = rawDate.split('-');
+                formattedDate = `${d}/${m}/${y}`;
+            }
+
+            const bill = {
+                id: 'bill_man_' + Date.now(),
+                gstin: document.getElementById('man_gstin').value.toUpperCase(),
+                vendorName: document.getElementById('man_vendor').value,
+                category: document.getElementById('man_category').value,
+                invoiceNumber: document.getElementById('man_inv_no').value,
+                invoiceDate: formattedDate,
+                grossAmount: basic + taxAmt,
+                taxPercent: pct,
+                netTaxableAmount: basic,
+                igst: isInter ? taxAmt : 0,
+                cgst: isInter ? 0 : taxAmt / 2,
+                sgst: isInter ? 0 : taxAmt / 2,
+                hasFile: false,
+                timestamp: Date.now()
+            };
+
+            saveBillToCloud(bill);
+            window.closeManualEntry();
+            window.showCustomAlert("Success", "Manual entry added successfully.", "success");
+        }
+
+        async function compressImage(file) {
+            if (!file.type.startsWith('image/')) {
+                return await fileToBase64(file);
+            }
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        const MAX = 800;
+                        let w = img.width, h = img.height;
+                        if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } 
+                        else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+                        canvas.width = w; canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        
+                        ctx.filter = 'grayscale(100%) contrast(1.2)';
+                        ctx.drawImage(img, 0, 0, w, h);
+                        
+                        resolve(canvas.toDataURL('image/jpeg', 0.4).split(',')[1]);
+                    };
+                };
+            });
+        }
+
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const r = new FileReader();
+                r.readAsDataURL(file);
+                r.onload = () => resolve(r.result.split(',')[1]);
+                r.onerror = e => reject(e);
+            });
+        }
+
+        document.getElementById('file_input').addEventListener('change', async (e) => {
+            const files = e.target.files;
+            for (let file of files) {
+                try {
+                    const compressedBase64 = await compressImage(file);
+                    if (compressedBase64) {
+                        window.pendingFiles.push({
+                            mimeType: file.type.startsWith('image/') ? 'image/jpeg' : file.type,
+                            data: compressedBase64,
+                            name: file.name
+                        });
+                    }
+                } catch (err) { console.error(err); }
+            }
+            updateFileBadge();
+        });
+
+        document.getElementById('native_camera_input').addEventListener('change', async (e) => {
+            const files = e.target.files;
+            if (files && files.length > 0) {
+                const file = files[0];
+                try {
+                    const compressedBase64 = await compressImage(file);
+                    if (compressedBase64) {
+                        window.pendingFiles.push({
+                            mimeType: 'image/jpeg',
+                            data: compressedBase64,
+                            name: 'Camera_Snapshot.jpg'
+                        });
+                        updateFileBadge();
+                    }
+                } catch (err) { console.error(err); }
+            }
+            e.target.value = '';
+        });
+
+        function updateFileBadge() {
+            const badge = document.getElementById('file_badge');
+            const count = document.getElementById('file_count');
+            if (window.pendingFiles.length > 0) {
+                count.textContent = window.pendingFiles.length;
+                badge.classList.remove('hidden'); badge.classList.add('inline-flex');
+            } else {
+                badge.classList.add('hidden'); badge.classList.remove('inline-flex');
+            }
+        }
+
+        window.clearFiles = function() {
+            window.pendingFiles = [];
+            document.getElementById('file_input').value = '';
+            updateFileBadge();
+        }
+
+        let videoStream = null;
+        window.openCamera = async function() {
+            try {
+                if (!window.isSecureContext && location.protocol !== 'http:') {
+                    throw new Error("Insecure context requires native camera fallback");
+                }
+                
+                videoStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                
+                const modal = document.getElementById('camera-modal');
+                modal.classList.remove('hidden');
+                setTimeout(() => modal.classList.remove('opacity-0'), 10);
+                
+                document.getElementById('camera-stream').srcObject = videoStream;
+            } catch (err) {
+                document.getElementById('native_camera_input').click();
+            }
+        }
+        window.closeCamera = function() {
+            const modal = document.getElementById('camera-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+            if (videoStream) { videoStream.getTracks().forEach(t => t.stop()); videoStream = null; }
+        }
+        window.takeSnapshot = function() {
+            const video = document.getElementById('camera-stream');
+            const canvas = document.getElementById('camera-canvas');
+            
+            const MAX = 1000;
+            let w = video.videoWidth;
+            let h = video.videoHeight;
+            if (w > h) { if (w > MAX) { h *= MAX / w; w = MAX; } } 
+            else { if (h > MAX) { w *= MAX / h; h = MAX; } }
+            
+            canvas.width = w; 
+            canvas.height = h;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            const data = canvas.toDataURL('image/jpeg', 0.5).split(',')[1];
+            window.pendingFiles.push({ mimeType: 'image/jpeg', data: data, name: 'Camera_Snapshot.jpg' });
+            updateFileBadge();
+            window.closeCamera();
+        }
+
+        window.processAI = async function() {
+            const textPrompt = document.getElementById('ai_prompt').value.trim();
+            if (window.pendingFiles.length === 0 && !textPrompt) {
+                window.showCustomAlert("Input Required", "Please attach files, capture a photo, or paste data.", "error");
+                return;
+            }
+
+            if (window.pendingFiles.length > 15) {
+                window.showCustomAlert("Batch Size Too Large", "To ensure high accuracy and avoid free-tier timeout limits, please process a maximum of 10-15 bills at a time. Clear some files and try again.", "error");
+                return;
+            }
+
+            const dynamicApiKey = getActiveGeminiKey();
+            if (!dynamicApiKey) {
+                window.showCustomAlert("Gemini API Key Required", "Please click 'Configure Sync & APIs' at the top right to paste your Gemini API Key before processing.", "error");
+                return;
+            }
+
+            const loader = document.getElementById('ai_loading_indicator');
+            loader.classList.remove('hidden'); loader.classList.add('flex');
+
+            try {
+                let parts = [];
+                const strictInstructions = `You are a strict, highly accurate accounting data extraction AI. 
+Extract data into a JSON object containing an array named "bills". Keys MUST be exact:
+- 'gstin' (string, e.g. "27AABC1234Z1")
+- 'vendorName' (string)
+- 'category' (string, CRITICAL: DO NOT use generic words like "Service", "Items", or "Uncategorized". Extract the exact main item name or highly specific nature of service. Examples: "Crane Hire", "Copper Wires", "Filter Machine", "Paint", "Legal Fees", "Hotel Lodging", "Air Ticket". Be highly intelligent.)
+- 'invoiceNumber' (string)
+- 'invoiceDate' (string EXACTLY "DD/MM/YYYY")
+- 'grossAmount' (number)
+- 'taxPercent' (number, deduce if not explicit e.g. 5, 12, 18, 28)
+- 'netTaxableAmount' (number)
+- 'igst' (number)
+- 'cgst' (number)
+- 'sgst' (number)
+
+RULES: Math must align (Net + Tax = Gross). If missing amounts but % exists, calc them (Interstate=IGST, Intrastate=CGST/SGST). Use 0 for missing numbers. Output ONLY pure JSON.
+User context: ${textPrompt}`;
+                
+                parts.push({ text: strictInstructions });
+                window.pendingFiles.forEach(file => {
+                    parts.push({ inlineData: { mimeType: file.mimeType, data: file.data } });
+                });
+
+                const payload = {
+                    contents: [{ role: "user", parts: parts }],
+                    generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
+                };
+
+                const response = await fetch(`${API_URL}?key=${dynamicApiKey}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+
+                if (data.error) throw new Error(data.error.message);
+
+                if (data.candidates && data.candidates[0].content.parts[0].text) {
+                    const parsedData = JSON.parse(data.candidates[0].content.parts[0].text);
+                    if (parsedData && parsedData.bills && Array.isArray(parsedData.bills)) {
+                        
+                        for (let i = 0; i < parsedData.bills.length; i++) {
+                            const bill = parsedData.bills[i];
+                            const id = 'bill_ai_' + Date.now() + i;
+                            bill.id = id;
+                            bill.timestamp = Date.now();
+                            
+                            if (window.pendingFiles.length > 0) {
+                                const fileIndex = Math.min(i, window.pendingFiles.length - 1);
+                                const fileObj = window.pendingFiles[fileIndex];
+                                
+                                const isLocal = !(db && userId);
+                                const sizeLimit = isLocal ? 10000000 : 950000; 
+                                
+                                if (fileObj.data.length < sizeLimit) { 
+                                    bill.hasFile = true;
+                                    await saveFileToCloud(id, fileObj.data, fileObj.mimeType);
+                                } else {
+                                    bill.hasFile = false;
+                                    console.warn("File too large to save.");
+                                }
+                            } else {
+                                bill.hasFile = false;
+                            }
+                            await saveBillToCloud(bill);
+                        }
+                        
+                        window.clearFiles();
+                        document.getElementById('ai_prompt').value = '';
+                        window.showCustomAlert("Success", `Added ${parsedData.bills.length} bill(s).`, "success");
+                    } else throw new Error("Invalid AI format.");
+                } else throw new Error("Empty AI response.");
+
+            } catch (err) {
+                console.error(err);
+                window.showCustomAlert("Failed", err.message, "error");
+            } finally {
+                loader.classList.add('hidden'); loader.classList.remove('flex');
+            }
+        }
+
+        window.viewFile = async function(id) {
+            const modal = document.getElementById('file-viewer-modal');
+            const contentDiv = document.getElementById('file-viewer-content');
+            contentDiv.innerHTML = '<div class="text-slate-500 flex flex-col items-center"><i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i><p>Loading document...</p></div>';
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+
+            try {
+                let fileData = null;
+                
+                if (db && userId) {
+                    const docSnap = await getDoc(doc(db, filesCollectionPath, id));
+                    if (docSnap.exists()) fileData = docSnap.data();
+                } else {
+                    fileData = await getLocalFile(id);
+                }
+
+                if (fileData) {
+                    const src = `data:${fileData.mimeType};base64,${fileData.data}`;
+                    if (fileData.mimeType.startsWith('image/')) {
+                        contentDiv.innerHTML = `<img src="${src}" class="max-w-full max-h-full object-contain rounded shadow-lg">`;
+                    } else if (fileData.mimeType === 'application/pdf') {
+                        contentDiv.innerHTML = `<iframe src="${src}" class="w-full h-full border-0 rounded shadow-lg"></iframe>`;
+                    } else {
+                        contentDiv.innerHTML = `<p class="text-slate-700">Unsupported file format.</p>`;
+                    }
+                } else {
+                    contentDiv.innerHTML = `<div class="text-center text-slate-500"><i class="fa-solid fa-file-circle-xmark text-4xl mb-3 text-slate-300"></i><p>File not found. It may have been deleted or was too large to save initially.</p></div>`;
+                }
+            } catch (e) {
+                console.error(e);
+                contentDiv.innerHTML = `<p class="text-red-500 font-bold">Error loading file.</p>`;
+            }
+        }
+
+        window.closeFileViewer = function() {
+            document.getElementById('file-viewer-modal').classList.add('opacity-0');
+            setTimeout(() => {
+                document.getElementById('file-viewer-modal').classList.add('hidden');
+                document.getElementById('file-viewer-content').innerHTML = '';
+            }, 300);
+        }
+
+        window.exportData = function() {
+            if (billsData.length === 0) return window.showCustomAlert("Empty", "No data to export.", "info");
+            
+            const format = document.getElementById('export_format').value;
+            const headers = ["Sr. No.", "GSTIN", "VENDOR NAME", "CATEGORY", "INV NO", "DATE", "GROSS", "% TAX", "NET TAXABLE", "IGST", "CGST", "SGST"];
+            
+            const searchTerm = document.getElementById('search_input').value.toLowerCase();
+            const fyFilter = document.getElementById('fy_filter').value;
+            const monthFilter = document.getElementById('month_filter').value;
+            const catFilter = document.getElementById('category_filter').value;
+            
+            let exportDataList = billsData.filter(bill => {
+                 const searchString = Object.values(bill).join(' ').toLowerCase();
+                 if(!searchString.includes(searchTerm)) return false;
+                 if(fyFilter !== 'all' && window.getFY(bill.invoiceDate) !== fyFilter) return false;
+                 if(monthFilter !== 'all' && bill.invoiceDate) {
+                     const parts = bill.invoiceDate.split('/');
+                     const check = fyFilter === 'all' ? parts[1] : `${parts[1]}-${parts[2]}`;
+                     if(check !== monthFilter) return false;
+                 }
+                 if(catFilter !== 'all' && (bill.category || 'Uncategorized') !== catFilter) return false;
+                 return true;
+            });
+            
+            if(sortConfig.key) {
+                exportDataList.sort((a, b) => {
+                    let vA = a[sortConfig.key], vB = b[sortConfig.key];
+                    if (sortConfig.key === 'invoiceDate') { vA = window.parseDate(vA) || new Date(0); vB = window.parseDate(vB) || new Date(0); }
+                    if (vA < vB) return sortConfig.direction === 'asc' ? -1 : 1;
+                    if (vA > vB) return sortConfig.direction === 'asc' ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            let t = { gross: 0, net: 0, igst: 0, cgst: 0, sgst: 0 };
+            const exportRows = exportDataList.map((b, i) => {
+                t.gross += Number(b.grossAmount)||0; t.net += Number(b.netTaxableAmount)||0;
+                t.igst += Number(b.igst)||0; t.cgst += Number(b.cgst)||0; t.sgst += Number(b.sgst)||0;
+                return [
+                    i + 1, b.gstin || '', b.vendorName || '', b.category || '', b.invoiceNumber || '', b.invoiceDate || '',
+                    (Number(b.grossAmount)||0).toFixed(2), (Number(b.taxPercent)||0)+'%', (Number(b.netTaxableAmount)||0).toFixed(2),
+                    (Number(b.igst)||0).toFixed(2), (Number(b.cgst)||0).toFixed(2), (Number(b.sgst)||0).toFixed(2)
+                ];
+            });
+
+            exportRows.push(["", "", "", "", "", "TOTALS:", t.gross.toFixed(2), "", t.net.toFixed(2), t.igst.toFixed(2), t.cgst.toFixed(2), t.sgst.toFixed(2)]);
+
+            const fileName = `PurchaseRecon_${new Date().toISOString().split('T')[0]}`;
+
+            if (format === 'pdf') {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF('l', 'pt', 'a4');
+                doc.text("Purchase Bills Reconciliation", 40, 40);
+                doc.autoTable({
+                    head: [headers],
+                    body: exportRows,
+                    startY: 60,
+                    styles: { fontSize: 8 },
+                    headStyles: { fillColor: [2, 132, 199] },
+                    footStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold' },
+                    willDrawCell: function(data) {
+                        if (data.row.index === exportRows.length - 1) {
+                            doc.setFillColor(241, 245, 249);
+                            doc.setTextColor(15, 23, 42);
+                            doc.setFont(undefined, 'bold');
+                        }
+                    }
+                });
+                doc.save(`${fileName}.pdf`);
+            }
+            else if (format === 'csv') {
+                let csvContent = headers.join(",") + "\n";
+                exportRows.forEach(row => { csvContent += row.map(c => `"${c}"`).join(",") + "\n"; });
+                downloadFile(csvContent, 'text/csv;charset=utf-8;', `${fileName}.csv`);
+            } else if (format === 'xlsx') {
+                const ws = XLSX.utils.aoa_to_sheet([headers, ...exportRows]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Purchases");
+                XLSX.writeFile(wb, `${fileName}.xlsx`);
+            } else if (format === 'json') {
+                downloadFile(JSON.stringify(exportDataList, null, 2), 'application/json;charset=utf-8;', `${fileName}.json`);
+            } else if (format === 'txt') {
+                let txtContent = headers.join("\t") + "\n";
+                exportRows.forEach(row => { txtContent += row.join("\t") + "\n"; });
+                downloadFile(txtContent, 'text/plain;charset=utf-8;', `${fileName}.txt`);
+            }
+        }
+
+        window.downloadHTMLBackup = async function() {
+            window.showCustomAlert("Preparing Backup", "Packing your app, database, and all bill images into a single portable HTML file. This may take a few moments depending on image count...", "info");
+            
+            setTimeout(async () => {
+                try {
+                    let allFiles = [];
+                    if (localDb) {
+                        allFiles = await new Promise((resolve) => {
+                            const tx = localDb.transaction('files', 'readonly');
+                            const req = tx.objectStore('files').getAll();
+                            req.onsuccess = () => resolve(req.result);
+                            req.onerror = () => resolve([]);
+                        });
+                    }
+
+                    const backupData = { bills: billsData, files: allFiles };
+                    
+                    const scriptId = 'portable-backup-data';
+                    let oldScript = document.getElementById(scriptId);
+                    if(oldScript) oldScript.remove();
+
+                    const scriptTag = document.createElement('script');
+                    scriptTag.id = scriptId;
+                    const safeJson = JSON.stringify(backupData).replace(/<\/script>/g, '<\\/script>');
+                    scriptTag.textContent = `window.__PORTABLE_BACKUP__ = ${safeJson};`;
+                    document.body.appendChild(scriptTag);
+
+                    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+                    
+                    document.body.removeChild(scriptTag);
+                    
+                    const dateStr = new Date().toISOString().split('T')[0];
+                    downloadFile(html, 'text/html;charset=utf-8;', `ReconTool_Portable_Backup_${dateStr}.html`);
+                    window.closeAlert();
+                } catch(e) {
+                    console.error(e);
+                    window.showCustomAlert("Backup Failed", "Could not generate portable backup.", "error");
+                }
+            }, 500);
+        }
+
+        function downloadFile(content, mimeType, fileName) {
+            const b = new Blob([content], { type: mimeType });
+            const a = document.createElement("a");
+            a.href = URL.createObjectURL(b); a.download = fileName;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
+        // Custom Alert System with callback support
+        window.showCustomAlert = function(title, message, type = 'info', confirmCallback = null) {
+            const modal = document.getElementById('alert-modal');
+            const iconEl = document.getElementById('alert-icon');
+            const confirmBtn = document.getElementById('alert-confirm-btn');
+            
+            document.getElementById('alert-title').textContent = title;
+            document.getElementById('alert-message').textContent = message;
+            
+            if (type === 'error') iconEl.innerHTML = '<i class="fa-solid fa-circle-exclamation text-red-500"></i>';
+            else if (type === 'success') iconEl.innerHTML = '<i class="fa-solid fa-circle-check text-green-500"></i>';
+            else iconEl.innerHTML = '<i class="fa-solid fa-circle-info text-blue-500"></i>';
+
+            if (confirmCallback) {
+                confirmBtn.classList.remove('hidden');
+                confirmBtn.onclick = () => {
+                    confirmCallback();
+                    window.closeAlert();
+                };
+            } else {
+                confirmBtn.classList.add('hidden');
+                confirmBtn.onclick = null;
+            }
+
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        window.closeAlert = function() {
+            document.getElementById('alert-modal').classList.add('opacity-0');
+            setTimeout(() => document.getElementById('alert-modal').classList.add('hidden'), 300);
+        }
+
+        // Run Init
+        initApp();
+    </script>
+</body>
+</html>
