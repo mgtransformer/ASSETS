@@ -9,11 +9,13 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#0ea5e9">
+    <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=PR&background=0ea5e9&color=fff&size=256">
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Export & Excel Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
@@ -30,27 +32,25 @@
     </script>
     
     <style>
-        /* Smooth, standard page scrolling */
-        body { background-color: #f8fafc; color: #0f172a; overflow-y: scroll; scroll-behavior: smooth; }
+        body { background-color: #f8fafc; color: #0f172a; overflow-x: hidden; }
+        .glass-panel { background: rgba(255, 255, 255, 0.98); border: 1px solid rgba(226, 232, 240, 0.8); }
         
-        .glass-panel { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(226, 232, 240, 0.8); }
-        
-        /* Table Layout Rules */
+        /* Optimized Table Layout */
+        .table-wrapper { overflow-x: auto; border-radius: 0 0 0.75rem 0.75rem; }
         table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1750px; }
         
-        /* Table Headers */
         th { 
-            background-color: #f1f5f9; font-weight: 700; color: #334155; 
-            font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; 
-            border: 1px solid #e2e8f0; padding: 0.85rem 0.75rem; text-align: left;
+            background-color: #f8fafc; font-weight: 800; color: #334155; 
+            font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.05em; 
+            border: 1px solid #e2e8f0; padding: 0.6rem 0.5rem; text-align: left;
             border-bottom: 2px solid #cbd5e1;
         }
         
-        /* Table Cells - Increased Padding & Font Size for Readability */
         td { 
-            border: 1px solid #e2e8f0; padding: 0.85rem 0.75rem; 
-            font-size: 0.9rem; font-weight: 500;
+            border: 1px solid #e2e8f0; padding: 0.5rem 0.5rem; 
+            font-size: 0.8rem; font-weight: 500;
             background-color: #ffffff; white-space: nowrap; 
+            vertical-align: middle;
         }
         
         tfoot th, tfoot td {
@@ -58,207 +58,208 @@
             border-top: 2px solid #94a3b8;
         }
 
-        /* Status Colors */
         tr.paid-row td { background-color: #f0fdf4 !important; }
         tr.unpaid-row td { background-color: #fef2f2 !important; }
-        tr.active-row td { filter: brightness(0.95); }
-        tr:hover td { filter: brightness(0.97); }
+        tr:hover td { filter: brightness(0.96); }
 
         .col-num { text-align: right; font-variant-numeric: tabular-nums; }
         .col-center { text-align: center; }
         
-        /* Custom Scrollbars */
-        ::-webkit-scrollbar { width: 12px; height: 14px; }
-        ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 4px; border: 2px solid #f1f5f9; }
-        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        /* Compact Custom Scrollbars */
+        ::-webkit-scrollbar { width: 10px; height: 12px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 6px; border: 2px solid #f1f5f9; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
         
-        .scan-line { position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(to right, transparent, #0ea5e9, transparent); animation: scan 2s infinite linear; opacity: 0; }
+        .scan-line { position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(to right, transparent, #0ea5e9, transparent); animation: scan 1.5s infinite linear; opacity: 0; }
         @keyframes scan { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .modal-backdrop { backdrop-filter: blur(4px); }
 
         @media print {
-            body { background-color: #ffffff; }
-            header, .glass-panel, .no-print, .modal-backdrop, #dashboard_section, .sticky-toolbar { display: none !important; }
-            main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
-            .table-wrapper { overflow: visible !important; }
-            table { min-width: 100% !important; border: 1px solid #000; }
-            th, td { border: 1px solid #000 !important; padding: 6px !important; font-size: 10px !important; white-space: normal !important; color: #000 !important; background-color: #fff !important; }
-            th { position: static !important; background-color: #f1f5f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            @page { size: landscape; margin: 10mm; }
+            body { overflow: visible !important; }
+            header, .glass-panel, .no-print, .modal-backdrop, #dashboard_section { display: none !important; }
+            main { padding: 0 !important; margin: 0 !important; max-width: 100% !important; height: auto !important; overflow: visible !important; }
+            .table-wrapper { overflow: visible !important; height: auto !important; }
+            table { min-width: 100% !important; }
+            th, td { border: 1px solid #000 !important; padding: 4px !important; font-size: 9px !important; white-space: normal !important; color: #000 !important; }
+            th { position: static !important; }
+            tfoot th, tfoot td { position: static !important; }
+            @page { size: landscape; margin: 5mm; }
         }
     </style>
 </head>
 
-<body class="min-h-screen flex flex-col bg-slate-50">
+<body class="min-h-screen flex flex-col bg-slate-100 font-sans text-slate-800">
 
-    <!-- Sticky Header -->
-    <header class="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm h-16 flex items-center justify-between px-4 sm:px-6 lg:px-8 shrink-0">
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 shrink-0 shadow-sm z-50 h-[60px] flex items-center justify-between px-3 sm:px-6">
         <div class="flex items-center gap-4">
-            <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG Transformer" class="h-10 object-contain drop-shadow-sm no-print">
+            <!-- Restored Company Logo -->
+            <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG Transformer" class="h-10 sm:h-12 w-auto max-w-[220px] object-contain drop-shadow-sm no-print">
             
-            <div>
-                <h1 class="text-lg sm:text-xl font-black text-slate-800 leading-tight tracking-tight">Purchase Recon <span class="text-brand-600 text-[10px] sm:text-xs font-bold px-2 py-0.5 bg-brand-50 rounded-full ml-1 no-print border border-brand-200 uppercase tracking-wider">PRO</span></h1>
-                <p class="text-[10px] sm:text-xs text-slate-500 font-semibold tracking-wide flex items-center gap-2 mt-0.5">
+            <div class="hidden md:block">
+                <h1 class="text-base sm:text-lg font-black text-slate-800 leading-tight tracking-tight">Purchase Recon <span class="text-brand-600 text-[10px] font-bold px-2 py-0.5 bg-brand-50 rounded-full ml-1 border border-brand-200">PRO</span></h1>
+                <p class="text-[10px] text-slate-500 font-bold tracking-wide flex items-center gap-2 mt-0.5">
                     Smart Directory & AI Extractor 
-                    <span id="cloud-status" class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded border border-slate-200 text-[9px] uppercase"><i class="fa-solid fa-spinner fa-spin"></i> Connecting...</span>
+                    <span id="cloud-status" class="bg-slate-100 text-slate-600 px-1.5 py-0.5 rounded border border-slate-200 text-[9px] uppercase"><i class="fa-solid fa-spinner fa-spin"></i> Connecting...</span>
                 </p>
             </div>
         </div>
         
-        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar">
-            <button onclick="window.toggleAnalytics()" id="btn_toggle_analytics" class="no-print bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm border border-indigo-200">
-                <i class="fa-solid fa-chart-line"></i> View Analytics
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0">
+            <button onclick="window.toggleAnalytics()" id="btn_toggle_analytics" class="no-print bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-indigo-200">
+                <i class="fa-solid fa-chart-line"></i> Analytics
             </button>
             
-            <button onclick="window.openApiModal()" class="no-print bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm border border-amber-200">
-                <i class="fa-solid fa-key text-amber-500"></i> Configure APIs
+            <button onclick="window.openApiModal()" class="no-print bg-amber-50 text-amber-700 hover:bg-amber-100 px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-amber-200">
+                <i class="fa-solid fa-key text-amber-500"></i> Settings
             </button>
 
-            <button onclick="window.downloadHTMLBackup()" class="no-print bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm border border-slate-300">
+            <button onclick="window.downloadHTMLBackup()" class="no-print bg-slate-100 text-slate-700 hover:bg-slate-200 px-3 py-1.5 rounded text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-300">
                 <i class="fa-solid fa-download"></i> Backup
             </button>
             
-            <div class="no-print flex items-center gap-2 border-l pl-3 border-slate-200">
-                <select id="export_format" class="text-sm border border-slate-300 rounded-md px-2 py-1.5 focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white font-bold text-slate-700">
+            <div class="no-print flex items-center gap-1.5 border-l pl-2 border-slate-200">
+                <select id="export_format" class="text-xs border border-slate-300 rounded px-2 py-1.5 focus:ring-2 focus:ring-brand-500 bg-white font-bold text-slate-700 outline-none cursor-pointer">
                     <option value="pdf">PDF</option>
                     <option value="xlsx">Excel</option>
+                    <option value="csv">CSV</option>
+                    <option value="html">HTML</option>
+                    <option value="json">JSON</option>
                 </select>
-                <button onclick="window.exportData()" class="bg-slate-800 text-white px-4 py-1.5 rounded-md text-sm font-bold hover:bg-slate-700 shadow-sm transition">
+                <button onclick="window.exportData()" class="bg-slate-800 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-slate-700 shadow-sm transition">
                     Export
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Main Scrolling Content Area -->
-    <main class="w-full max-w-[1900px] mx-auto p-3 sm:p-4 lg:p-6 flex flex-col gap-4 flex-1">
+    <!-- Main Workspace -->
+    <main class="flex-1 flex flex-col w-full max-w-[1920px] mx-auto p-2 sm:p-3 gap-3">
 
-        <!-- AI Copilot Section -->
-        <section class="glass-panel rounded-xl p-4 shadow-sm border border-brand-100 relative overflow-hidden shrink-0">
+        <!-- AI Copilot Section (Compact) -->
+        <section class="shrink-0 glass-panel rounded-xl p-3 shadow-sm relative overflow-hidden">
             <div id="ai_loading_indicator" class="absolute inset-0 bg-white/95 z-30 hidden flex-col items-center justify-center backdrop-blur-md">
-                <i class="fa-solid fa-microchip fa-bounce text-4xl text-brand-500 mb-3"></i>
-                <h3 class="text-lg font-bold text-slate-800" id="ai_loading_title">AI is analyzing & categorizing...</h3>
-                <p class="text-sm text-slate-600 font-medium" id="ai_loading_sub">Extracting robust vendor details, items, math alignments...</p>
-                <div class="w-64 h-2 bg-slate-200 rounded-full mt-3 overflow-hidden relative"><div class="scan-line block opacity-100"></div></div>
-                <p class="text-[10px] text-brand-600 font-bold mt-2 uppercase tracking-widest" id="ai_model_status">Connecting best AI model...</p>
+                <i class="fa-solid fa-microchip fa-bounce text-3xl text-brand-500 mb-2"></i>
+                <h3 class="text-base font-black text-slate-800" id="ai_loading_title">Processing AI...</h3>
+                <p class="text-xs text-slate-600 font-bold" id="ai_loading_sub">Extracting details securely.</p>
+                <div class="w-48 h-1.5 bg-slate-200 rounded-full mt-2 overflow-hidden relative"><div class="scan-line block opacity-100"></div></div>
+                <p class="text-[9px] text-brand-600 font-bold mt-1.5 uppercase tracking-widest" id="ai_model_status">Connecting Engine...</p>
             </div>
 
-            <div class="flex flex-col xl:flex-row gap-4 items-start xl:items-center justify-between w-full">
-                <div class="flex-grow w-full xl:w-2/3 space-y-3">
+            <div class="flex flex-col xl:flex-row gap-3 items-start xl:items-center justify-between w-full">
+                <!-- Smart Input -->
+                <div class="flex-grow w-full xl:w-2/3 flex flex-col gap-2">
                     <div class="flex justify-between items-center">
-                        <h2 class="text-sm font-black text-slate-800 uppercase tracking-wider flex items-center gap-2">
-                            <i class="fa-solid fa-robot text-brand-600 text-lg"></i> Smart Data Entry Copilot
+                        <h2 class="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                            <i class="fa-solid fa-robot text-brand-600 text-sm"></i> Smart Data Copilot
                         </h2>
-                        <button onclick="window.openManualEntry()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-md text-xs font-bold transition flex items-center gap-2 shadow-sm">
+                        <button onclick="window.openManualEntry()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-2.5 py-1 rounded text-[10px] font-black uppercase tracking-wider transition flex items-center gap-1 shadow-sm">
                             <i class="fa-solid fa-keyboard"></i> Manual Entry
                         </button>
                     </div>
                     
-                    <textarea id="ai_prompt" rows="2" class="w-full text-base border border-slate-300 rounded-md p-3 focus:ring-2 focus:ring-brand-500 resize-none font-medium shadow-inner placeholder-slate-400" placeholder="Drop files here, click 'Attach Bills', or paste data."></textarea>
+                    <textarea id="ai_prompt" rows="1" class="w-full text-xs border border-slate-300 rounded p-2 focus:ring-2 focus:ring-brand-500 outline-none resize-none font-bold placeholder-slate-400" placeholder="Drop files, click 'Attach Bills', or paste data here..."></textarea>
                     
-                    <div class="flex flex-wrap items-center gap-3">
+                    <div class="flex flex-wrap items-center gap-2">
                         <input type="file" id="file_input" multiple accept="image/*,.pdf" class="hidden">
                         <input type="file" id="native_camera_input" accept="image/*" capture="environment" class="hidden">
                         
-                        <button onclick="document.getElementById('file_input').click()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-md text-sm font-bold shadow-sm flex items-center gap-2 transition">
-                            <i class="fa-solid fa-paperclip text-brand-500 text-lg"></i> Attach Bills
+                        <button onclick="document.getElementById('file_input').click()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-1.5 rounded text-[11px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-paperclip text-brand-500 text-sm"></i> Attach Bills
                         </button>
                         
-                        <button onclick="window.openCamera()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-md text-sm font-bold shadow-sm flex items-center gap-2 transition">
-                            <i class="fa-solid fa-camera text-brand-500 text-lg"></i> Capture Photo
+                        <button onclick="window.openCamera()" class="bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 px-3 py-1.5 rounded text-[11px] font-black uppercase tracking-wider shadow-sm flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-camera text-brand-500 text-sm"></i> Camera
                         </button>
                         
-                        <span id="file_badge" class="hidden items-center bg-brand-100 text-brand-800 text-sm font-bold px-3 py-1.5 rounded border border-brand-300 shadow-sm">
+                        <span id="file_badge" class="hidden items-center bg-brand-100 text-brand-800 text-[11px] font-black px-2 py-1.5 rounded border border-brand-300 shadow-sm uppercase tracking-wider">
                             <span id="file_count">0</span> queued
-                            <i class="fa-solid fa-xmark ml-2 cursor-pointer hover:text-red-500" onclick="window.clearFiles()"></i>
+                            <i class="fa-solid fa-xmark ml-1.5 cursor-pointer hover:text-red-500 text-sm" onclick="window.clearFiles()"></i>
                         </span>
 
                         <div class="flex-grow"></div>
                         
-                        <button onclick="window.processAI()" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-2.5 rounded-md text-sm font-black shadow-md flex items-center gap-2 transition">
-                            <i class="fa-solid fa-wand-magic-sparkles text-lg"></i> Process with AI
+                        <button onclick="window.processAI()" class="bg-brand-600 hover:bg-brand-700 text-white px-5 py-1.5 rounded text-[11px] font-black uppercase tracking-wider shadow-md flex items-center gap-1.5 transition">
+                            <i class="fa-solid fa-wand-magic-sparkles text-sm"></i> Process
                         </button>
                     </div>
                 </div>
 
-                <div class="hidden xl:block w-px h-24 bg-slate-200"></div>
+                <div class="hidden xl:block w-px h-16 bg-slate-200"></div>
 
-                <div class="w-full xl:w-1/3 grid grid-cols-2 gap-3">
+                <!-- Advanced Tools -->
+                <div class="w-full xl:w-1/3 grid grid-cols-2 gap-2">
                     <input type="file" id="payment_scan_input" accept="image/*,.pdf" class="hidden">
-                    <button onclick="document.getElementById('payment_scan_input').click()" class="bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-50 p-2.5 rounded-md text-xs font-bold shadow-sm flex items-center gap-2 w-full justify-center transition">
-                        <i class="fa-solid fa-receipt text-emerald-600 text-base"></i> Scan Payment
+                    <button onclick="document.getElementById('payment_scan_input').click()" class="bg-white border border-emerald-300 text-emerald-800 hover:bg-emerald-50 p-2 rounded text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-receipt text-emerald-600 text-xs"></i> Scan Payment
                     </button>
                     
-                    <input type="file" id="gstr2b_input" accept=".xlsx, .xls" class="hidden">
-                    <button onclick="document.getElementById('gstr2b_input').click()" class="bg-white border border-blue-300 text-blue-800 hover:bg-blue-50 p-2.5 rounded-md text-xs font-bold shadow-sm flex items-center gap-2 w-full justify-center transition">
-                        <i class="fa-solid fa-file-excel text-blue-600 text-base"></i> GSTR-2B Sync
+                    <input type="file" id="gstr2b_input" accept=".xlsx, .xls, .csv" class="hidden">
+                    <button onclick="document.getElementById('gstr2b_input').click()" class="bg-white border border-blue-300 text-blue-800 hover:bg-blue-50 p-2 rounded text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-file-excel text-blue-600 text-xs"></i> GSTR-2B Sync
                     </button>
 
                     <input type="file" id="bulk_import_input" accept=".csv, .xlsx, .xls" class="hidden">
-                    <button onclick="document.getElementById('bulk_import_input').click()" class="col-span-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 p-2.5 rounded-md text-xs font-bold shadow-sm flex items-center gap-2 w-full justify-center transition">
-                        <i class="fa-solid fa-upload text-slate-500 text-base"></i> Bulk Import History (Excel)
+                    <button onclick="document.getElementById('bulk_import_input').click()" class="col-span-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-50 p-2 rounded text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center justify-center gap-1.5 transition">
+                        <i class="fa-solid fa-upload text-slate-500 text-xs"></i> Bulk Import History (Excel)
                     </button>
                 </div>
             </div>
         </section>
 
-        <!-- Dashboard Analytics Section -->
-        <section id="dashboard_section" class="shrink-0 hidden grid-cols-2 xl:grid-cols-4 gap-3 transition-all duration-300">
-            <!-- Clickable Filter Cards -->
-            <div onclick="window.setQuickFilter('all')" class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between cursor-pointer hover:border-blue-400 hover:shadow-md hover:ring-2 hover:ring-blue-100 transition group relative overflow-hidden">
-                <div class="absolute inset-0 bg-blue-50 opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
-                <div class="relative z-10">
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 group-hover:text-blue-700 transition-colors">Total Purchases <i class="fa-solid fa-filter ml-1 text-[10px] opacity-50 group-hover:opacity-100"></i></p>
-                    <h3 class="text-2xl font-black text-slate-800 leading-none" id="dash_total_gross">₹0.00</h3>
-                </div>
-                <div class="bg-blue-50 text-blue-600 p-3 rounded-lg relative z-10 border border-blue-100"><i class="fa-solid fa-wallet text-xl"></i></div>
-            </div>
-            
-            <div onclick="window.setQuickFilter('paid')" class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between cursor-pointer hover:border-emerald-400 hover:shadow-md hover:ring-2 hover:ring-emerald-100 transition group relative overflow-hidden">
-                <div class="absolute inset-0 bg-emerald-50 opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
-                <div class="relative z-10">
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 group-hover:text-emerald-700 transition-colors">Total Paid <i class="fa-solid fa-filter ml-1 text-[10px] opacity-50 group-hover:opacity-100"></i></p>
-                    <h3 class="text-2xl font-black text-emerald-600 leading-none" id="dash_total_paid">₹0.00</h3>
-                </div>
-                <div class="bg-emerald-50 text-emerald-600 p-3 rounded-lg relative z-10 border border-emerald-100"><i class="fa-solid fa-money-bill-wave text-xl"></i></div>
-            </div>
-            
-            <div onclick="window.setQuickFilter('unpaid')" class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between cursor-pointer hover:border-red-400 hover:shadow-md hover:ring-2 hover:ring-red-100 transition group relative overflow-hidden">
-                <div class="absolute inset-0 bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity z-0"></div>
-                <div class="relative z-10">
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1 group-hover:text-red-700 transition-colors">Outstanding <i class="fa-solid fa-filter ml-1 text-[10px] opacity-50 group-hover:opacity-100"></i></p>
-                    <h3 class="text-2xl font-black text-red-600 leading-none" id="dash_total_balance">₹0.00</h3>
-                </div>
-                <div class="bg-red-50 text-red-600 p-3 rounded-lg relative z-10 border border-red-100"><i class="fa-solid fa-file-invoice text-xl"></i></div>
-            </div>
-            
-            <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200 flex items-center justify-between">
+        <!-- Analytics Dashboard (Clickable Filters Restored) -->
+        <section id="dashboard_section" class="shrink-0 hidden grid-cols-2 lg:grid-cols-4 gap-2 transition-all">
+            <div id="card_all" onclick="window.setQuickFilter('all')" class="filter-card bg-white rounded-lg p-3 shadow-sm border border-slate-200 flex items-center justify-between cursor-pointer hover:border-brand-400 hover:shadow-md transition-all ring-4 ring-brand-500 scale-[1.02] group">
                 <div>
-                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Input Tax (GST)</p>
-                    <h3 class="text-2xl font-black text-slate-800 leading-none" id="dash_total_tax">₹0.00</h3>
+                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-wider mb-0.5 group-hover:text-brand-600 transition-colors">Total Purchases <i class="fa-solid fa-filter ml-0.5 text-[8px] opacity-50 group-hover:opacity-100"></i></p>
+                    <h3 class="text-xl font-black text-slate-800 leading-none" id="dash_total_gross">₹0.00</h3>
                 </div>
-                <div class="bg-orange-50 text-orange-600 p-3 rounded-lg border border-orange-100"><i class="fa-solid fa-landmark text-xl"></i></div>
+                <div class="bg-brand-50 text-brand-600 p-2.5 rounded-lg border border-brand-100"><i class="fa-solid fa-wallet text-lg"></i></div>
+            </div>
+            
+            <div id="card_paid" onclick="window.setQuickFilter('paid')" class="filter-card bg-white rounded-lg p-3 shadow-sm border border-slate-200 flex items-center justify-between cursor-pointer hover:border-emerald-400 hover:shadow-md transition-all group">
+                <div>
+                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-wider mb-0.5 group-hover:text-emerald-600 transition-colors">Total Paid <i class="fa-solid fa-filter ml-0.5 text-[8px] opacity-50 group-hover:opacity-100"></i></p>
+                    <h3 class="text-xl font-black text-emerald-600 leading-none" id="dash_total_paid">₹0.00</h3>
+                </div>
+                <div class="bg-emerald-50 text-emerald-600 p-2.5 rounded-lg border border-emerald-100"><i class="fa-solid fa-money-bill-wave text-lg"></i></div>
+            </div>
+            
+            <div id="card_unpaid" onclick="window.setQuickFilter('unpaid')" class="filter-card bg-white rounded-lg p-3 shadow-sm border border-slate-200 flex items-center justify-between cursor-pointer hover:border-red-400 hover:shadow-md transition-all group">
+                <div>
+                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-wider mb-0.5 group-hover:text-red-600 transition-colors">Outstanding <i class="fa-solid fa-filter ml-0.5 text-[8px] opacity-50 group-hover:opacity-100"></i></p>
+                    <h3 class="text-xl font-black text-red-600 leading-none" id="dash_total_balance">₹0.00</h3>
+                </div>
+                <div class="bg-red-50 text-red-600 p-2.5 rounded-lg border border-red-100"><i class="fa-solid fa-file-invoice text-lg"></i></div>
+            </div>
+            
+            <div class="bg-white rounded-lg p-3 shadow-sm border border-slate-200 flex items-center justify-between">
+                <div>
+                    <p class="text-[10px] text-slate-500 font-black uppercase tracking-wider mb-0.5">Total Input Tax</p>
+                    <h3 class="text-xl font-black text-slate-800 leading-none" id="dash_total_tax">₹0.00</h3>
+                </div>
+                <div class="bg-orange-50 text-orange-600 p-2.5 rounded-lg border border-orange-100"><i class="fa-solid fa-landmark text-lg"></i></div>
             </div>
         </section>
 
-        <!-- Directory / Table Section -->
-        <section class="bg-white rounded-xl shadow-sm border border-slate-300 flex flex-col relative shrink-0">
-            
-            <!-- STICKY TOOLBAR: Stays at top of screen when scrolling down -->
-            <div class="sticky top-16 z-40 bg-slate-50/95 backdrop-blur-sm p-4 border-b border-slate-300 flex flex-wrap items-center justify-between gap-4 rounded-t-xl sticky-toolbar shadow-sm">
-                <div class="flex items-center gap-3">
-                    <h2 class="text-lg font-black text-slate-800 uppercase tracking-tight">Purchase Directory</h2>
-                    <span class="bg-white text-slate-700 text-xs px-3 py-1 rounded-md font-bold border border-slate-300 shadow-sm" id="table_count_badge">0 Records</span>
+        <!-- Directory Table Area -->
+        <section class="flex flex-col bg-white rounded-xl shadow-sm border border-slate-200">
+            <!-- Filter Toolbar -->
+            <div class="p-2.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-2 bg-slate-50 rounded-t-xl z-40 shadow-sm">
+                <div class="flex items-center gap-2">
+                    <h2 class="text-sm font-black text-slate-800 uppercase tracking-wider">Directory</h2>
+                    <span class="bg-white text-slate-600 text-[10px] px-2 py-0.5 rounded font-black border border-slate-300 shadow-sm uppercase tracking-wider" id="table_count_badge">0 Records</span>
                 </div>
                 
-                <div class="flex flex-wrap items-center gap-3 no-print">
+                <div class="flex flex-wrap items-center gap-2 no-print">
                     <div class="relative">
-                        <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-brand-500 text-sm"></i>
-                        <input type="text" id="search_input" oninput="window.renderTable()" placeholder="Search ANY detail..." class="pl-9 pr-3 py-2 text-sm border-2 border-slate-300 rounded-md focus:ring-brand-500 focus:border-brand-500 outline-none font-bold w-56 text-slate-800 placeholder-slate-400 bg-white transition shadow-sm">
+                        <i class="fa-solid fa-search absolute left-2.5 top-1/2 transform -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input type="text" id="search_input" oninput="window.renderTable()" placeholder="Search..." class="pl-7 pr-2 py-1 text-xs border-2 border-slate-300 rounded focus:border-brand-500 outline-none font-bold w-40 transition placeholder-slate-400">
                     </div>
                     
-                    <select id="fy_filter" onchange="window.updateMonthOptions(); window.renderTable()" class="text-sm border-2 border-brand-300 text-brand-900 rounded-md px-3 py-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-brand-50 font-black shadow-sm cursor-pointer transition hover:bg-brand-100">
-                        <option value="all">All Financial Years</option>
+                    <select id="fy_filter" onchange="window.updateMonthOptions(); window.renderTable()" class="text-xs border-2 border-brand-300 text-brand-900 rounded px-2 py-1 focus:border-brand-500 outline-none bg-brand-50 font-black cursor-pointer shadow-sm">
+                        <option value="all">All FYs</option>
                         <option value="FY2021-22">FY 2021-22</option>
                         <option value="FY2022-23">FY 2022-23</option>
                         <option value="FY2023-24">FY 2023-24</option>
@@ -270,39 +271,39 @@
                         <option value="FY2029-30">FY 2029-30</option>
                     </select>
 
-                    <select id="month_filter" onchange="window.renderTable()" class="text-sm border-2 border-slate-300 text-slate-700 rounded-md px-3 py-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white font-bold shadow-sm cursor-pointer transition hover:bg-slate-50">
+                    <select id="month_filter" onchange="window.renderTable()" class="text-xs border-2 border-slate-300 rounded px-2 py-1 focus:border-brand-500 outline-none font-bold cursor-pointer shadow-sm">
                         <option value="all">All Months</option>
                     </select>
 
-                    <select id="category_filter" onchange="window.renderTable()" class="text-sm border-2 border-slate-300 text-slate-700 rounded-md px-3 py-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white font-bold shadow-sm max-w-[180px] truncate cursor-pointer transition hover:bg-slate-50">
+                    <select id="category_filter" onchange="window.renderTable()" class="text-xs border-2 border-slate-300 rounded px-2 py-1 focus:border-brand-500 outline-none font-bold max-w-[130px] truncate cursor-pointer shadow-sm">
                         <option value="all">All Categories</option>
                     </select>
                 </div>
             </div>
 
-            <!-- Table Wrapper (Handles Horizontal Scroll Only) -->
-            <div class="w-full overflow-x-auto rounded-b-xl table-wrapper">
-                <table class="w-full text-left">
+            <!-- Scrollable Table -->
+            <div class="relative w-full overflow-x-auto rounded-b-xl table-wrapper">
+                <table>
                     <thead>
                         <tr>
-                            <th class="w-12 col-center bg-slate-100">Sr.</th>
-                            <th class="w-20 col-center no-print bg-slate-100">File</th>
-                            <th class="w-28 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('timestamp')">ADDED <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
-                            <th class="w-36 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('gstin')">GSTIN <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
-                            <th class="cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('vendorName')">VENDOR NAME <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
-                            <th class="w-56 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('category')">CATEGORY / ITEM <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
-                            <th class="w-32 font-black">INVOICE NO</th>
-                            <th class="w-28 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('invoiceDate')">DATE <i class="fa-solid fa-sort ml-1 text-slate-400 no-print"></i></th>
-                            <th class="w-36 col-num cursor-pointer hover:bg-slate-200 transition text-brand-900 font-black" onclick="window.sortTable('grossAmount')">GROSS AMT <i class="fa-solid fa-sort ml-1 text-brand-400 no-print"></i></th>
-                            <th class="w-20 col-center bg-slate-100 border-x-2 border-slate-300">% TAX</th>
-                            <th class="w-32 col-num text-slate-700">NET TAXABLE</th>
-                            <th class="w-24 col-num text-slate-600">IGST</th>
-                            <th class="w-24 col-num text-slate-600">CGST</th>
-                            <th class="w-24 col-num text-slate-600">SGST</th>
-                            <th class="w-32 col-num text-emerald-800 font-black border-l border-slate-200">PAID AMT</th>
-                            <th class="w-32 col-num text-red-800 font-black">BALANCE</th>
-                            <th class="w-36 col-center bg-blue-50 border-x-2 border-blue-200 text-blue-900 font-black">GSTR-2B</th>
-                            <th class="w-32 col-center no-print bg-slate-100">ACT</th>
+                            <th class="w-10 col-center">Sr.</th>
+                            <th class="w-16 col-center no-print">File</th>
+                            <th class="w-24 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('timestamp')">ADDED <i class="fa-solid fa-sort ml-1 text-slate-400"></i></th>
+                            <th class="w-32 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('gstin')">GSTIN <i class="fa-solid fa-sort ml-1 text-slate-400"></i></th>
+                            <th class="w-48 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('vendorName')">VENDOR NAME <i class="fa-solid fa-sort ml-1 text-slate-400"></i></th>
+                            <th class="w-40 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('category')">CATEGORY / ITEM <i class="fa-solid fa-sort ml-1 text-slate-400"></i></th>
+                            <th class="w-24 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('invoiceNumber')">INV NO <i class="fa-solid fa-sort ml-1 text-slate-400"></i></th>
+                            <th class="w-24 cursor-pointer hover:bg-slate-200 transition" onclick="window.sortTable('invoiceDate')">DATE <i class="fa-solid fa-sort ml-1 text-slate-400"></i></th>
+                            <th class="w-32 col-num cursor-pointer hover:bg-slate-200 text-brand-900 transition" onclick="window.sortTable('grossAmount')">GROSS AMT <i class="fa-solid fa-sort ml-1 text-brand-400"></i></th>
+                            <th class="w-16 col-center border-x-2 border-slate-200">% TAX</th>
+                            <th class="w-24 col-num text-slate-600">NET TAXABLE</th>
+                            <th class="w-20 col-num text-slate-600">IGST</th>
+                            <th class="w-20 col-num text-slate-600">CGST</th>
+                            <th class="w-20 col-num text-slate-600">SGST</th>
+                            <th class="w-28 col-num text-emerald-800 border-l-2 border-slate-200">PAID AMT</th>
+                            <th class="w-28 col-num text-red-800">BALANCE</th>
+                            <th class="w-28 col-center bg-blue-50 border-x-2 border-blue-200 text-blue-900">GSTR-2B</th>
+                            <th class="w-20 col-center no-print">ACT</th>
                         </tr>
                     </thead>
                     <tbody id="table_body">
@@ -310,112 +311,112 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="8" class="text-right py-4 pr-4 uppercase tracking-widest text-xs font-black text-slate-600">Filtered Total</td>
-                            <td class="col-num py-4 text-brand-800 text-lg font-black" id="foot_gross">0.00</td>
-                            <td class="bg-slate-200 border-x-2 border-slate-400"></td>
-                            <td class="col-num py-4 text-base font-bold text-slate-700" id="foot_net">0.00</td>
-                            <td class="col-num py-4 text-sm text-slate-600 font-bold" id="foot_igst">0.00</td>
-                            <td class="col-num py-4 text-sm text-slate-600 font-bold" id="foot_cgst">0.00</td>
-                            <td class="col-num py-4 text-sm text-slate-600 font-bold" id="foot_sgst">0.00</td>
-                            <td class="col-num py-4 text-emerald-700 text-lg font-black border-l border-slate-300" id="foot_paid">0.00</td>
-                            <td class="col-num py-4 text-red-700 text-lg font-black" id="foot_balance">0.00</td>
+                            <td colspan="8" class="text-right py-2.5 pr-4 uppercase tracking-widest text-[10px]">Filtered Total</td>
+                            <td class="col-num py-2.5 text-brand-800 text-sm font-black" id="foot_gross">0.00</td>
+                            <td class="bg-slate-200 border-x-2 border-slate-300"></td>
+                            <td class="col-num py-2.5 font-bold" id="foot_net">0.00</td>
+                            <td class="col-num py-2.5 text-slate-600 font-bold" id="foot_igst">0.00</td>
+                            <td class="col-num py-2.5 text-slate-600 font-bold" id="foot_cgst">0.00</td>
+                            <td class="col-num py-2.5 text-slate-600 font-bold" id="foot_sgst">0.00</td>
+                            <td class="col-num py-2.5 text-emerald-700 text-sm font-black border-l-2 border-slate-300" id="foot_paid">0.00</td>
+                            <td class="col-num py-2.5 text-red-700 text-sm font-black" id="foot_balance">0.00</td>
                             <td class="bg-blue-100 border-x-2 border-blue-300"></td>
                             <td class="no-print bg-slate-200"></td>
                         </tr>
                     </tfoot>
                 </table>
-                <div id="empty_state" class="hidden flex flex-col items-center justify-center bg-slate-50/80 py-24 border-t border-slate-200">
-                    <i class="fa-solid fa-folder-open text-6xl mb-4 text-slate-300"></i>
-                    <p class="text-base font-bold text-slate-500">Directory is empty. Upload bills or adjust filters.</p>
+                <div id="empty_state" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/90 z-10">
+                    <i class="fa-solid fa-folder-open text-5xl mb-3 text-slate-300"></i>
+                    <p class="text-sm font-black text-slate-500 uppercase tracking-widest">Directory is empty.</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Hidden input for specifically replacing a bill image -->
+    <!-- Hidden file input for Replace Bill Action -->
     <input type="file" id="replace_bill_input" accept="image/*,.pdf" class="hidden">
 
     <!-- API Configuration Modal -->
     <div id="api-keys-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[90] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 flex flex-col transform transition-transform duration-300 scale-95" id="api-keys-modal-content">
-            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
-                <h3 class="font-black text-lg text-slate-800"><i class="fa-solid fa-shield-halved text-brand-600 mr-2"></i> System Configuration</h3>
-                <button onclick="window.closeApiModal()" class="text-slate-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark text-2xl"></i></button>
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 flex flex-col transform transition-transform duration-300 scale-95" id="api-keys-modal-content">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-xl">
+                <h3 class="font-black text-base text-slate-800"><i class="fa-solid fa-shield-halved text-brand-600 mr-2"></i> Configure Settings</h3>
+                <button onclick="window.closeApiModal()" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <div class="p-6 space-y-5">
-                <div class="bg-blue-50 border border-blue-200 text-blue-800 p-3.5 rounded-lg text-sm font-semibold shadow-sm leading-snug">
-                    <i class="fa-solid fa-info-circle text-blue-500 mr-1.5"></i> Keys are stored safely in your browser memory. Make sure you use the same Sync PIN across devices.
+            <div class="p-5 space-y-4">
+                <div class="bg-blue-50 border border-blue-200 text-blue-800 p-2.5 rounded text-xs font-bold leading-tight">
+                    <i class="fa-solid fa-info-circle text-blue-500 mr-1"></i> Keys are stored safely in local memory. Ensure identical Sync PIN across devices.
                 </div>
                 
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-700 uppercase tracking-wide flex items-center gap-2">Gemini API Key</label>
-                    <input type="password" id="modal_gemini_key" class="w-full border-2 border-slate-300 rounded-md p-3 text-sm font-mono focus:border-brand-500 outline-none font-bold placeholder-slate-300" placeholder="AIzaSy...">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">Gemini API Key</label>
+                    <input type="password" id="modal_gemini_key" class="w-full border-2 border-slate-300 rounded p-2 text-sm font-mono font-bold focus:border-brand-500 outline-none placeholder-slate-300" placeholder="AIzaSy...">
                 </div>
                 
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-700 uppercase tracking-wide flex items-center gap-2">Firebase API Key</label>
-                    <input type="password" id="modal_firebase_key" class="w-full border-2 border-slate-300 rounded-md p-3 text-sm font-mono focus:border-brand-500 outline-none font-bold placeholder-slate-300" placeholder="AIzaSy...">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-700 uppercase tracking-widest flex items-center gap-2">Firebase API Key</label>
+                    <input type="password" id="modal_firebase_key" class="w-full border-2 border-slate-300 rounded p-2 text-sm font-mono font-bold focus:border-brand-500 outline-none placeholder-slate-300" placeholder="AIzaSy...">
                 </div>
 
-                <div class="space-y-1.5 mt-2 pt-4 border-t-2 border-slate-100">
-                    <label class="text-xs font-black text-slate-700 uppercase tracking-wide">Cross-Device Sync PIN</label>
-                    <input type="text" id="modal_sync_pin" class="w-full border-2 border-slate-300 rounded-md p-3 text-sm font-mono focus:border-brand-500 outline-none font-black placeholder-slate-300" placeholder="e.g. MGTrans123">
+                <div class="space-y-1 mt-2 pt-3 border-t-2 border-slate-100">
+                    <label class="text-[10px] font-black text-slate-700 uppercase tracking-widest">Cross-Device Sync PIN</label>
+                    <input type="text" id="modal_sync_pin" class="w-full border-2 border-slate-300 rounded p-2 text-sm font-mono font-black focus:border-brand-500 outline-none placeholder-slate-300" placeholder="e.g. MGTrans123">
                 </div>
 
-                <div class="flex items-start gap-3 pt-3">
-                    <input type="checkbox" id="save_keys_local" class="mt-1 rounded border-slate-300 text-brand-600 w-4 h-4 cursor-pointer" checked>
-                    <label for="save_keys_local" class="text-sm text-slate-700 font-bold cursor-pointer leading-tight">Save settings securely in this browser to auto-connect.</label>
+                <div class="flex items-start gap-2 pt-1">
+                    <input type="checkbox" id="save_keys_local" class="mt-0.5 rounded border-slate-300 text-brand-600 w-3.5 h-3.5 cursor-pointer" checked>
+                    <label for="save_keys_local" class="text-[11px] text-slate-700 font-bold cursor-pointer">Save securely in this browser.</label>
                 </div>
             </div>
-            <div class="p-4 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-end gap-3">
-                <button onclick="window.closeApiModal()" class="px-5 py-2.5 rounded-md text-sm font-bold text-slate-600 hover:bg-slate-200 transition">Cancel</button>
-                <button onclick="window.saveApiKeys()" class="px-6 py-2.5 rounded-md text-sm font-black text-white bg-brand-600 hover:bg-brand-700 shadow-md transition">Save & Connect</button>
+            <div class="p-3 border-t border-slate-200 bg-slate-50 rounded-b-xl flex justify-end gap-2">
+                <button onclick="window.closeApiModal()" class="px-4 py-1.5 rounded text-xs font-bold text-slate-600 hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="window.saveApiKeys()" class="px-5 py-1.5 rounded text-xs font-black text-white bg-brand-600 hover:bg-brand-700 shadow-md transition">Save & Sync</button>
             </div>
         </div>
     </div>
 
     <!-- Manual Entry Modal -->
     <div id="manual-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[80] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
-        <div class="bg-white rounded-2xl shadow-2xl max-w-4xl w-full mx-4 flex flex-col max-h-[95vh]">
-            <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-2xl">
-                <h3 class="font-black text-xl text-slate-800"><i class="fa-solid fa-keyboard text-emerald-600 mr-2"></i> <span id="man_modal_title">Manual Bill Entry</span></h3>
-                <button onclick="window.closeManualEntry()" class="text-slate-400 hover:text-red-500 transition-colors"><i class="fa-solid fa-xmark text-2xl"></i></button>
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full mx-4 flex flex-col max-h-[95vh]">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-xl">
+                <h3 class="font-black text-base text-slate-800"><i class="fa-solid fa-keyboard text-emerald-600 mr-2"></i> <span id="man_modal_title">Manual Entry</span></h3>
+                <button onclick="window.closeManualEntry()" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <div class="p-6 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-5 bg-white">
+            <div class="p-5 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4">
                 <input type="hidden" id="man_editing_id" value="">
                 
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-600 uppercase tracking-wide">GSTIN</label>
-                    <input type="text" id="man_gstin" class="w-full border-2 border-slate-300 rounded-md p-2.5 text-base font-mono uppercase font-black text-slate-800 focus:border-brand-500 outline-none">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-600 uppercase tracking-widest">GSTIN</label>
+                    <input type="text" id="man_gstin" class="w-full border-2 border-slate-300 rounded p-2 text-sm font-mono uppercase font-black focus:border-brand-500 outline-none placeholder-slate-300">
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-600 uppercase tracking-wide">Vendor Name</label>
-                    <input type="text" id="man_vendor" class="w-full border-2 border-slate-300 rounded-md p-2.5 text-base font-black text-slate-800 focus:border-brand-500 outline-none">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Vendor Name</label>
+                    <input type="text" id="man_vendor" class="w-full border-2 border-slate-300 rounded p-2 text-sm font-black focus:border-brand-500 outline-none placeholder-slate-300">
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-600 uppercase tracking-wide">Category / Item Description</label>
-                    <input type="text" id="man_category" class="w-full border-2 border-slate-300 rounded-md p-2.5 text-base font-bold text-slate-800 focus:border-brand-500 outline-none">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Category / Item</label>
+                    <input type="text" id="man_category" class="w-full border-2 border-slate-300 rounded p-2 text-sm font-bold focus:border-brand-500 outline-none placeholder-slate-300">
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-600 uppercase tracking-wide">Invoice No</label>
-                    <input type="text" id="man_inv_no" class="w-full border-2 border-slate-300 rounded-md p-2.5 text-base font-mono font-black text-slate-800 focus:border-brand-500 outline-none">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Invoice No</label>
+                    <input type="text" id="man_inv_no" class="w-full border-2 border-slate-300 rounded p-2 text-sm font-mono font-black focus:border-brand-500 outline-none placeholder-slate-300">
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-600 uppercase tracking-wide">Date</label>
-                    <input type="date" id="man_inv_date" class="w-full border-2 border-slate-300 rounded-md p-2.5 text-base font-bold text-slate-800 focus:border-brand-500 outline-none">
-                </div>
-                
-                <div class="space-y-1.5 md:col-span-2 mt-3 pt-4 border-t-2 border-slate-200">
-                    <h4 class="text-base font-black text-slate-800 mb-2 uppercase tracking-wide"><i class="fa-solid fa-calculator text-brand-500 mr-2"></i>Financial & Payment Calculations</h4>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Date</label>
+                    <input type="date" id="man_inv_date" class="w-full border-2 border-slate-300 rounded p-2 text-sm font-bold focus:border-brand-500 outline-none">
                 </div>
                 
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-600 uppercase tracking-wide">Basic Amount (Net Taxable)</label>
-                    <input type="number" id="man_basic" oninput="window.calcManualMath()" class="w-full border-2 border-slate-300 rounded-md p-2.5 text-lg font-black text-slate-900 focus:border-brand-500 outline-none" step="0.01">
+                <div class="space-y-1 md:col-span-2 mt-1 pt-3 border-t-2 border-slate-100">
+                    <h4 class="text-xs font-black text-slate-800 mb-1 uppercase tracking-widest"><i class="fa-solid fa-calculator text-brand-500 mr-1.5"></i> Math & Tax</h4>
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-600 uppercase tracking-wide">Tax %</label>
-                    <select id="man_tax_pct" onchange="window.calcManualMath()" class="w-full border-2 border-slate-300 rounded-md p-2.5 text-base font-black text-slate-800 focus:border-brand-500 outline-none bg-white">
+                
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Basic Amount</label>
+                    <input type="number" id="man_basic" oninput="window.calcManualMath()" class="w-full border-2 border-slate-300 rounded p-2 text-base font-black text-slate-900 focus:border-brand-500 outline-none" step="0.01">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Tax %</label>
+                    <select id="man_tax_pct" onchange="window.calcManualMath()" class="w-full border-2 border-slate-300 rounded p-2 text-sm font-black focus:border-brand-500 outline-none bg-white">
                         <option value="18">18%</option>
                         <option value="28">28%</option>
                         <option value="12">12%</option>
@@ -423,29 +424,29 @@
                         <option value="0">0%</option>
                     </select>
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-slate-600 uppercase tracking-wide">Tax Type</label>
-                    <div class="flex gap-6 mt-2">
-                        <label class="flex items-center gap-2 text-base font-bold text-slate-800 cursor-pointer"><input type="radio" name="man_tax_type" value="intra" checked onchange="window.calcManualMath()" class="w-4 h-4 text-brand-600"> CGST/SGST</label>
-                        <label class="flex items-center gap-2 text-base font-bold text-slate-800 cursor-pointer"><input type="radio" name="man_tax_type" value="inter" onchange="window.calcManualMath()" class="w-4 h-4 text-brand-600"> IGST</label>
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-slate-600 uppercase tracking-widest">Tax Type</label>
+                    <div class="flex gap-4 mt-1.5">
+                        <label class="flex items-center gap-1.5 text-xs font-black cursor-pointer"><input type="radio" name="man_tax_type" value="intra" checked onchange="window.calcManualMath()" class="w-3.5 h-3.5 text-brand-600"> CGST/SGST</label>
+                        <label class="flex items-center gap-1.5 text-xs font-black cursor-pointer"><input type="radio" name="man_tax_type" value="inter" onchange="window.calcManualMath()" class="w-3.5 h-3.5 text-brand-600"> IGST</label>
                     </div>
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-brand-700 uppercase tracking-wide">Total Gross Amount</label>
-                    <input type="text" id="man_gross" readonly class="w-full border-2 border-brand-300 bg-brand-50 rounded-md p-2.5 text-lg font-black text-brand-900 outline-none shadow-inner">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-brand-700 uppercase tracking-widest">Gross Amount</label>
+                    <input type="text" id="man_gross" readonly class="w-full border-2 border-brand-300 bg-brand-50 rounded p-2 text-base font-black text-brand-900 outline-none">
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-emerald-700 uppercase tracking-wide">Amount Paid (₹)</label>
-                    <input type="number" id="man_paid" oninput="window.calcManualMath()" class="w-full border-2 border-emerald-400 bg-emerald-50 rounded-md p-2.5 text-lg font-black text-emerald-900 focus:border-emerald-500 outline-none shadow-inner" step="0.01">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-emerald-700 uppercase tracking-widest">Amount Paid</label>
+                    <input type="number" id="man_paid" oninput="window.calcManualMath()" class="w-full border-2 border-emerald-400 bg-emerald-50 rounded p-2 text-base font-black text-emerald-900 focus:border-emerald-500 outline-none" step="0.01">
                 </div>
-                <div class="space-y-1.5">
-                    <label class="text-xs font-black text-red-700 uppercase tracking-wide">Balance Due (₹)</label>
-                    <input type="text" id="man_balance" readonly class="w-full border-2 border-red-300 bg-red-50 rounded-md p-2.5 text-lg font-black text-red-900 outline-none shadow-inner">
+                <div class="space-y-1">
+                    <label class="text-[10px] font-black text-red-700 uppercase tracking-widest">Balance Due</label>
+                    <input type="text" id="man_balance" readonly class="w-full border-2 border-red-300 bg-red-50 rounded p-2 text-base font-black text-red-900 outline-none">
                 </div>
             </div>
-            <div class="p-5 border-t border-slate-200 bg-slate-50 rounded-b-2xl flex justify-end gap-3 shrink-0">
-                <button onclick="window.closeManualEntry()" class="px-6 py-2.5 rounded-md text-sm font-bold text-slate-600 hover:bg-slate-200 transition">Cancel</button>
-                <button onclick="window.saveManualEntry()" class="px-8 py-2.5 rounded-md text-sm font-black text-white bg-emerald-600 hover:bg-emerald-700 shadow-lg transition">Save Entry</button>
+            <div class="p-3 border-t border-slate-200 bg-slate-50 rounded-b-xl flex justify-end gap-2 shrink-0">
+                <button onclick="window.closeManualEntry()" class="px-5 py-1.5 rounded text-xs font-bold text-slate-600 hover:bg-slate-200 transition">Cancel</button>
+                <button onclick="window.saveManualEntry()" class="px-6 py-1.5 rounded text-xs font-black text-white bg-emerald-600 hover:bg-emerald-700 shadow-md transition">Save Entry</button>
             </div>
         </div>
     </div>
@@ -453,16 +454,16 @@
     <!-- Viewer Modal -->
     <div id="file-viewer-modal" class="fixed inset-0 bg-slate-900/95 hidden z-[90] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
         <div class="relative w-full max-w-6xl h-[95vh] flex flex-col bg-slate-800 rounded-xl overflow-hidden shadow-2xl mx-4 border border-slate-700">
-            <div class="p-3 bg-slate-900 text-white flex justify-between items-center shrink-0 border-b border-slate-700">
-                <h3 class="font-bold text-base flex items-center gap-2 tracking-wide"><i class="fa-solid fa-file-invoice text-brand-400 text-xl"></i> Document Viewer</h3>
-                <div class="flex items-center gap-2 bg-slate-800 rounded-lg p-1 border border-slate-600">
-                    <button onclick="window.zoomViewer(0.2)" class="hover:bg-slate-700 p-2 px-3 rounded text-slate-300 transition" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus text-lg"></i></button>
-                    <button onclick="window.zoomViewer(-0.2)" class="hover:bg-slate-700 p-2 px-3 rounded text-slate-300 transition" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus text-lg"></i></button>
-                    <button onclick="window.resetViewer()" class="hover:bg-slate-700 p-2 px-4 rounded text-slate-300 transition text-sm font-black uppercase tracking-wider">Reset</button>
-                    <div class="w-px h-6 bg-slate-600 mx-2"></div>
-                    <button id="viewer_download_btn" class="hover:bg-slate-700 p-2 px-3 rounded text-slate-300 transition" title="Download File"><i class="fa-solid fa-download text-lg"></i></button>
+            <div class="p-2.5 bg-slate-900 text-white flex justify-between items-center shrink-0 border-b border-slate-700">
+                <h3 class="font-bold text-sm flex items-center gap-2"><i class="fa-solid fa-file-invoice text-brand-400 text-lg"></i> Viewer</h3>
+                <div class="flex items-center gap-1.5 bg-slate-800 rounded p-1 border border-slate-600">
+                    <button onclick="window.zoomViewer(0.2)" class="hover:bg-slate-700 p-1.5 px-2.5 rounded text-slate-300 transition" title="Zoom In"><i class="fa-solid fa-magnifying-glass-plus"></i></button>
+                    <button onclick="window.zoomViewer(-0.2)" class="hover:bg-slate-700 p-1.5 px-2.5 rounded text-slate-300 transition" title="Zoom Out"><i class="fa-solid fa-magnifying-glass-minus"></i></button>
+                    <button onclick="window.resetViewer()" class="hover:bg-slate-700 p-1.5 px-3 rounded text-slate-300 transition text-[10px] font-black uppercase tracking-wider">Reset</button>
+                    <div class="w-px h-5 bg-slate-600 mx-1"></div>
+                    <button id="viewer_download_btn" class="hover:bg-slate-700 p-1.5 px-2.5 rounded text-slate-300 transition" title="Download"><i class="fa-solid fa-download"></i></button>
                 </div>
-                <button onclick="window.closeFileViewer()" class="text-white bg-red-600/90 hover:bg-red-500 rounded p-2 px-5 font-black text-sm uppercase tracking-wider transition shadow-md"><i class="fa-solid fa-xmark mr-1.5"></i> Close</button>
+                <button onclick="window.closeFileViewer()" class="text-white bg-red-600 hover:bg-red-500 rounded p-1.5 px-4 font-black text-[10px] uppercase tracking-wider transition shadow-sm"><i class="fa-solid fa-xmark mr-1"></i> Close</button>
             </div>
             <div class="flex-grow overflow-auto flex items-center justify-center p-4 relative" id="file-viewer-container">
                 <div id="file-viewer-content" style="transform: scale(1); transform-origin: center center; transition: transform 0.2s ease;" class="max-w-full max-h-full"></div>
@@ -471,19 +472,19 @@
     </div>
 
     <!-- Camera Modal -->
-    <div id="camera-modal" class="fixed inset-0 bg-slate-900/95 hidden z-[80] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
-        <div class="bg-white rounded-2xl p-5 max-w-lg w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="font-black text-xl text-slate-800">Scan Bill</h3>
-                <button onclick="window.closeCamera()" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-2xl"></i></button>
+    <div id="camera-modal" class="fixed inset-0 bg-slate-900/90 hidden z-[80] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div class="bg-white rounded-xl p-4 max-w-lg w-full mx-4 shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="flex justify-between items-center mb-3">
+                <h3 class="font-black text-base text-slate-800">Scan Bill</h3>
+                <button onclick="window.closeCamera()" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
             </div>
-            <div class="relative bg-black rounded-xl overflow-hidden aspect-[3/4] flex items-center justify-center shadow-inner">
+            <div class="relative bg-black rounded-lg overflow-hidden aspect-[3/4] flex items-center justify-center shadow-inner">
                 <video id="camera-stream" autoplay playsinline class="w-full h-full object-cover"></video>
-                <div class="absolute inset-0 border-4 border-brand-500/50 m-6 rounded-lg pointer-events-none border-dashed"></div>
+                <div class="absolute inset-0 border-2 border-brand-500/50 m-4 rounded pointer-events-none border-dashed"></div>
             </div>
-            <div class="mt-6 flex justify-center gap-4">
-                <button onclick="window.takeSnapshot()" class="bg-brand-600 text-white rounded-full h-16 w-16 flex items-center justify-center hover:bg-brand-700 shadow-xl hover:scale-105 transition-transform">
-                    <i class="fa-solid fa-camera text-2xl"></i>
+            <div class="mt-4 flex justify-center gap-3">
+                <button onclick="window.takeSnapshot()" class="bg-brand-600 text-white rounded-full h-14 w-14 flex items-center justify-center hover:bg-brand-700 shadow-lg hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-camera text-xl"></i>
                 </button>
             </div>
             <canvas id="camera-canvas" class="hidden"></canvas>
@@ -492,18 +493,18 @@
 
     <!-- Alert Modal -->
     <div id="alert-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[100] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
-        <div class="bg-white rounded-2xl p-8 max-w-sm w-full mx-4 shadow-2xl text-center border-t-8 border-brand-500">
-            <div id="alert-icon" class="text-6xl mb-5"></div>
-            <h3 id="alert-title" class="text-2xl font-black text-slate-800 mb-3 tracking-tight"></h3>
-            <p id="alert-message" class="text-base text-slate-600 mb-8 font-medium leading-relaxed"></p>
-            <div class="flex flex-col gap-3">
-                <button id="alert-confirm-btn" class="bg-brand-600 text-white px-6 py-3 rounded-lg font-black uppercase tracking-wider hover:bg-brand-700 transition w-full hidden shadow-lg">Confirm</button>
-                <button id="alert-cancel-btn" onclick="window.closeAlert()" class="bg-slate-100 text-slate-700 px-6 py-3 rounded-lg font-black uppercase tracking-wider hover:bg-slate-200 transition w-full border border-slate-300">Close</button>
+        <div class="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl text-center border-t-4 border-brand-500">
+            <div id="alert-icon" class="text-5xl mb-3"></div>
+            <h3 id="alert-title" class="text-lg font-black text-slate-800 mb-2 tracking-tight"></h3>
+            <p id="alert-message" class="text-xs text-slate-600 mb-5 font-bold leading-relaxed whitespace-pre-line"></p>
+            <div class="flex flex-col gap-2">
+                <button id="alert-confirm-btn" class="bg-brand-600 text-white px-5 py-2.5 rounded font-black uppercase tracking-wider text-xs hover:bg-brand-700 transition w-full hidden shadow-sm">Confirm</button>
+                <button id="alert-cancel-btn" onclick="window.closeAlert()" class="bg-slate-100 text-slate-700 px-5 py-2.5 rounded font-black uppercase tracking-wider text-xs hover:bg-slate-200 transition w-full border border-slate-300">Close</button>
             </div>
         </div>
     </div>
 
-    <!-- Core App Logic -->
+    <!-- Script Application Logic -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -518,12 +519,14 @@
         window.sessionSyncPin = '';
         window.viewerZoomLevel = 1;
 
-        // Auto Model Fallback Array (Tries latest 3.8 first, falls back to stable 3.5, then pro)
+        // Smart Fallback Models Engine
         const GEMINI_MODELS = [
             "gemini-3.8-flash", 
             "gemini-3.5-flash", 
             "gemini-3.1-pro-preview", 
-            "gemini-2.5-flash"
+            "gemini-3.0-flash", 
+            "gemini-2.5-flash",
+            "gemini-1.5-flash"
         ];
 
         const MY_FIREBASE_CONFIG = {
@@ -577,7 +580,6 @@
             });
         }
 
-        // --- STREAMING_CHUNK:UI Interactions & Settings ---
         window.toggleAnalytics = function() {
             const sec = document.getElementById('dashboard_section');
             if (sec.classList.contains('hidden')) {
@@ -585,7 +587,7 @@
                 document.getElementById('btn_toggle_analytics').innerHTML = '<i class="fa-solid fa-chart-line"></i> Hide Analytics';
             } else {
                 sec.classList.add('hidden');
-                document.getElementById('btn_toggle_analytics').innerHTML = '<i class="fa-solid fa-chart-line"></i> View Analytics';
+                document.getElementById('btn_toggle_analytics').innerHTML = '<i class="fa-solid fa-chart-line"></i> Analytics';
             }
         }
 
@@ -624,7 +626,7 @@
 
             window.sessionGeminiKey = geminiKey; window.sessionFirebaseKey = firebaseKey; window.sessionSyncPin = syncPin;
             window.closeApiModal();
-            window.showCustomAlert("Settings Saved", "Your APIs and PIN configuration have been updated securely.", "success");
+            window.showCustomAlert("Settings Saved", "Your configuration has been updated securely.", "success");
             if(firebaseKey || syncPin) initApp();
         }
 
@@ -632,7 +634,6 @@
         function getActiveFirebaseKey() { return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_firebase_key') : window.sessionFirebaseKey) || ''; }
         function getActiveSyncPin() { return (localStorage.getItem('recon_save_keys') !== 'false' ? localStorage.getItem('recon_sync_pin') : window.sessionSyncPin) || ''; }
 
-        // --- STREAMING_CHUNK:Firebase Sync & Data Core ---
         let unsubscribeSnapshot = null;
 
         async function initApp() {
@@ -652,7 +653,6 @@
                         billsCollectionPath = `artifacts/${appId}/users/${userId}/bills`;
                         filesCollectionPath = `artifacts/${appId}/users/${userId}/bill_files`;
                         document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-cloud text-green-600"></i> Cloud Synced';
-                        document.getElementById('alert-modal').classList.add('hidden'); // Clear errors if reconnected
                         setupRealtimeSync();
                     }
                 });
@@ -686,21 +686,38 @@
                 window.updateMonthOptions(); window.renderTable();
             }, (error) => {
                 console.error("Firestore error:", error);
-                window.showCustomAlert("Sync Error", error.message, "error");
             });
         }
 
+        function sanitizeStr(str) { return (str || '').toString().replace(/[^a-zA-Z0-9]/g, '').toUpperCase(); }
+
         function isDuplicate(newBill) {
-            return billsData.some(b => 
-                b.id !== newBill.id &&
-                b.gstin && newBill.gstin && b.gstin.toUpperCase() === newBill.gstin.toUpperCase() &&
-                b.invoiceNumber && newBill.invoiceNumber && b.invoiceNumber.toUpperCase() === newBill.invoiceNumber.toUpperCase() &&
-                Math.abs((Number(b.grossAmount) || 0) - (Number(newBill.grossAmount) || 0)) <= 1.00
-            );
+            const newGst = sanitizeStr(newBill.gstin);
+            const newInv = sanitizeStr(newBill.invoiceNumber);
+            
+            return billsData.some(b => {
+                if (b.id === newBill.id) return false;
+                const existingGst = sanitizeStr(b.gstin);
+                const existingInv = sanitizeStr(b.invoiceNumber);
+                
+                // Strong Match: Perfect GSTIN and Invoice Match
+                if (newGst && existingGst && newInv && existingInv) {
+                    if (newGst === existingGst && newInv === existingInv) return true;
+                }
+                
+                // Fallback Match: If GSTIN missing, but Vendor + Invoice + Amount exactly aligns
+                const newVendor = sanitizeStr(newBill.vendorName);
+                const existingVendor = sanitizeStr(b.vendorName);
+                if (newInv && existingInv && newInv === existingInv && newVendor && existingVendor && (newVendor.includes(existingVendor) || existingVendor.includes(newVendor))) {
+                    if (Math.abs((Number(b.grossAmount) || 0) - (Number(newBill.grossAmount) || 0)) < 2.0) return true;
+                }
+                
+                return false;
+            });
         }
 
         async function saveBillToCloud(bill) {
-            if(isDuplicate(bill)) throw new Error(`Duplicate detected for Bill No: ${bill.invoiceNumber} (GSTIN: ${bill.gstin}). Skipping to maintain data integrity.`);
+            if(isDuplicate(bill)) throw new Error(`Strict Duplicate Check Failed: Inv No ${bill.invoiceNumber} already exists. Skipping.`);
             bill.paidAmount = bill.paidAmount || 0;
             bill.balance = Math.max(0, (Number(bill.grossAmount) || 0) - bill.paidAmount);
             bill.gstr2bStatus = bill.gstr2bStatus || 'Pending';
@@ -723,18 +740,16 @@
             } else await saveLocalFile(id, base64Data, mimeType);
         }
 
-        // --- STREAMING_CHUNK:Filtering & Table Render ---
         let currentQuickFilter = 'all';
         window.setQuickFilter = function(filterType) {
-            if (currentQuickFilter === filterType && filterType !== 'all') currentQuickFilter = 'all';
-            else currentQuickFilter = filterType;
+            currentQuickFilter = (currentQuickFilter === filterType && filterType !== 'all') ? 'all' : filterType;
             
-            // Highlight the active card
-            const cards = document.querySelectorAll('#dashboard_section > div');
-            cards.forEach(c => c.classList.remove('ring-4', 'ring-brand-400', 'shadow-xl'));
-            if(currentQuickFilter === 'all') cards[0].classList.add('ring-4', 'ring-brand-400', 'shadow-xl');
-            if(currentQuickFilter === 'paid') cards[1].classList.add('ring-4', 'ring-brand-400', 'shadow-xl');
-            if(currentQuickFilter === 'unpaid') cards[2].classList.add('ring-4', 'ring-brand-400', 'shadow-xl');
+            const cards = document.querySelectorAll('.filter-card');
+            cards.forEach(c => c.classList.remove('ring-4', 'ring-brand-500', 'ring-emerald-500', 'ring-red-500', 'scale-[1.02]'));
+            
+            if (currentQuickFilter === 'all') document.getElementById('card_all').classList.add('ring-4', 'ring-brand-500', 'scale-[1.02]');
+            else if (currentQuickFilter === 'paid') document.getElementById('card_paid').classList.add('ring-4', 'ring-emerald-500', 'scale-[1.02]');
+            else if (currentQuickFilter === 'unpaid') document.getElementById('card_unpaid').classList.add('ring-4', 'ring-red-500', 'scale-[1.02]');
             
             window.renderTable();
         }
@@ -824,19 +839,19 @@
                     const bal = Number(bill.balance) || 0; const tax = (Number(bill.igst)||0) + (Number(bill.cgst)||0) + (Number(bill.sgst)||0);
                     dashTotals.gross += gross; dashTotals.paid += paid; dashTotals.balance += bal; dashTotals.tax += tax;
                     dashTotals.countAll++;
-                    if (bal === 0 && gross > 0) dashTotals.countPaid++;
+                    if (bal <= 0 && gross > 0) dashTotals.countPaid++;
                     if (bal > 0) dashTotals.countUnpaid++;
                 });
 
                 const fmt = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
-                document.getElementById('dash_total_gross').innerHTML = `${fmt.format(dashTotals.gross)} <span class="text-sm text-slate-400 font-bold ml-1">(${dashTotals.countAll})</span>`;
-                document.getElementById('dash_total_paid').innerHTML = `${fmt.format(dashTotals.paid)} <span class="text-sm text-emerald-400 font-bold ml-1">(${dashTotals.countPaid})</span>`;
-                document.getElementById('dash_total_balance').innerHTML = `${fmt.format(dashTotals.balance)} <span class="text-sm text-red-400 font-bold ml-1">(${dashTotals.countUnpaid})</span>`;
+                document.getElementById('dash_total_gross').innerHTML = `${fmt.format(dashTotals.gross)} <span class="text-[10px] text-brand-600 border border-brand-200 bg-brand-50 px-1.5 py-0.5 rounded ml-1 align-middle">(${dashTotals.countAll})</span>`;
+                document.getElementById('dash_total_paid').innerHTML = `${fmt.format(dashTotals.paid)} <span class="text-[10px] text-emerald-600 border border-emerald-200 bg-emerald-50 px-1.5 py-0.5 rounded ml-1 align-middle">(${dashTotals.countPaid})</span>`;
+                document.getElementById('dash_total_balance').innerHTML = `${fmt.format(dashTotals.balance)} <span class="text-[10px] text-red-600 border border-red-200 bg-red-50 px-1.5 py-0.5 rounded ml-1 align-middle">(${dashTotals.countUnpaid})</span>`;
                 document.getElementById('dash_total_tax').textContent = fmt.format(dashTotals.tax);
 
                 let finalFilteredData = baseFiltered.filter(bill => {
                     const bal = Number(bill.balance) || 0; const gross = Number(bill.grossAmount) || 0;
-                    if (currentQuickFilter === 'paid') return (bal === 0 && gross > 0);
+                    if (currentQuickFilter === 'paid') return (bal <= 0 && gross > 0);
                     if (currentQuickFilter === 'unpaid') return bal > 0;
                     return true;
                 });
@@ -867,45 +882,46 @@
                         t.igst+=Number(bill.igst)||0; t.cgst+=Number(bill.cgst)||0; t.sgst+=Number(bill.sgst)||0;
                         t.paid+=Number(bill.paidAmount)||0; t.balance+=Number(bill.balance)||0;
 
+                        // Restored File Buttons Layout
                         const hasFile = bill.hasFile 
                             ? `<div class="flex flex-col gap-1 items-center justify-center">
-                                 <button onclick="window.viewFile('${bill.id}')" class="text-blue-600 hover:bg-blue-100 p-2 rounded shadow border border-blue-200 bg-blue-50 transition" title="View"><i class="fa-solid fa-image text-lg"></i></button>
-                                 <button onclick="window.initiateReplaceFile('${bill.id}')" class="text-slate-400 hover:text-amber-600 hover:bg-amber-50 px-2 py-0.5 rounded text-[9px] uppercase font-bold tracking-wider border border-transparent hover:border-amber-200 transition">Change</button>
+                                 <button onclick="window.viewFile('${bill.id}')" class="text-blue-600 hover:bg-blue-100 p-1 rounded shadow-sm border border-blue-200 bg-blue-50 transition" title="View"><i class="fa-solid fa-image text-sm"></i></button>
+                                 <button onclick="window.initiateReplaceFile('${bill.id}')" class="text-slate-400 hover:text-amber-600 hover:bg-amber-50 px-1.5 py-0.5 rounded text-[8px] uppercase font-black tracking-wider border border-transparent hover:border-amber-200 transition">Change</button>
                                </div>` 
-                            : `<button onclick="window.initiateReplaceFile('${bill.id}')" class="text-slate-400 hover:text-brand-600 hover:bg-brand-50 p-2 rounded flex flex-col items-center gap-1 border-2 border-dashed border-slate-300 hover:border-brand-300 w-full transition" title="Upload File"><i class="fa-solid fa-file-arrow-up text-lg"></i><span class="text-[9px] uppercase font-bold text-center tracking-wider">Add</span></button>`;
+                            : `<button onclick="window.initiateReplaceFile('${bill.id}')" class="text-slate-400 hover:text-brand-600 hover:bg-brand-50 py-1.5 px-2 rounded flex flex-col items-center gap-1 border-2 border-dashed border-slate-300 hover:border-brand-300 w-full transition" title="Upload File"><i class="fa-solid fa-file-arrow-up text-sm"></i><span class="text-[8px] uppercase font-black text-center tracking-wider">Add</span></button>`;
 
-                        let g2b = `<span class="text-[10px] font-black text-slate-500 bg-slate-100 px-2.5 py-1 rounded uppercase border border-slate-200 tracking-wider">Pending</span>`;
-                        if(bill.gstr2bStatus === 'Matched') g2b = `<span class="text-[10px] font-black text-green-700 bg-green-100 px-2.5 py-1 rounded uppercase border border-green-300 tracking-wider"><i class="fa-solid fa-check"></i> Matched</span>`;
-                        else if(bill.gstr2bStatus === 'Amount Mismatch') g2b = `<span class="text-[10px] font-black text-amber-700 bg-amber-100 px-2.5 py-1 rounded uppercase border border-amber-300 tracking-wider"><i class="fa-solid fa-triangle-exclamation"></i> Mismatch</span>`;
-                        else if(bill.gstr2bStatus === 'Missing in 2B') g2b = `<span class="text-[10px] font-black text-red-700 bg-red-100 px-2.5 py-1 rounded uppercase border border-red-300 tracking-wider"><i class="fa-solid fa-xmark"></i> Missing</span>`;
+                        let g2b = `<span class="text-[9px] font-black text-slate-500 bg-slate-100 px-2 py-0.5 rounded uppercase border border-slate-200 tracking-wider">Pending</span>`;
+                        if(bill.gstr2bStatus === 'Matched') g2b = `<span class="text-[9px] font-black text-green-700 bg-green-100 px-2 py-0.5 rounded uppercase border border-green-300 tracking-wider"><i class="fa-solid fa-check"></i> Matched</span>`;
+                        else if(bill.gstr2bStatus === 'Amount Mismatch') g2b = `<span class="text-[9px] font-black text-amber-700 bg-amber-100 px-2 py-0.5 rounded uppercase border border-amber-300 tracking-wider"><i class="fa-solid fa-triangle-exclamation"></i> Mismatch</span>`;
+                        else if(bill.gstr2bStatus === 'Missing in 2B') g2b = `<span class="text-[9px] font-black text-red-700 bg-red-100 px-2 py-0.5 rounded uppercase border border-red-300 tracking-wider"><i class="fa-solid fa-xmark"></i> Missing</span>`;
 
                         let rowClass = "";
-                        if(bill.balance === 0 && bill.grossAmount > 0) rowClass = "paid-row";
+                        if(bill.balance <= 0 && bill.grossAmount > 0) rowClass = "paid-row";
                         else if(bill.balance > 0) rowClass = "unpaid-row";
 
                         const tr = document.createElement('tr');
                         tr.className = `${rowClass} transition-colors`;
                         tr.innerHTML = `
                             <td class="col-center text-slate-500 font-bold bg-slate-50/50">${index + 1}</td>
-                            <td class="col-center no-print align-middle p-1.5 bg-slate-50/50">${hasFile}</td>
-                            <td class="text-xs text-slate-500 font-bold">${window.formatTimestamp(bill.timestamp)}</td>
-                            <td class="font-mono text-sm font-black text-slate-700">${bill.gstin || '-'}</td>
-                            <td class="font-black text-slate-900 text-sm truncate max-w-[280px]" title="${bill.vendorName || ''}">${bill.vendorName || '-'}</td>
-                            <td class="truncate max-w-[250px]" title="${bill.category || ''}"><span class="text-[10px] font-black text-brand-700 bg-brand-50 uppercase tracking-widest px-2 py-1 rounded border border-brand-200 shadow-sm">${bill.category || 'Uncategorized'}</span></td>
-                            <td class="font-mono text-sm font-black text-slate-800">${bill.invoiceNumber || '-'}</td>
-                            <td class="font-mono text-xs text-slate-700 font-bold">${bill.invoiceDate || '-'}</td>
-                            <td class="col-num font-black text-slate-900 text-base">${(Number(bill.grossAmount)||0).toFixed(2)}</td>
-                            <td class="col-center bg-slate-50 font-black text-slate-600 text-sm border-x-2 border-slate-200/50">${(Number(bill.taxPercent)||0).toFixed(0)}%</td>
+                            <td class="col-center no-print align-middle px-1 py-0.5 bg-slate-50/50">${hasFile}</td>
+                            <td class="text-[10px] text-slate-500 font-bold">${window.formatTimestamp(bill.timestamp)}</td>
+                            <td class="font-mono text-xs font-black text-slate-700">${bill.gstin || '-'}</td>
+                            <td class="font-black text-slate-900 text-xs truncate max-w-[280px]" title="${bill.vendorName || ''}">${bill.vendorName || '-'}</td>
+                            <td class="truncate max-w-[250px]" title="${bill.category || ''}"><span class="text-[9px] font-black text-brand-700 bg-brand-50 uppercase tracking-widest px-1.5 py-0.5 rounded border border-brand-200 shadow-sm">${bill.category || 'Uncategorized'}</span></td>
+                            <td class="font-mono text-xs font-black text-slate-800">${bill.invoiceNumber || '-'}</td>
+                            <td class="font-mono text-[11px] text-slate-700 font-bold">${bill.invoiceDate || '-'}</td>
+                            <td class="col-num font-black text-slate-900 text-sm">${(Number(bill.grossAmount)||0).toFixed(2)}</td>
+                            <td class="col-center bg-slate-50 font-black text-slate-600 text-xs border-x-2 border-slate-200/50">${(Number(bill.taxPercent)||0).toFixed(0)}%</td>
                             <td class="col-num font-bold text-slate-700">${(Number(bill.netTaxableAmount)||0).toFixed(2)}</td>
-                            <td class="col-num text-slate-500 text-xs font-semibold">${(Number(bill.igst)||0).toFixed(2)}</td>
-                            <td class="col-num text-slate-500 text-xs font-semibold">${(Number(bill.cgst)||0).toFixed(2)}</td>
-                            <td class="col-num text-slate-500 text-xs font-semibold">${(Number(bill.sgst)||0).toFixed(2)}</td>
-                            <td class="col-num font-black text-emerald-700 text-base border-l border-slate-200/50">${(Number(bill.paidAmount)||0).toFixed(2)}</td>
-                            <td class="col-num font-black text-red-700 text-base">${(Number(bill.balance)||0).toFixed(2)}</td>
-                            <td class="col-center bg-slate-50/50 border-x-2 border-slate-200/50">${g2b}</td>
-                            <td class="col-center no-print space-x-1.5 bg-slate-50/50">
-                                <button onclick="window.editBill('${bill.id}')" class="text-slate-400 hover:text-brand-600 hover:bg-brand-100 p-2 rounded shadow-sm border border-transparent hover:border-brand-200 transition"><i class="fa-solid fa-pen text-sm"></i></button>
-                                <button onclick="window.confirmDelete('${bill.id}')" class="text-slate-400 hover:text-red-600 hover:bg-red-100 p-2 rounded shadow-sm border border-transparent hover:border-red-200 transition"><i class="fa-solid fa-trash text-sm"></i></button>
+                            <td class="col-num text-slate-500 text-[11px] font-bold">${(Number(bill.igst)||0).toFixed(2)}</td>
+                            <td class="col-num text-slate-500 text-[11px] font-bold">${(Number(bill.cgst)||0).toFixed(2)}</td>
+                            <td class="col-num text-slate-500 text-[11px] font-bold">${(Number(bill.sgst)||0).toFixed(2)}</td>
+                            <td class="col-num font-black text-emerald-700 text-sm border-l-2 border-slate-200/50">${(Number(bill.paidAmount)||0).toFixed(2)}</td>
+                            <td class="col-num font-black text-red-700 text-sm">${(Number(bill.balance)||0).toFixed(2)}</td>
+                            <td class="col-center bg-blue-50/50 border-x-2 border-blue-200/50">${g2b}</td>
+                            <td class="col-center no-print space-x-1 bg-slate-50/50">
+                                <button onclick="window.editBill('${bill.id}')" class="text-slate-400 hover:text-brand-600 hover:bg-brand-100 p-1.5 rounded shadow-sm border border-transparent hover:border-brand-200 transition"><i class="fa-solid fa-pen text-xs"></i></button>
+                                <button onclick="window.confirmDelete('${bill.id}')" class="text-slate-400 hover:text-red-600 hover:bg-red-100 p-1.5 rounded shadow-sm border border-transparent hover:border-red-200 transition"><i class="fa-solid fa-trash text-xs"></i></button>
                             </td>
                         `;
                         tbody.appendChild(tr);
@@ -913,8 +929,8 @@
                 }
                 
                 let modeText = '';
-                if(currentQuickFilter === 'paid') modeText = ' <span class="ml-2 text-emerald-600 border-l border-slate-300 pl-2">(PAID FILTER ACTIVE)</span>';
-                else if(currentQuickFilter === 'unpaid') modeText = ' <span class="ml-2 text-red-600 border-l border-slate-300 pl-2">(OUTSTANDING FILTER ACTIVE)</span>';
+                if(currentQuickFilter === 'paid') modeText = ' <span class="ml-2 text-emerald-600 border-l border-slate-300 pl-2">PAID FILTER ON</span>';
+                else if(currentQuickFilter === 'unpaid') modeText = ' <span class="ml-2 text-red-600 border-l border-slate-300 pl-2">UNPAID FILTER ON</span>';
                 document.getElementById('table_count_badge').innerHTML = `${finalFilteredData.length} Records ${modeText}`;
 
                 document.getElementById('foot_gross').textContent = t.gross.toFixed(2); document.getElementById('foot_net').textContent = t.net.toFixed(2);
@@ -929,7 +945,6 @@
             window.renderTable();
         }
 
-        // --- STREAMING_CHUNK:AI Image Handling & Fallbacks ---
         let replacingBillId = null;
         window.initiateReplaceFile = function(id) { replacingBillId = id; document.getElementById('replace_bill_input').click(); }
 
@@ -1021,25 +1036,59 @@
             updateFileBadge(); window.closeCamera();
         }
 
-        // --- STREAMING_CHUNK:AI Core & Fallback Fetcher ---
         async function fetchWithFallback(payload, dynamicApiKey) {
             const statusText = document.getElementById('ai_model_status');
+            let lastError = null;
+
             for (let i = 0; i < GEMINI_MODELS.length; i++) {
                 const currentModel = GEMINI_MODELS[i];
                 if(statusText) statusText.textContent = `Model: ${currentModel} (${i+1}/${GEMINI_MODELS.length})`;
+                
                 const url = `https://generativelanguage.googleapis.com/v1beta/models/${currentModel}:generateContent?key=${dynamicApiKey}`;
+                
                 try {
-                    const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                    const response = await fetch(url, { 
+                        method: 'POST', 
+                        headers: { 'Content-Type': 'application/json' }, 
+                        body: JSON.stringify(payload) 
+                    });
                     const data = await response.json();
+                    
                     if (data.error) {
-                        if (data.error.code === 429 || data.error.code === 503) { console.warn(`${currentModel} hit limit. Next...`); continue; } 
+                        lastError = data.error.message;
+                        // Skip Unreleased/Not Found (404), Rate Limit (429), Server Busy (503)
+                        if ([400, 403, 404, 429, 500, 503].includes(data.error.code)) { 
+                            console.warn(`${currentModel} error (${data.error.code}). Moving to fallback...`); 
+                            continue; 
+                        } 
                         else throw new Error(data.error.message);
                     }
                     return data; 
                 } catch(e) {
-                    if(i === GEMINI_MODELS.length - 1) throw new Error("All AI models failed or rate limited. Try in 1 min.");
+                    lastError = e.message;
+                    if(i === GEMINI_MODELS.length - 1) {
+                        throw new Error(`All AI models exhausted. Last Error: ${lastError}`);
+                    }
                 }
-            } throw new Error("All AI models exhausted.");
+            } 
+            throw new Error("Failed to connect to AI engines.");
+        }
+
+        // Helper to convert Excel to CSV for AI ingestion safely
+        async function readExcelToCSV(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = (evt) => {
+                    try {
+                        const data = new Uint8Array(evt.target.result);
+                        const workbook = XLSX.read(data, {type: 'array'});
+                        const firstSheetName = workbook.SheetNames[0];
+                        const csvStr = XLSX.utils.sheet_to_csv(workbook.Sheets[firstSheetName]);
+                        resolve(csvStr.substring(0, 250000)); // Cap length securely
+                    } catch(e) { reject(e); }
+                };
+                reader.readAsArrayBuffer(file);
+            });
         }
 
         window.processAI = async function() {
@@ -1050,6 +1099,8 @@
             if (!dynamicApiKey) return window.showCustomAlert("API Key Missing", "Configure Gemini API Key first.", "error");
 
             const loader = document.getElementById('ai_loading_indicator');
+            document.getElementById('ai_loading_title').textContent = "Processing Bills...";
+            document.getElementById('ai_loading_sub').textContent = "Extracting data with AI...";
             loader.classList.remove('hidden'); loader.classList.add('flex');
 
             try {
@@ -1094,7 +1145,6 @@ Math must align (Net+Tax=Gross). Output pure JSON. User text: ${textPrompt}`;
             } finally { loader.classList.add('hidden'); loader.classList.remove('flex'); }
         }
 
-        // --- STREAMING_CHUNK:Payment Scan & Advanced Features ---
         document.getElementById('payment_scan_input').addEventListener('change', async (e) => {
             const file = e.target.files[0]; if(!file) return; e.target.value = '';
             const dynamicApiKey = getActiveGeminiKey();
@@ -1132,59 +1182,96 @@ Math must align (Net+Tax=Gross). Output pure JSON. User text: ${textPrompt}`;
             } finally { document.getElementById('ai_loading_indicator').classList.add('hidden'); document.getElementById('ai_loading_indicator').classList.remove('flex'); }
         });
 
-        // Other Advanced Tools
-        document.getElementById('gstr2b_input').addEventListener('change', (e) => {
+        document.getElementById('gstr2b_input').addEventListener('change', async (e) => {
             const file = e.target.files[0]; if(!file) return; e.target.value = '';
-            const reader = new FileReader();
-            reader.onload = async (evt) => {
-                try {
-                    const rows = XLSX.utils.sheet_to_json(XLSX.read(evt.target.result, {type: 'binary'}).Sheets[XLSX.read(evt.target.result, {type: 'binary'}).SheetNames[0]]);
-                    let matchC = 0, mismatchC = 0, checkC = 0;
-                    rows.forEach(row => {
-                        let keys = Object.keys(row);
-                        let gstin = (row[keys.find(k => k.toLowerCase().includes('gstin'))]||'').toString().trim().toUpperCase();
-                        let invNo = (row[keys.find(k => k.toLowerCase().includes('invoice num') || k.toLowerCase().includes('document det'))]||'').toString().trim();
-                        let amt = parseFloat(row[keys.find(k => k.toLowerCase().includes('invoice val') || k.toLowerCase().includes('gross'))]) || 0;
-                        if(gstin && invNo) {
-                            checkC++; let matched = billsData.find(b => b.gstin === gstin && b.invoiceNumber === invNo);
-                            if(matched) {
-                                if(Math.abs(Number(matched.grossAmount) - amt) <= 1.00) { matched.gstr2bStatus = 'Matched'; matchC++; }
-                                else { matched.gstr2bStatus = 'Amount Mismatch'; mismatchC++; }
-                                saveBillToCloud(matched).catch(()=>{});
-                            }
+            const dynamicApiKey = getActiveGeminiKey();
+            if (!dynamicApiKey) return window.showCustomAlert("API Key Missing", "Configure Gemini API Key.", "error");
+
+            const loader = document.getElementById('ai_loading_indicator');
+            document.getElementById('ai_loading_title').textContent = "Analyzing Govt GSTR-2B...";
+            document.getElementById('ai_loading_sub').textContent = "Extracting valid columns safely...";
+            loader.classList.remove('hidden'); loader.classList.add('flex');
+
+            try {
+                const csvData = await readExcelToCSV(file);
+                
+                const prompt = `You are an expert AI. Extract ONLY valid invoice rows from this messy GSTR-2B data. Ignore title headers/empty rows.
+Extract exactly:
+1. 'gstin' (string)
+2. 'invoiceNumber' (string)
+3. 'invoiceValue' (number)
+Return ONLY JSON: { "rows": [ { "gstin": "...", "invoiceNumber": "...", "invoiceValue": 123 } ] }
+Raw Data:
+${csvData}`;
+
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.1 } };
+                const data = await fetchWithFallback(payload, dynamicApiKey);
+                const result = JSON.parse(data.candidates[0].content.parts[0].text);
+                const aiRows = result.rows || [];
+
+                if (aiRows.length === 0) throw new Error("AI found no invoice data.");
+
+                let matchC = 0, mismatchC = 0;
+                aiRows.forEach(row => {
+                    let gstin = sanitizeStr(row.gstin);
+                    let invNo = sanitizeStr(row.invoiceNumber);
+                    let amt = Number(row.invoiceValue) || 0;
+
+                    if (gstin && invNo) {
+                        let matched = billsData.find(b => sanitizeStr(b.gstin) === gstin && sanitizeStr(b.invoiceNumber) === invNo);
+                        if (matched) {
+                            if (Math.abs(Number(matched.grossAmount) - amt) <= 2.00) { matched.gstr2bStatus = 'Matched'; matchC++; } 
+                            else { matched.gstr2bStatus = 'Amount Mismatch'; mismatchC++; }
+                            saveBillToCloud(matched).catch(()=>{});
                         }
-                    });
-                    billsData.forEach(b => { if(b.gstr2bStatus === 'Pending') { b.gstr2bStatus = 'Missing in 2B'; saveBillToCloud(b).catch(()=>{}); } });
-                    window.showCustomAlert("GSTR-2B Sync", `Checked ${checkC} rows.\nMatched: ${matchC}\nMismatches: ${mismatchC}`, "success");
-                } catch(err) { window.showCustomAlert("Error", "Could not process GSTR-2B file.", "error"); }
-            }; reader.readAsBinaryString(file);
-        });
-
-        document.getElementById('bulk_import_input').addEventListener('change', (e) => {
-            const file = e.target.files[0]; if(!file) return; e.target.value = '';
-            const reader = new FileReader();
-            reader.onload = async (evt) => {
-                try {
-                    const rows = XLSX.utils.sheet_to_json(XLSX.read(evt.target.result, {type: 'binary'}).Sheets[XLSX.read(evt.target.result, {type: 'binary'}).SheetNames[0]]);
-                    let added = 0, skips = 0;
-                    for(let i=0; i<rows.length; i++) {
-                        let row = rows[i]; let keys = Object.keys(row); let g = (k) => { let match = keys.find(x => x.toLowerCase().includes(k)); return match ? row[match] : ''; }
-                        let basic = parseFloat(g('net') || g('taxable')) || 0; let gross = parseFloat(g('gross') || g('total') || g('val')) || 0; if(gross === 0) continue;
-                        let bill = {
-                            id: 'bill_bulk_' + Date.now() + i, gstin: g('gstin').toString().trim().toUpperCase(), vendorName: g('name') || g('vendor') || g('party'),
-                            category: g('cat') || g('item') || 'Bulk Import', invoiceNumber: g('inv') || g('bill').toString(), invoiceDate: g('date'),
-                            grossAmount: gross, taxPercent: parseFloat(g('%') || g('rate')) || 0, netTaxableAmount: basic || gross, 
-                            igst: parseFloat(g('igst')) || 0, cgst: parseFloat(g('cgst')) || 0, sgst: parseFloat(g('sgst')) || 0,
-                            hasFile: false, timestamp: Date.now(), paidAmount: 0, balance: gross, gstr2bStatus: 'Pending'
-                        };
-                        if(!isDuplicate(bill)) { await saveBillToCloud(bill); added++; } else skips++;
                     }
-                    window.showCustomAlert("Import Complete", `Added ${added}. Skipped ${skips} duplicates.`, "success");
-                } catch(err) { window.showCustomAlert("Error", "Failed to import.", "error"); }
-            }; reader.readAsBinaryString(file);
+                });
+
+                billsData.forEach(b => {
+                    if(b.gstr2bStatus === 'Pending') { b.gstr2bStatus = 'Missing in 2B'; saveBillToCloud(b).catch(()=>{}); }
+                });
+
+                window.showCustomAlert("GSTR-2B Sync Complete", `Analyzed ${aiRows.length} rows.\nMatched: ${matchC}\nMismatches: ${mismatchC}`, "success");
+            } catch(err) { window.showCustomAlert("Error", err.message, "error"); 
+            } finally { loader.classList.add('hidden'); loader.classList.remove('flex'); }
         });
 
-        // --- STREAMING_CHUNK:Manual Forms & Document Viewer ---
+        document.getElementById('bulk_import_input').addEventListener('change', async (e) => {
+            const file = e.target.files[0]; if(!file) return; e.target.value = '';
+            const dynamicApiKey = getActiveGeminiKey();
+            if (!dynamicApiKey) return window.showCustomAlert("API Key Missing", "Configure API Key.", "error");
+
+            const loader = document.getElementById('ai_loading_indicator');
+            document.getElementById('ai_loading_title').textContent = "AI Bulk Import...";
+            document.getElementById('ai_loading_sub').textContent = "Structuring messy Excel columns...";
+            loader.classList.remove('hidden'); loader.classList.add('flex');
+            
+            try {
+                const csvData = await readExcelToCSV(file);
+                const prompt = `Extract valid bills from this messy Excel/CSV. Return JSON { "bills": [ {...} ] }. Exact keys required: 'gstin', 'vendorName', 'category' (meaningful item name), 'invoiceNumber', 'invoiceDate' (DD/MM/YYYY), 'grossAmount', 'taxPercent', 'netTaxableAmount', 'igst', 'cgst', 'sgst'.
+Data:
+${csvData}`;
+
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.1 } };
+                const data = await fetchWithFallback(payload, dynamicApiKey);
+                const result = JSON.parse(data.candidates[0].content.parts[0].text);
+                const aiBills = result.bills || [];
+
+                let added = 0, skips = 0;
+                for(let i=0; i < aiBills.length; i++) {
+                    let bill = aiBills[i];
+                    bill.id = 'bill_bulk_' + Date.now() + '_' + i;
+                    bill.hasFile = false; bill.timestamp = Date.now(); bill.paidAmount = 0;
+                    bill.grossAmount = Number(bill.grossAmount) || 0; bill.balance = bill.grossAmount;
+                    bill.gstr2bStatus = 'Pending';
+                    if (bill.grossAmount === 0) continue; 
+                    try { await saveBillToCloud(bill); added++; } catch(e) { skips++; }
+                }
+                window.showCustomAlert("Import Complete", `Added ${added} entries. Skipped ${skips} exact duplicates.`, "success");
+            } catch(err) { window.showCustomAlert("Error", err.message, "error"); 
+            } finally { loader.classList.add('hidden'); loader.classList.remove('flex'); }
+        });
+
         window.openManualEntry = function() {
             document.getElementById('man_modal_title').textContent = "Manual Bill Entry"; document.getElementById('man_editing_id').value = '';
             document.querySelectorAll('#manual-modal input:not([type="radio"])').forEach(el => el.value = '');
@@ -1254,8 +1341,8 @@ Math must align (Net+Tax=Gross). Output pure JSON. User text: ${textPrompt}`;
                 if (fileData) {
                     const src = `data:${fileData.mimeType};base64,${fileData.data}`;
                     document.getElementById('viewer_download_btn').onclick = () => { const ext = fileData.mimeType.split('/')[1] || 'jpeg'; downloadFileUrl(src, `Document_${id}.${ext}`); };
-                    if (fileData.mimeType.startsWith('image/')) contentDiv.innerHTML = `<img src="${src}" class="max-w-full h-auto object-contain border-4 border-slate-700 shadow-2xl bg-white rounded-md">`;
-                    else if (fileData.mimeType === 'application/pdf') contentDiv.innerHTML = `<iframe src="${src}" class="w-[85vw] h-[85vh] border-0 bg-white shadow-2xl rounded-md"></iframe>`;
+                    if (fileData.mimeType.startsWith('image/')) contentDiv.innerHTML = `<img src="${src}" class="max-w-full h-auto object-contain border-4 border-slate-700 shadow-2xl bg-white rounded">`;
+                    else if (fileData.mimeType === 'application/pdf') contentDiv.innerHTML = `<iframe src="${src}" class="w-[85vw] h-[85vh] border-0 bg-white shadow-2xl rounded"></iframe>`;
                 } else {
                     contentDiv.innerHTML = `<div class="text-center text-slate-500"><i class="fa-solid fa-file-circle-xmark text-6xl mb-4 text-slate-600"></i><p class="font-bold">File missing or deleted.</p></div>`;
                     document.getElementById('viewer_download_btn').onclick = null;
@@ -1270,19 +1357,43 @@ Math must align (Net+Tax=Gross). Output pure JSON. User text: ${textPrompt}`;
             if (billsData.length === 0) return window.showCustomAlert("Empty", "No data to export.", "info");
             const format = document.getElementById('export_format').value;
             const headers = ["Sr.", "ADDED", "GSTIN", "VENDOR NAME", "CATEGORY", "INV NO", "DATE", "GROSS", "% TAX", "NET", "IGST", "CGST", "SGST", "PAID", "BALANCE", "2B STATUS"];
+            
             let t = { gross: 0, net: 0, igst: 0, cgst: 0, sgst: 0, paid: 0, balance: 0 };
             const exportRows = billsData.map((b, i) => {
-                t.gross+=Number(b.grossAmount)||0; t.net+=Number(b.netTaxableAmount)||0; t.igst+=Number(b.igst)||0; t.cgst+=Number(b.cgst)||0; t.sgst+=Number(b.sgst)||0; t.paid+=Number(b.paidAmount)||0; t.balance+=Number(b.balance)||0;
-                return [i + 1, window.formatTimestamp(b.timestamp), b.gstin || '', b.vendorName || '', b.category || '', b.invoiceNumber || '', b.invoiceDate || '', (Number(b.grossAmount)||0).toFixed(2), (Number(b.taxPercent)||0)+'%', (Number(b.netTaxableAmount)||0).toFixed(2), (Number(b.igst)||0).toFixed(2), (Number(b.cgst)||0).toFixed(2), (Number(b.sgst)||0).toFixed(2), (Number(b.paidAmount)||0).toFixed(2), (Number(b.balance)||0).toFixed(2), b.gstr2bStatus || 'Pending'];
+                t.gross+=Number(b.grossAmount)||0; t.net+=Number(b.netTaxableAmount)||0;
+                t.igst+=Number(b.igst)||0; t.cgst+=Number(b.cgst)||0; t.sgst+=Number(b.sgst)||0;
+                t.paid+=Number(b.paidAmount)||0; t.balance+=Number(b.balance)||0;
+                
+                return [
+                    i + 1, window.formatTimestamp(b.timestamp), b.gstin || '', b.vendorName || '', b.category || '', b.invoiceNumber || '', b.invoiceDate || '',
+                    (Number(b.grossAmount)||0).toFixed(2), (Number(b.taxPercent)||0)+'%', (Number(b.netTaxableAmount)||0).toFixed(2),
+                    (Number(b.igst)||0).toFixed(2), (Number(b.cgst)||0).toFixed(2), (Number(b.sgst)||0).toFixed(2),
+                    (Number(b.paidAmount)||0).toFixed(2), (Number(b.balance)||0).toFixed(2), b.gstr2bStatus || 'Pending'
+                ];
             });
+
             exportRows.push(["", "", "", "", "", "", "TOTALS:", t.gross.toFixed(2), "", t.net.toFixed(2), t.igst.toFixed(2), t.cgst.toFixed(2), t.sgst.toFixed(2), t.paid.toFixed(2), t.balance.toFixed(2), ""]);
+
             const fileName = `PurchaseRecon_Export_${Date.now()}`;
+
             if (format === 'pdf') {
                 const { jsPDF } = window.jspdf; const doc = new jsPDF('l', 'pt', 'a4'); doc.text("Purchase Bills Directory", 40, 40);
                 doc.autoTable({ head: [headers], body: exportRows, startY: 60, styles: { fontSize: 7 }, headStyles: { fillColor: [2, 132, 199] }, footStyles: { fillColor: [241, 245, 249], textColor: [15, 23, 42], fontStyle: 'bold' }, willDrawCell: function(data) { if(data.row.index === exportRows.length - 1) { doc.setFillColor(241, 245, 249); doc.setTextColor(0,0,0); doc.setFont(undefined, 'bold'); } } });
                 doc.save(`${fileName}.pdf`);
             } else if (format === 'xlsx') {
                 const ws = XLSX.utils.aoa_to_sheet([headers, ...exportRows]); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Data"); XLSX.writeFile(wb, `${fileName}.xlsx`);
+            } else if (format === 'csv') {
+                let csv = headers.join(",") + "\n";
+                exportRows.forEach(row => { csv += row.map(c => `"${c}"`).join(",") + "\n"; });
+                downloadFileUrl(URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })), `${fileName}.csv`);
+            } else if (format === 'json') {
+                const dataStr = JSON.stringify(billsData, null, 2);
+                downloadFileUrl(URL.createObjectURL(new Blob([dataStr], { type: 'application/json;charset=utf-8;' })), `${fileName}.json`);
+            } else if (format === 'html') {
+                let htmlContent = `<!DOCTYPE html><html><head><title>Export</title><style>table{border-collapse:collapse;width:100%;font-family:sans-serif;}th,td{border:1px solid #ddd;padding:8px;text-align:left;}th{background-color:#f2f2f2;} .totals{font-weight:bold;background-color:#f9f9f9;}</style></head><body><h2>Purchase Bills Directory Export</h2><table><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+                exportRows.forEach(row => { htmlContent += `<tr>${row.map(c=>`<td>${c}</td>`).join('')}</tr>`; });
+                htmlContent += `</tbody></table></body></html>`;
+                downloadFileUrl(URL.createObjectURL(new Blob([htmlContent], { type: 'text/html;charset=utf-8;' })), `${fileName}.html`);
             }
         }
 
