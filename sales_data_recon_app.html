@@ -194,7 +194,7 @@
                         <i class="fa-solid fa-receipt text-emerald-600 text-xs"></i> Scan Receipt
                     </button>
                     
-                    <input type="file" id="gstr_input" accept=".xlsx, .xls, .csv" class="hidden">
+                    <input type="file" id="gstr_input" accept=".xlsx, .xls, .csv, .pdf, image/*" class="hidden">
                     <button onclick="document.getElementById('gstr_input').click()" class="bg-white border border-blue-300 text-blue-800 hover:bg-blue-50 p-2 rounded text-[10px] font-black uppercase tracking-wider shadow-sm flex items-center justify-center gap-1.5 transition">
                         <i class="fa-solid fa-file-excel text-blue-600 text-xs"></i> GSTR-1 Sync
                     </button>
@@ -308,7 +308,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="7" class="text-right py-2.5 pr-4 uppercase tracking-widest text-[10px]">Filtered Total</td>
+                            <td colspan="8" class="text-right py-2.5 pr-4 uppercase tracking-widest text-[10px]">Filtered Total</td>
                             <td class="col-num py-2.5 text-brand-800 text-sm font-black" id="foot_gross">0.00</td>
                             <td class="bg-slate-200 border-x-2 border-slate-300"></td>
                             <td class="col-num py-2.5 font-bold" id="foot_net">0.00</td>
@@ -543,6 +543,7 @@
 
         let salesData = [];
         window.pendingFiles = []; 
+        window.currentFilteredData = [];
         let sortConfig = { key: 'timestamp', direction: 'desc' };
         
         window.sessionGeminiKey = '';
@@ -923,6 +924,8 @@
                         return 0;
                     });
                 }
+
+                window.currentFilteredData = finalFilteredData;
 
                 let t = { gross: 0, net: 0, igst: 0, cgst: 0, sgst: 0, tds: 0, paid: 0, balance: 0 };
                 if (finalFilteredData.length === 0) {
@@ -1354,49 +1357,132 @@ Math must align (Net+Tax=Gross). Output pure JSON. User text: ${textPrompt}`;
 
             const loader = document.getElementById('ai_loading_indicator');
             document.getElementById('ai_loading_title').textContent = "Analyzing Govt GSTR-1...";
-            document.getElementById('ai_loading_sub').textContent = "Extracting valid columns safely...";
-            loader.classList.remove('hidden'); loader.classList.add('flex');
-
+            
             try {
-                const csvData = await readExcelToCSV(file);
-                
-                const prompt = `You are an expert AI. Extract ONLY valid invoice rows from this messy GSTR-1 sales data (could be B2B, B2C, or custom portal formats). Map columns intelligently. Ignore title headers/empty rows.
-Extract exactly:
-1. 'gstin' (string, if available)
-2. 'invoiceNumber' (string, critical)
-3. 'invoiceValue' (number, representing total gross amount)
-Return ONLY JSON: { "rows": [ { "gstin": "...", "invoiceNumber": "...", "invoiceValue": 123 } ] }
-Raw Data:
-${csvData}`;
+                if (file.name.toLowerCase().endsWith('.pdf') || file.type.startsWith('image/')) {
+                    document.getElementById('ai_loading_sub').textContent = "Extracting Summary Totals...";
+                    loader.classList.remove('hidden'); loader.classList.add('flex');
+                    
+                    const b64 = await fileToBase64(file);
+                    const prompt = `Extract the total sales summary from this GSTR-1 return document (specifically look for Table 4A - Taxable outward supplies made to registered persons). 
+                    Return EXACTLY this JSON format and nothing else:
+                    { "returnPeriod": "Month Year", "totalTaxableValue": number, "totalCGST": number, "totalSGST": number, "totalIGST": number }`;
 
-                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.1 } };
-                const data = await fetchWithFallback(payload, dynamicApiKey);
-                const result = JSON.parse(data.candidates[0].content.parts[0].text);
-                const aiRows = result.rows || [];
+                    const payload = { 
+                        contents: [{ role: "user", parts: [{ text: prompt }, { inlineData: { mimeType: file.type || 'application/pdf', data: b64 } }] }], 
+                        generationConfig: { responseMimeType: "application/json", temperature: 0.1 } 
+                    };
+                    
+                    const data = await fetchWithFallback(payload, dynamicApiKey);
+                    const result = JSON.parse(data.candidates[0].content.parts[0].text);
+                    
+                    const tNetEl = document.getElementById('foot_net');
+                    const tCgstEl = document.getElementById('foot_cgst');
+                    const tSgstEl = document.getElementById('foot_sgst');
+                    
+                    const appNet = parseFloat((tNetEl.textContent||'0').replace(/,/g, '')) || 0;
+                    const appCgst = parseFloat((tCgstEl.textContent||'0').replace(/,/g, '')) || 0;
+                    const appSgst = parseFloat((tSgstEl.textContent||'0').replace(/,/g, '')) || 0;
 
-                if (aiRows.length === 0) throw new Error("AI found no invoice data.");
-
-                let matchC = 0, mismatchC = 0;
-                aiRows.forEach(row => {
-                    let gstin = sanitizeStr(row.gstin);
-                    let invNo = sanitizeStr(row.invoiceNumber);
-                    let amt = Number(row.invoiceValue) || 0;
-
-                    if (gstin && invNo) {
-                        let matched = salesData.find(b => sanitizeStr(b.gstin) === gstin && sanitizeStr(b.invoiceNumber) === invNo);
-                        if (matched) {
-                            if (Math.abs(Number(matched.grossAmount) - amt) <= 2.00) { matched.gstr2bStatus = 'Matched'; matchC++; } 
-                            else { matched.gstr2bStatus = 'Amount Mismatch'; mismatchC++; }
-                            saveInvoiceToCloud(matched).catch(()=>{});
+                    const pdfNet = result.totalTaxableValue || 0;
+                    const pdfCgst = result.totalCGST || 0;
+                    const pdfSgst = result.totalSGST || 0;
+                    
+                    const isMatch = Math.abs(appNet - pdfNet) < 5.0; // 5 rupee tolerance for rounding
+                    
+                    let msg = `Period: ${result.returnPeriod || 'Unknown'}\n\n`;
+                    msg += `📊 GOVT GSTR-1 PDF TOTALS:\nTaxable: ₹${pdfNet.toFixed(2)}\nCGST: ₹${pdfCgst.toFixed(2)}\nSGST: ₹${pdfSgst.toFixed(2)}\n\n`;
+                    msg += `💻 YOUR FILTERED TOOL TOTALS:\nTaxable: ₹${appNet.toFixed(2)}\nCGST: ₹${appCgst.toFixed(2)}\nSGST: ₹${appSgst.toFixed(2)}\n\n`;
+                    
+                    if (isMatch) {
+                        msg += `✅ STATUS: MATCHED!\nYour entered data aligns perfectly with the Govt return.`;
+                        window.showCustomAlert("GSTR-1 Summary Validation", msg, "success");
+                        
+                        // Automatically update the status of all currently filtered invoices to "Matched"
+                        const searchTerm = document.getElementById('search_input').value.toLowerCase();
+                        const fyFilter = document.getElementById('fy_filter').value;
+                        const monthFilter = document.getElementById('month_filter').value;
+                        const categoryFilter = document.getElementById('category_filter').value;
+                        
+                        let offlineUpdate = false;
+                        salesData.forEach(invoice => {
+                            const searchString = Object.values(invoice).join(' ').toLowerCase();
+                            const matchesSearch = searchString.includes(searchTerm);
+                            const invFY = window.getFY(invoice.invoiceDate);
+                            const matchesFY = (fyFilter === 'all') || (invFY === fyFilter);
+                            let matchesMonth = true;
+                            if (monthFilter !== 'all' && invoice.invoiceDate) {
+                                const parts = invoice.invoiceDate.split('/');
+                                if (parts.length === 3) matchesMonth = (fyFilter === 'all') ? (parts[1] === monthFilter) : (`${parts[1]}-${parts[2]}` === monthFilter);
+                                else matchesMonth = false;
+                            }
+                            const cat = invoice.category || 'Uncategorized';
+                            const matchesCat = (categoryFilter === 'all') || (cat === categoryFilter);
+                            
+                            // If this invoice is part of the currently filtered view, mark it as matched
+                            if (matchesSearch && matchesFY && matchesMonth && matchesCat) {
+                                invoice.gstr2bStatus = 'Matched';
+                                if (db && userId) {
+                                    setDoc(doc(db, salesCollectionPath, invoice.id), invoice).catch(()=>{});
+                                } else {
+                                    offlineUpdate = true;
+                                }
+                            }
+                        });
+                        
+                        // Force a table re-render if we are in local offline mode
+                        if (offlineUpdate) {
+                            localStorage.setItem('smart_recon_sales', JSON.stringify(salesData));
+                            window.renderTable();
                         }
+                        
+                    } else {
+                        msg += `❌ STATUS: MISMATCH!\nEnsure you have filtered the directory to match the exact month of the GSTR-1 return, or check for missing/extra invoices. Note: This PDF only verifies totals, not line-by-line.`;
+                        window.showCustomAlert("GSTR-1 Summary Mismatch", msg, "error");
                     }
-                });
+                } else {
+                    document.getElementById('ai_loading_sub').textContent = "Extracting valid columns safely...";
+                    loader.classList.remove('hidden'); loader.classList.add('flex');
+                    
+                    const csvData = await readExcelToCSV(file);
+                    const prompt = `You are an expert AI. Extract ONLY valid invoice rows from this messy GSTR-1 sales data (could be B2B, B2C, or custom portal formats). Map columns intelligently. Ignore title headers/empty rows.
+    Extract exactly:
+    1. 'gstin' (string, if available)
+    2. 'invoiceNumber' (string, critical)
+    3. 'invoiceValue' (number, representing total gross amount)
+    Return ONLY JSON: { "rows": [ { "gstin": "...", "invoiceNumber": "...", "invoiceValue": 123 } ] }
+    Raw Data:
+    ${csvData}`;
 
-                salesData.forEach(b => {
-                    if(b.gstr2bStatus === 'Pending') { b.gstr2bStatus = 'Missing in 2B'; saveInvoiceToCloud(b).catch(()=>{}); }
-                });
+                    const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }], generationConfig: { responseMimeType: "application/json", temperature: 0.1 } };
+                    const data = await fetchWithFallback(payload, dynamicApiKey);
+                    const result = JSON.parse(data.candidates[0].content.parts[0].text);
+                    const aiRows = result.rows || [];
 
-                window.showCustomAlert("GSTR-1 Sync Complete", `Analyzed ${aiRows.length} rows.\nMatched: ${matchC}\nMismatches: ${mismatchC}`, "success");
+                    if (aiRows.length === 0) throw new Error("AI found no invoice data.");
+
+                    let matchC = 0, mismatchC = 0;
+                    aiRows.forEach(row => {
+                        let gstin = sanitizeStr(row.gstin);
+                        let invNo = sanitizeStr(row.invoiceNumber);
+                        let amt = Number(row.invoiceValue) || 0;
+
+                        if (gstin && invNo) {
+                            let matched = salesData.find(b => sanitizeStr(b.gstin) === gstin && sanitizeStr(b.invoiceNumber) === invNo);
+                            if (matched) {
+                                if (Math.abs(Number(matched.grossAmount) - amt) <= 2.00) { matched.gstr2bStatus = 'Matched'; matchC++; } 
+                                else { matched.gstr2bStatus = 'Amount Mismatch'; mismatchC++; }
+                                saveInvoiceToCloud(matched).catch(()=>{});
+                            }
+                        }
+                    });
+
+                    salesData.forEach(b => {
+                        if(b.gstr2bStatus === 'Pending') { b.gstr2bStatus = 'Missing in 2B'; saveInvoiceToCloud(b).catch(()=>{}); }
+                    });
+
+                    window.showCustomAlert("GSTR-1 Sync Complete", `Analyzed ${aiRows.length} rows.\nMatched: ${matchC}\nMismatches: ${mismatchC}`, "success");
+                }
             } catch(err) { window.showCustomAlert("Error", err.message, "error"); 
             } finally { loader.classList.add('hidden'); loader.classList.remove('flex'); }
         });
@@ -1539,12 +1625,12 @@ ${csvData}`;
         window.closeFileViewer = function() { document.getElementById('file-viewer-modal').classList.add('opacity-0'); setTimeout(() => { document.getElementById('file-viewer-modal').classList.add('hidden'); document.getElementById('file-viewer-content').innerHTML = ''; }, 300); }
 
         window.exportData = function() {
-            if (salesData.length === 0) return window.showCustomAlert("Empty", "No data to export.", "info");
+            if (!window.currentFilteredData || window.currentFilteredData.length === 0) return window.showCustomAlert("Empty", "No filtered data available to export.", "info");
             const format = document.getElementById('export_format').value;
             const headers = ["Sr.", "ADDED", "INV NO", "GSTIN", "CUSTOMER NAME", "CATEGORY", "DATE", "GROSS", "% TAX", "NET", "IGST", "CGST", "SGST", "TDS", "RECEIVED", "BALANCE", "GSTR-1 STATUS"];
             
             let t = { gross: 0, net: 0, igst: 0, cgst: 0, sgst: 0, tds: 0, paid: 0, balance: 0 };
-            const exportRows = salesData.map((b, i) => {
+            const exportRows = window.currentFilteredData.map((b, i) => {
                 t.gross+=Number(b.grossAmount)||0; t.net+=Number(b.netTaxableAmount)||0;
                 t.igst+=Number(b.igst)||0; t.cgst+=Number(b.cgst)||0; t.sgst+=Number(b.sgst)||0;
                 t.tds+=Number(b.tdsAmount)||0; t.paid+=Number(b.paidAmount)||0; t.balance+=Number(b.balance)||0;
