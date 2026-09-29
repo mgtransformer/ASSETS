@@ -78,6 +78,10 @@
         @keyframes scan { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
         .modal-backdrop { backdrop-filter: blur(4px); }
 
+        /* Chat Specific Styles */
+        .chat-bubble-ai { background-color: #f1f5f9; border: 1px solid #e2e8f0; color: #1e293b; border-radius: 12px 12px 12px 0; }
+        .chat-bubble-user { background-color: #4f46e5; color: white; border-radius: 12px 12px 0 12px; }
+
         @media print {
             body { overflow: visible !important; }
             header, .glass-panel, .no-print, .modal-backdrop, #dashboard_section { display: none !important; }
@@ -94,7 +98,7 @@
 
 <body class="min-h-screen flex flex-col bg-slate-100 font-sans text-slate-800">
 
-    <header class="bg-white border-b border-slate-200 shrink-0 shadow-sm z-50 h-[60px] flex items-center justify-between px-3 sm:px-6">
+    <header class="bg-white border-b border-slate-200 shrink-0 shadow-sm z-40 h-[60px] flex items-center justify-between px-3 sm:px-6">
         <div class="flex items-center gap-4">
             <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG Transformer" class="h-10 sm:h-12 w-auto max-w-[220px] object-contain drop-shadow-sm no-print">
             
@@ -536,6 +540,89 @@
         </div>
     </div>
 
+    <!-- Payment Resolution Chat Modal -->
+    <div id="payment-chat-modal" class="fixed inset-0 bg-slate-900/90 hidden z-[120] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl w-full max-w-4xl h-[90vh] mx-4 flex flex-col overflow-hidden border border-slate-300">
+            <div class="p-3 bg-slate-800 text-white flex justify-between items-center shrink-0 border-b border-slate-700">
+                <div>
+                    <h3 class="font-black text-base flex items-center gap-2"><i class="fa-solid fa-robot text-emerald-400"></i> Payment Reconciliation Assistant</h3>
+                    <p class="text-[10px] text-slate-300 font-bold tracking-wide mt-0.5">Analyze complex payments, specific TDS deductions, & multi-invoices.</p>
+                </div>
+                <button onclick="window.closePaymentChat()" class="text-slate-400 hover:text-red-400 transition bg-slate-700/50 hover:bg-slate-700 rounded-full h-8 w-8 flex items-center justify-center"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="flex flex-col md:flex-row flex-grow overflow-hidden bg-slate-50">
+                <div class="flex flex-col w-full md:w-3/5 h-full border-r border-slate-200">
+                    <div id="payment-chat-history" class="flex-grow overflow-y-auto p-4 space-y-4 bg-white relative">
+                        <!-- Chat bubbles injected here -->
+                    </div>
+                    <div class="p-3 bg-slate-100 border-t border-slate-200 shrink-0">
+                        <div class="flex gap-2">
+                            <input type="text" id="payment_chat_input" onkeypress="if(event.key==='Enter') window.sendPaymentChatMessage()" placeholder="E.g., 'This is for invoice 3 and 4, they deducted 2% TDS on basic'" class="flex-grow border-2 border-slate-300 rounded-lg p-2.5 text-sm font-bold focus:border-emerald-500 outline-none shadow-inner placeholder-slate-400">
+                            <button id="payment_chat_send_btn" onclick="window.sendPaymentChatMessage()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 rounded-lg font-black uppercase tracking-wider text-xs shadow-md transition flex items-center gap-2">
+                                Send <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-2/5 h-full flex flex-col bg-slate-50">
+                    <div class="p-3 bg-indigo-50 border-b border-indigo-100 shrink-0">
+                        <h4 class="text-xs font-black text-indigo-900 uppercase tracking-widest flex items-center gap-1.5"><i class="fa-solid fa-sitemap text-indigo-500"></i> Proposed Distribution</h4>
+                    </div>
+                    <div class="flex-grow overflow-y-auto p-3" id="payment-proposals-container">
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 opacity-50">
+                            <i class="fa-solid fa-file-invoice text-4xl mb-2"></i>
+                            <p class="text-xs font-bold text-center">Waiting for AI to propose<br>invoice mapping...</p>
+                        </div>
+                    </div>
+                    <div class="p-4 bg-white border-t border-slate-200 shrink-0">
+                        <button id="btn_apply_proposals" onclick="window.applyPaymentProposals()" disabled class="w-full bg-slate-300 text-slate-500 px-4 py-3 rounded-lg font-black uppercase tracking-wider text-sm transition shadow-sm flex justify-center items-center gap-2 cursor-not-allowed">
+                            <i class="fa-solid fa-check-double"></i> Confirm & Apply Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment History Modal -->
+    <div id="payment-history-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[115] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 flex flex-col max-h-[85vh]">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center bg-slate-50 rounded-t-xl">
+                <div>
+                    <h3 class="font-black text-base text-slate-800"><i class="fa-solid fa-file-invoice-dollar text-emerald-600 mr-2"></i> Payment History Ledger</h3>
+                    <p class="text-[10px] text-slate-500 font-bold tracking-wide mt-0.5">Inv: <span id="ph_inv_no" class="text-slate-800 font-black"></span> | <span id="ph_cust_name"></span></p>
+                </div>
+                <button onclick="window.closePaymentHistory()" class="text-slate-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+            </div>
+            
+            <div class="p-0 overflow-y-auto flex-grow bg-white">
+                <table class="w-full text-left border-collapse">
+                    <thead class="bg-slate-100 border-b-2 border-slate-200 sticky top-0">
+                        <tr>
+                            <th class="p-2 text-[10px] uppercase font-black text-slate-600">Date</th>
+                            <th class="p-2 text-[10px] uppercase font-black text-slate-600">Ref / UTR</th>
+                            <th class="p-2 text-[10px] uppercase font-black text-slate-600 text-right">Received</th>
+                            <th class="p-2 text-[10px] uppercase font-black text-slate-600 text-right">TDS App.</th>
+                            <th class="p-2 text-[10px] uppercase font-black text-slate-600">Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ph_table_body">
+                        <!-- History rows injected here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-3 border-t border-slate-200 bg-slate-50 rounded-b-xl flex justify-end gap-2 shrink-0">
+                <button onclick="window.closePaymentHistory()" class="px-5 py-1.5 rounded text-xs font-bold text-slate-600 hover:bg-slate-200 transition">Close</button>
+                <button id="ph_download_btn" class="px-5 py-1.5 rounded text-xs font-black text-white bg-brand-600 hover:bg-brand-700 shadow-md transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-pdf"></i> Download Receipt PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -550,6 +637,10 @@
         window.sessionFirebaseKey = '';
         window.sessionSyncPin = '';
         window.viewerZoomLevel = 1;
+
+        // Payment Chat State
+        window.currentPaymentChatHistory = [];
+        window.currentPaymentProposals = [];
 
         // Smart Fallback Models Engine
         const GEMINI_MODELS = [
@@ -978,7 +1069,8 @@
                             <td class="col-num font-black text-red-700 text-sm">${(Number(invoice.balance)||0).toFixed(2)}</td>
                             <td class="col-center bg-blue-50/50 border-x-2 border-blue-200/50">${g2b}</td>
                             <td class="col-center no-print space-x-1 bg-slate-50/50">
-                                ${invoice.paidAmount > 0 || invoice.tdsAmount > 0 ? `<button onclick="window.resetPayment('${invoice.id}')" class="text-slate-400 hover:text-amber-600 hover:bg-amber-100 p-1.5 rounded shadow-sm border border-transparent hover:border-amber-200 transition" title="Clear Payments"><i class="fa-solid fa-rotate-left text-xs"></i></button>` : ''}
+                                ${invoice.paidAmount > 0 || invoice.tdsAmount > 0 ? `<button onclick="window.viewPaymentHistory('${invoice.id}')" class="text-emerald-500 hover:text-emerald-700 hover:bg-emerald-100 p-1.5 rounded shadow-sm border border-transparent hover:border-emerald-200 transition" title="View Payment Details"><i class="fa-solid fa-indian-rupee-sign text-xs"></i></button>
+                                <button onclick="window.resetPayment('${invoice.id}')" class="text-slate-400 hover:text-amber-600 hover:bg-amber-100 p-1.5 rounded shadow-sm border border-transparent hover:border-amber-200 transition" title="Clear Payments"><i class="fa-solid fa-rotate-left text-xs"></i></button>` : ''}
                                 <button onclick="window.editInvoice('${invoice.id}')" class="text-slate-400 hover:text-brand-600 hover:bg-brand-100 p-1.5 rounded shadow-sm border border-transparent hover:border-brand-200 transition" title="Edit"><i class="fa-solid fa-pen text-xs"></i></button>
                                 <button onclick="window.confirmDelete('${invoice.id}')" class="text-slate-400 hover:text-red-600 hover:bg-red-100 p-1.5 rounded shadow-sm border border-transparent hover:border-red-200 transition" title="Delete"><i class="fa-solid fa-trash text-xs"></i></button>
                             </td>
@@ -1074,6 +1166,40 @@
             else { badge.classList.add('hidden'); badge.classList.remove('inline-flex'); }
         }
         window.clearFiles = function() { window.pendingFiles = []; document.getElementById('file_input').value = ''; updateFileBadge(); }
+
+        const PAYMENT_SYSTEM_PROMPT = `You are a sophisticated Accounts Receivable AI Assistant helping a user reconcile a payment receipt.
+You must analyze the user's input/image and map it to the provided list of PENDING INVOICES.
+
+Rules for Analysis:
+1. Identify the Customer Name and the Total Amount Received.
+2. Check if the payment matches a single invoice exactly (Gross, Net, or Net + specific TDS deduction).
+3. Check if the payment is a combination of MULTIPLE invoices for the SAME customer (e.g., they paid Inv 1 + Inv 2 together).
+4. TDS Logic: Customers might deduct TDS (often 1%, 2%, or 10%). Sometimes on Basic amount, sometimes on Freight.
+5. If the user provides additional context in text, perform the math and map it exactly.
+6. If you are NOT confident, or if multiple combinations exist, ask the user a clarifying question in the 'ai_message'.
+7. If you ARE confident, propose the final distribution in the 'proposals' array.
+8. CRITICAL: Always extract UTR/Reference No, Payment Date, and generate a descriptive remark (e.g. '10% TDS on basic').
+
+CRITICAL: Your response MUST strictly follow this JSON schema. Do NOT include markdown blocks.
+{
+  "ai_message": "A helpful, conversational message explaining your findings or asking a question.",
+  "proposals": [
+    {
+      "id": "invoice id from the list",
+      "invoiceNumber": "invoice number",
+      "customerName": "customer name",
+      "applyPaid": number (amount to mark as received for this invoice),
+      "applyTds": number (amount to mark as TDS for this invoice),
+      "utr": "string (Extract Transaction ID, UTR, Ref No, or Cheque No. If none, write 'Unknown')",
+      "paymentDate": "string (Extract date in DD/MM/YYYY. If none, write 'Unknown')",
+      "remarks": "string (e.g., '10% TDS on Basic', 'Full payment', 'Part payment 50%')"
+    }
+  ],
+  "requires_user_input": boolean (true if you need clarification, false if ready to confirm)
+}`;
+
+        window.currentPaymentChatHistory = [];
+        window.currentPaymentProposals = [];
 
         let videoStream = null;
         window.openCamera = async function() {
@@ -1215,85 +1341,320 @@ Math must align (Net+Tax=Gross). Output pure JSON. User text: ${textPrompt}`;
                 const mimeTypeToUse = file.type.startsWith('image/') ? 'image/jpeg' : file.type;
                 const b64 = await compressImage(file);
                 
-                const loader = document.getElementById('ai_loading_indicator');
-                document.getElementById('ai_loading_title').textContent = "Scanning Payment...";
-                document.getElementById('ai_loading_sub').textContent = "Analyzing TDS & matching invoices...";
-                loader.classList.remove('hidden'); loader.classList.add('flex');
+                document.getElementById('payment-chat-modal').classList.remove('hidden');
+                setTimeout(() => document.getElementById('payment-chat-modal').classList.remove('opacity-0'), 10);
+                
+                window.currentPaymentChatHistory = [];
+                window.currentPaymentProposals = [];
+                
+                const pendingInvoices = salesData.filter(b => b.balance > 0).map(b => 
+                    `[ID: ${b.id}] Inv: ${b.invoiceNumber} | Cust: ${b.customerName} | Gross: ${b.grossAmount} | Net/Basic: ${b.netTaxableAmount} | Bal: ${b.balance}`
+                ).join('\n');
 
-                const pendingInvoices = salesData.filter(b => b.balance > 0).map(b => `Inv: ${b.invoiceNumber} | Cust: ${b.customerName} | Gross: ${b.grossAmount} | Net/Basic: ${b.netTaxableAmount} | Bal: ${b.balance}`).join('\n');
+                const initialUserMessage = `Here is a payment receipt and the list of our current pending unpaid invoices. Analyze the receipt and tell me how this payment should be distributed.\n\nPENDING INVOICES:\n${pendingInvoices || 'No pending invoices.'}`;
 
-                const payload = {
-                    contents: [{ role: "user", parts: [
-                        { text: `Extract payment details and match with our pending invoices.\nPending Invoices:\n${pendingInvoices}\n\nCustomers may pay:\n- Full Gross\n- Basic only\n- Gross minus TDS (2% or 10% of Basic)\n- Part/Advance payment (e.g., 20%, 50% installments)\n- Only GST\n\nCRITICAL: If they paid an installment, extract ONLY the exact installment amount they paid NOW. Do NOT extract the full invoice amount if it's just a part-payment. Prevent double-applying.\n\nReturn EXACT JSON:\n{ "customerName": "...", "matchedInvoiceNumber": "...", "amountReceived": ..., "tdsDeducted": ... }` },
+                window.currentPaymentChatHistory.push({
+                    role: "user",
+                    parts: [
+                        { text: PAYMENT_SYSTEM_PROMPT + "\n\n" + initialUserMessage },
                         { inlineData: { mimeType: mimeTypeToUse, data: b64 } }
-                    ]}], generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
+                    ]
+                });
+
+                document.getElementById('payment-chat-history').innerHTML = '';
+                await triggerPaymentChatAI(dynamicApiKey);
+
+            } catch(e) { 
+                window.showCustomAlert("Scan Error", e.message, "error");
+                window.closePaymentChat();
+            }
+        }
+
+        window.closePaymentChat = function() {
+            document.getElementById('payment-chat-modal').classList.add('opacity-0');
+            setTimeout(() => document.getElementById('payment-chat-modal').classList.add('hidden'), 300);
+            window.currentPaymentChatHistory = [];
+            window.currentPaymentProposals = [];
+        }
+
+        window.sendPaymentChatMessage = async function() {
+            const inputEl = document.getElementById('payment_chat_input');
+            const text = inputEl.value.trim();
+            if (!text) return;
+            inputEl.value = '';
+            
+            window.currentPaymentChatHistory.push({ role: "user", parts: [{ text: text }] });
+            addChatBubble(text, 'user');
+            
+            const dynamicApiKey = getActiveGeminiKey();
+            if (!dynamicApiKey) return window.showCustomAlert("API Key Missing", "Configure API Key.", "error");
+
+            await triggerPaymentChatAI(dynamicApiKey);
+        }
+
+        async function triggerPaymentChatAI(dynamicApiKey) {
+            const chatHistoryContainer = document.getElementById('payment-chat-history');
+            const loadingId = 'loading_' + Date.now();
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = loadingId;
+            loadingDiv.className = 'flex justify-start opacity-70';
+            loadingDiv.innerHTML = `<div class="chat-bubble-ai p-3 max-w-[85%] text-sm shadow-sm flex items-center gap-2"><i class="fa-solid fa-circle-notch fa-spin text-brand-500"></i> AI is thinking...</div>`;
+            chatHistoryContainer.appendChild(loadingDiv);
+            chatHistoryContainer.scrollTop = chatHistoryContainer.scrollHeight;
+
+            try {
+                const payload = {
+                    contents: window.currentPaymentChatHistory,
+                    generationConfig: { responseMimeType: "application/json", temperature: 0.1 }
                 };
                 
                 const data = await fetchWithFallback(payload, dynamicApiKey);
-                const result = JSON.parse(data.candidates[0].content.parts[0].text);
+                document.getElementById(loadingId).remove();
+
+                const responseText = data.candidates[0].content.parts[0].text;
+                const result = JSON.parse(responseText);
+
+                window.currentPaymentChatHistory.push({ role: "model", parts: [{ text: responseText }] });
+                addChatBubble(result.ai_message, 'ai');
+
+                if (result.proposals && Array.isArray(result.proposals)) {
+                    window.currentPaymentProposals = result.proposals;
+                    renderPaymentProposals();
+                }
+
+                const applyBtn = document.getElementById('btn_apply_proposals');
+                if (window.currentPaymentProposals.length > 0 && !result.requires_user_input) {
+                    applyBtn.disabled = false;
+                    applyBtn.classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+                    applyBtn.classList.add('bg-brand-600', 'text-white', 'hover:bg-brand-700');
+                } else {
+                    applyBtn.disabled = true;
+                    applyBtn.classList.add('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+                    applyBtn.classList.remove('bg-brand-600', 'text-white', 'hover:bg-brand-700');
+                }
+            } catch (err) {
+                if(document.getElementById(loadingId)) document.getElementById(loadingId).remove();
+                addChatBubble("Error connecting to AI: " + err.message, 'ai');
+            }
+        }
+
+        function addChatBubble(text, sender) {
+            const container = document.getElementById('payment-chat-history');
+            const div = document.createElement('div');
+            if (sender === 'user') {
+                div.className = 'flex justify-end';
+                div.innerHTML = `<div class="chat-bubble-user p-3 max-w-[85%] text-sm shadow-sm font-medium leading-relaxed whitespace-pre-wrap">${text}</div>`;
+            } else {
+                div.className = 'flex justify-start';
+                div.innerHTML = `<div class="chat-bubble-ai p-3 max-w-[85%] text-sm shadow-sm font-medium leading-relaxed whitespace-pre-wrap"><i class="fa-solid fa-robot text-brand-500 mr-1 mb-1 block text-xs opacity-80"></i>${text}</div>`;
+            }
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function renderPaymentProposals() {
+            const container = document.getElementById('payment-proposals-container');
+            container.innerHTML = '';
+
+            if (window.currentPaymentProposals.length === 0) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center h-full text-slate-400 opacity-50">
+                        <i class="fa-solid fa-file-invoice text-4xl mb-2"></i>
+                        <p class="text-xs font-bold text-center">Waiting for AI to propose<br>invoice mapping...</p>
+                    </div>`;
+                return;
+            }
+
+            let totalApplyPaid = 0; let totalApplyTds = 0;
+            window.currentPaymentProposals.forEach(prop => {
+                totalApplyPaid += Number(prop.applyPaid) || 0; totalApplyTds += Number(prop.applyTds) || 0;
+                const actualInvoice = salesData.find(b => b.id === prop.id);
+                const currentBal = actualInvoice ? actualInvoice.balance : 0;
                 
-                if(result.customerName && result.amountReceived) {
-                    let target = null;
-                    if (result.matchedInvoiceNumber) {
-                        target = salesData.find(b => b.invoiceNumber === result.matchedInvoiceNumber && b.balance > 0);
+                let overpaymentWarning = '';
+                if (actualInvoice && ((Number(prop.applyPaid)||0) + (Number(prop.applyTds)||0)) > currentBal) {
+                    overpaymentWarning = `<p class="text-[9px] text-red-600 font-black mt-1"><i class="fa-solid fa-triangle-exclamation"></i> Exceeds balance (₹${currentBal.toFixed(2)}).</p>`;
+                }
+
+                const card = document.createElement('div');
+                card.className = 'bg-white p-3 rounded border border-indigo-100 shadow-sm mb-2 relative overflow-hidden group';
+                card.innerHTML = `
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-indigo-500"></div>
+                    <div class="pl-2">
+                        <div class="flex justify-between items-start mb-1">
+                            <span class="text-xs font-black text-slate-800">${prop.invoiceNumber || 'Unknown'}</span>
+                            <span class="text-[9px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 font-bold">${prop.paymentDate || 'No Date'}</span>
+                        </div>
+                        <p class="text-[10px] font-bold text-slate-500 truncate mb-0.5">${prop.customerName || 'Unknown Customer'}</p>
+                        <p class="text-[9px] font-black text-indigo-600 mb-2 truncate" title="UTR/Ref: ${prop.utr}"><i class="fa-solid fa-money-check mr-1"></i>${prop.utr || 'N/A'}</p>
+                        
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div class="bg-emerald-50 p-1.5 rounded border border-emerald-100">
+                                <span class="text-[9px] text-emerald-700 font-black uppercase block">Apply Received</span>
+                                <span class="font-black text-emerald-900">₹${(Number(prop.applyPaid)||0).toFixed(2)}</span>
+                            </div>
+                            <div class="bg-purple-50 p-1.5 rounded border border-purple-100">
+                                <span class="text-[9px] text-purple-700 font-black uppercase block">Apply TDS</span>
+                                <span class="font-black text-purple-900">₹${(Number(prop.applyTds)||0).toFixed(2)}</span>
+                            </div>
+                        </div>
+                        ${overpaymentWarning}
+                        <p class="text-[9px] text-slate-400 font-bold mt-1.5 italic">${prop.remarks || ''}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            const summary = document.createElement('div');
+            summary.className = 'mt-3 p-3 bg-slate-100 rounded border border-slate-200';
+            summary.innerHTML = `
+                <div class="flex justify-between text-xs font-bold text-slate-600 mb-1"><span>Total Received:</span><span class="text-emerald-700 font-black">₹${totalApplyPaid.toFixed(2)}</span></div>
+                <div class="flex justify-between text-xs font-bold text-slate-600"><span>Total TDS:</span><span class="text-purple-700 font-black">₹${totalApplyTds.toFixed(2)}</span></div>
+                <div class="border-t border-slate-300 mt-2 pt-2 flex justify-between text-sm font-black text-slate-900"><span>Combined Total:</span><span>₹${(totalApplyPaid + totalApplyTds).toFixed(2)}</span></div>
+            `;
+            container.appendChild(summary);
+        }
+
+        window.applyPaymentProposals = async function() {
+            if (!window.currentPaymentProposals || window.currentPaymentProposals.length === 0) return;
+            
+            const btn = document.getElementById('btn_apply_proposals');
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...';
+
+            let appliedCount = 0; let errorCount = 0;
+
+            for (const prop of window.currentPaymentProposals) {
+                const target = salesData.find(b => b.id === prop.id);
+                if (target) {
+                    const applyPaid = Number(prop.applyPaid) || 0;
+                    const applyTds = Number(prop.applyTds) || 0;
+                    const totalProposed = applyPaid + applyTds;
+                    
+                    let safePaid = applyPaid; let safeTds = applyTds;
+                    if (totalProposed > target.balance) {
+                        safeTds = Math.min(applyTds, target.balance);
+                        safePaid = Math.min(applyPaid, target.balance - safeTds);
                     }
-                    if (!target) {
-                        const targetName = result.customerName.toLowerCase().replace(/[^a-z0-9\s]/g, '');
-                        const targetTokens = targetName.split(/\s+/).filter(t => t.length > 2 && !['pvt', 'ltd', 'limited', 'private', 'the', 'and', 'co'].includes(t));
 
-                        const potentialBills = salesData.filter(b => {
-                            if (b.balance <= 0) return false;
-                            const dbName = (b.customerName||'').toLowerCase().replace(/[^a-z0-9\s]/g, '');
-                            if (dbName.includes(targetName) || targetName.includes(dbName)) return true;
-                            
-                            const dbTokens = dbName.split(/\s+/).filter(t => t.length > 2 && !['pvt', 'ltd', 'limited', 'private', 'the', 'and', 'co'].includes(t));
-                            let matches = 0;
-                            for (let t of targetTokens) { if (dbTokens.includes(t)) matches++; }
-                            return matches > 0;
-                        });
+                    target.paidAmount = (Number(target.paidAmount)||0) + safePaid;
+                    target.tdsAmount = (Number(target.tdsAmount)||0) + safeTds;
+                    target.balance = Math.max(0, target.grossAmount - target.paidAmount - target.tdsAmount);
+                    
+                    target.paymentHistory = target.paymentHistory || [];
+                    target.paymentHistory.push({
+                        date: prop.paymentDate && prop.paymentDate !== 'Unknown' ? prop.paymentDate : new Date().toLocaleDateString('en-GB'),
+                        utr: prop.utr || 'AI Extracted',
+                        applyPaid: safePaid,
+                        applyTds: safeTds,
+                        remarks: prop.remarks || 'AI Reco'
+                    });
 
-                        if(potentialBills.length > 0) {
-                            potentialBills.sort((a, b) => {
-                                const aExpected = a.balance - (result.tdsDeducted || 0);
-                                const bExpected = b.balance - (result.tdsDeducted || 0);
-                                return Math.abs(aExpected - result.amountReceived) - Math.abs(bExpected - result.amountReceived);
-                            });
-                            target = potentialBills[0];
-                        }
-                    }
+                    try { await saveInvoiceToCloud(target); appliedCount++; } catch(e) { errorCount++; }
+                } else { errorCount++; }
+            }
 
-                    if(target) {
-                        let proposedPaid = result.amountReceived || 0;
-                        let proposedTds = result.tdsDeducted || 0;
-                        let totalProposed = proposedPaid + proposedTds;
-                        
-                        let msg = `Customer: ${target.customerName}\nInv: ${target.invoiceNumber}\nCurrent Balance: ₹${target.balance.toFixed(2)}\n\nApply Received: ₹${proposedPaid.toFixed(2)}`;
-                        if (proposedTds > 0) msg += `\nApply TDS: ₹${proposedTds.toFixed(2)}`;
-                        
-                        if (totalProposed > target.balance) {
-                            msg += `\n\n⚠️ OVERPAYMENT WARNING: Total (₹${totalProposed.toFixed(2)}) exceeds the current balance (₹${target.balance.toFixed(2)}). Applying this will cap the payment to close the invoice exactly.`;
-                        }
-                        
-                        msg += `\n\nConfirm?`;
+            window.closePaymentChat();
+            if (errorCount === 0) window.showCustomAlert("Success", `Applied payments to ${appliedCount} invoice(s).`, "success");
+            else window.showCustomAlert("Partial Success", `Applied: ${appliedCount}. Failed: ${errorCount}.`, "info");
+        }
 
-                        window.showCustomAlert("Match Found", msg, totalProposed > target.balance ? "error" : "info", async () => {
-                            if (totalProposed > target.balance) {
-                                let applyTds = Math.min(proposedTds, target.balance);
-                                let applyPaid = Math.min(proposedPaid, target.balance - applyTds);
-                                target.paidAmount = (Number(target.paidAmount)||0) + applyPaid;
-                                target.tdsAmount = (Number(target.tdsAmount)||0) + applyTds;
-                            } else {
-                                target.paidAmount = (Number(target.paidAmount)||0) + proposedPaid;
-                                target.tdsAmount = (Number(target.tdsAmount)||0) + proposedTds;
-                            }
-                            target.balance = Math.max(0, target.grossAmount - target.paidAmount - target.tdsAmount);
-                            await saveInvoiceToCloud(target); 
-                            window.showCustomAlert("Applied", "Payment saved.", "success");
-                        });
-                    } else window.showCustomAlert("No Match", `Extracted Name: "${result.customerName}"\nAmount: ₹${result.amountReceived}\n\nNo unpaid invoice found matching this customer.`, "error");
-                } else throw new Error("Could not extract info.");
-            } catch(e) { window.showCustomAlert("Scan Error", e.message, "error");
-            } finally { document.getElementById('ai_loading_indicator').classList.add('hidden'); document.getElementById('ai_loading_indicator').classList.remove('flex'); }
+        // View Payment History Modal
+        window.viewPaymentHistory = function(id) {
+            const invoice = salesData.find(b => b.id === id); if(!invoice) return;
+            const history = invoice.paymentHistory || [];
+            
+            document.getElementById('ph_inv_no').textContent = invoice.invoiceNumber;
+            document.getElementById('ph_cust_name').textContent = invoice.customerName;
+            
+            const tbody = document.getElementById('ph_table_body');
+            tbody.innerHTML = '';
+            
+            if (history.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="text-center p-4 text-xs font-bold text-slate-500 italic">No detailed history found. Payment was recorded prior to history tracking update.</td></tr>`;
+            } else {
+                history.forEach((h, i) => {
+                    tbody.innerHTML += `
+                        <tr class="border-b border-slate-100 hover:bg-slate-50">
+                            <td class="p-2 text-[10px] font-bold text-slate-600">${h.date || '-'}</td>
+                            <td class="p-2 text-[10px] font-black text-indigo-700 break-all max-w-[120px]">${h.utr || '-'}</td>
+                            <td class="p-2 text-xs font-black text-emerald-700 text-right">₹${(Number(h.applyPaid)||0).toFixed(2)}</td>
+                            <td class="p-2 text-xs font-black text-purple-700 text-right">₹${(Number(h.applyTds)||0).toFixed(2)}</td>
+                            <td class="p-2 text-[9px] font-bold text-slate-500 max-w-[150px] truncate" title="${h.remarks || ''}">${h.remarks || '-'}</td>
+                        </tr>
+                    `;
+                });
+            }
+            
+            document.getElementById('ph_download_btn').onclick = () => window.downloadPaymentReceipt(invoice.id);
+
+            const modal = document.getElementById('payment-history-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        window.closePaymentHistory = function() {
+            const modal = document.getElementById('payment-history-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        window.downloadPaymentReceipt = function(id) {
+            const invoice = salesData.find(b => b.id === id); if(!invoice) return;
+            const history = invoice.paymentHistory || [];
+            
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'pt', 'a4');
+            
+            doc.setFillColor(79, 70, 229);
+            doc.rect(0, 0, 595, 80, 'F');
+            doc.setTextColor(255, 255, 255);
+            doc.setFontSize(22); doc.setFont(undefined, 'bold');
+            doc.text("PAYMENT RECEIPT", 40, 45);
+            
+            doc.setFontSize(10);
+            doc.text("MG Transformer", 40, 65);
+            doc.text(new Date().toLocaleDateString('en-GB'), 555, 45, { align: 'right' });
+
+            doc.setTextColor(15, 23, 42);
+            doc.setFontSize(14); doc.setFont(undefined, 'bold');
+            doc.text("Invoice Details", 40, 120);
+            
+            doc.setFontSize(10); doc.setFont(undefined, 'normal');
+            doc.text(`Customer: ${invoice.customerName}`, 40, 140);
+            doc.text(`Invoice No: ${invoice.invoiceNumber}`, 40, 155);
+            doc.text(`Invoice Date: ${invoice.invoiceDate}`, 40, 170);
+            doc.text(`Category: ${invoice.category || 'N/A'}`, 40, 185);
+
+            doc.text(`Gross Amount: INR ${(Number(invoice.grossAmount)||0).toFixed(2)}`, 350, 140);
+            doc.text(`Total Received: INR ${(Number(invoice.paidAmount)||0).toFixed(2)}`, 350, 155);
+            doc.text(`Total TDS: INR ${(Number(invoice.tdsAmount)||0).toFixed(2)}`, 350, 170);
+            doc.setFont(undefined, 'bold');
+            doc.text(`Current Balance: INR ${(Number(invoice.balance)||0).toFixed(2)}`, 350, 185);
+            
+            doc.setFontSize(14);
+            doc.text("Payment History Log", 40, 230);
+            
+            const headers = [["Date", "Reference / UTR", "Amount Paid", "TDS Deducted", "Remarks"]];
+            let body = [];
+            
+            if (history.length > 0) {
+                body = history.map(h => [
+                    h.date || '-', h.utr || '-', (Number(h.applyPaid)||0).toFixed(2), (Number(h.applyTds)||0).toFixed(2), h.remarks || '-'
+                ]);
+            } else {
+                body = [["-", "Initial Manual Record / Legacy Data", (Number(invoice.paidAmount)||0).toFixed(2), (Number(invoice.tdsAmount)||0).toFixed(2), "No detailed history available"]];
+            }
+
+            doc.autoTable({
+                head: headers, body: body, startY: 250, styles: { fontSize: 9, cellPadding: 6 },
+                headStyles: { fillColor: [79, 70, 229] }, alternateRowStyles: { fillColor: [248, 250, 252] }
+            });
+
+            doc.setFontSize(9); doc.setFont(undefined, 'normal'); doc.setTextColor(100, 100, 100);
+            doc.text("Generated by Smart Sales Data Reconciliation PRO", 40, doc.internal.pageSize.getHeight() - 40);
+
+            doc.save(`Payment_Receipt_${invoice.invoiceNumber}.pdf`);
         }
 
         document.getElementById('payment_scan_input').addEventListener('change', async (e) => {
@@ -1573,9 +1934,38 @@ ${csvData}`;
                 invoiceNumber: document.getElementById('man_inv_no').value, invoiceDate: formattedDate,
                 grossAmount: basic + taxAmt, taxPercent: pct, netTaxableAmount: basic,
                 igst: isInter ? taxAmt : 0, cgst: isInter ? 0 : taxAmt / 2, sgst: isInter ? 0 : taxAmt / 2,
-                paidAmount: paid, tdsAmount: tds, balance: (basic + taxAmt) - paid - tds, hasFile: false, timestamp: Date.now()
+                paidAmount: paid, tdsAmount: tds, balance: (basic + taxAmt) - paid - tds, hasFile: false, timestamp: Date.now(),
+                paymentHistory: []
             };
-            if (editId) { const existing = salesData.find(b => b.id === editId); if (existing) { invoice.hasFile = existing.hasFile; invoice.timestamp = existing.timestamp; invoice.gstr2bStatus = existing.gstr2bStatus; } }
+            
+            if (editId) { 
+                const existing = salesData.find(b => b.id === editId); 
+                if (existing) { 
+                    invoice.hasFile = existing.hasFile; 
+                    invoice.timestamp = existing.timestamp; 
+                    invoice.gstr2bStatus = existing.gstr2bStatus; 
+                    invoice.paymentHistory = existing.paymentHistory || [];
+                    
+                    let diffPaid = paid - (Number(existing.paidAmount)||0);
+                    let diffTds = tds - (Number(existing.tdsAmount)||0);
+                    if (diffPaid !== 0 || diffTds !== 0) {
+                        invoice.paymentHistory.push({
+                            date: new Date().toLocaleDateString('en-GB'),
+                            utr: 'Manual Update',
+                            applyPaid: diffPaid > 0 ? diffPaid : 0,
+                            applyTds: diffTds > 0 ? diffTds : 0,
+                            remarks: 'Manual entry adjustment'
+                        });
+                    }
+                } 
+            } else if (paid > 0 || tds > 0) {
+                invoice.paymentHistory.push({
+                    date: new Date().toLocaleDateString('en-GB'),
+                    utr: 'Initial Manual Entry',
+                    applyPaid: paid, applyTds: tds,
+                    remarks: 'Recorded upon creation'
+                });
+            }
             try { await saveInvoiceToCloud(invoice); window.closeManualEntry(); window.showCustomAlert("Success", editId ? "Updated." : "Added.", "success"); } catch(e) { window.showCustomAlert("Error", e.message, "error"); }
         }
 
@@ -1588,10 +1978,11 @@ ${csvData}`;
 
         window.resetPayment = function(id) {
             const invoice = salesData.find(b => b.id === id); if(!invoice) return;
-            window.showCustomAlert("Clear Payments?", `Remove all recorded payments and TDS for Invoice ${invoice.invoiceNumber}? This reverts it to fully unpaid.`, "error", async function() {
+            window.showCustomAlert("Clear Payments?", `Remove all recorded payments, history, and TDS for Invoice ${invoice.invoiceNumber}? This reverts it to fully unpaid.`, "error", async function() {
                 invoice.paidAmount = 0;
                 invoice.tdsAmount = 0;
                 invoice.balance = invoice.grossAmount;
+                invoice.paymentHistory = [];
                 try { 
                     await saveInvoiceToCloud(invoice); 
                     window.showCustomAlert("Reset", "Payments cleared successfully.", "success"); 
