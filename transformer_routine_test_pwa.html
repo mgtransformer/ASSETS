@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -62,7 +63,7 @@
             max-width: 210mm;
             margin: 20px auto;
             padding: 0 10px;
-            display: block; /* Fix for blank pages instead of flex */
+            display: block; 
         }
 
         .test-section, .summary-section, .general-details-card {
@@ -198,10 +199,71 @@
             backdrop-filter: blur(4px);
             display: none; justify-content: center; align-items: center; z-index: 1000;
         }
-        .modal-content { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; width: 90%; max-width: 450px; }
-        #signature-pad { border: 2px dashed #cbd5e1; border-radius: 6px; cursor: crosshair; margin-top: 10px; background-color: #f8fafc; width: 100%; }
+        .modal-content { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; width: 90%; max-width: 480px; }
+        
+        #signature-pad {
+            border: 2px dashed #94a3b8;
+            border-radius: 6px;
+            cursor: crosshair;
+            margin-top: 10px;
+            background-color: #f8fafc;
+            width: 100%;
+            touch-action: none;
+        }
+
+        .handwritten-sig-placeholder {
+            position: relative;
+            width: 100%;
+            max-width: 260px;
+            height: 88px;
+            border: 2px dashed #94a3b8;
+            border-radius: 8px;
+            background-color: #f8fafc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            transition: border-color 0.2s, background-color 0.2s;
+        }
+        .handwritten-sig-placeholder:hover,
+        .handwritten-sig-placeholder:focus-within {
+            border-color: var(--persian-blue);
+            background-color: #eff6ff;
+        }
+        #inline-signature-pad {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            cursor: crosshair;
+            touch-action: none;
+            z-index: 10;
+        }
+        .sig-placeholder-watermark {
+            pointer-events: none;
+            z-index: 5;
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            padding: 4px 8px;
+            line-height: 1.3;
+        }
         
         .print-only, .print-only-summary { display: none; }
+
+        @media screen {
+            #print-repeating-header { display: none !important; }
+            .print-only-table-header { display: none !important; }
+            /* FIXED: Applied specific class targeting to prevent screen layout destruction */
+            .print-spacing-table, .print-spacing-table > tbody, .print-spacing-table > tbody > tr, .print-spacing-wrapper-td {
+                display: block; width: 100%; border: none; padding: 0; margin: 0;
+            }
+        }
 
         @page {
             size: A4 portrait;
@@ -217,7 +279,36 @@
                 display: block !important;
             }
 
+            /* CSS Hack: Generates a blank 25px space at the top of every printed page */
+            .print-spacing-table {
+                display: table !important;
+                width: 100% !important;
+                border: none !important;
+                border-collapse: collapse !important;
+            }
+            .print-only-table-header {
+                display: table-header-group !important; 
+            }
+
+            /* Fixed header that sits inside the 25px space on every page */
+            #print-repeating-header {
+                display: block !important;
+                position: fixed;
+                top: 0; 
+                right: 0; 
+                font-size: 11.5px !important;
+                font-family: 'Inter', Arial, sans-serif;
+                font-weight: 800;
+                text-align: right;
+                z-index: 900; 
+                background: transparent !important;
+                height: 25px;
+                padding-top: 4px;
+                padding-right: 8px;
+            }
+
             .document-container { 
+                position: relative; 
                 margin: 0 !important; 
                 padding: 0 !important;
                 max-width: none !important;
@@ -225,9 +316,7 @@
                 display: block !important;
             }
 
-            .report-content {
-                display: block !important; 
-            }
+            .report-content { display: block !important; }
 
             .general-details-card, .test-section, .summary-section, .signature-card {
                 background: transparent !important;
@@ -236,6 +325,15 @@
                 border: 1px solid #cbd5e1 !important;
                 padding: 15px !important;
                 margin-bottom: 12px !important;
+            }
+
+            /* Pull logo box UP into the 25px thead space to cover the header perfectly on page 1 */
+            #logo-box-print-cover {
+                margin-top: -25px !important; 
+                padding-top: 25px !important; 
+                position: relative !important;
+                z-index: 1000 !important;
+                background-color: #ffffff !important;
             }
 
             input[type="text"], input[type="number"], input[type="date"], select, textarea, [contenteditable="true"] {
@@ -260,6 +358,15 @@
             .print-only { display: inline !important; }
             .print-only-block { display: block !important; }
             
+            .handwritten-sig-placeholder {
+                border: none !important;
+                background: transparent !important;
+                height: 80px !important;
+            }
+            #inline-signature-pad, .sig-placeholder-watermark {
+                display: none !important;
+            }
+
             .print-only-summary {
                 display: block; white-space: pre-wrap; word-wrap: break-word; text-align: left;
                 font-size: 12px !important; line-height: 1.4; padding: 10px; 
@@ -325,6 +432,15 @@
 </head>
 <body class="hide-deviations">
 
+    <!-- Repeating PDF Header outside tables (Styled Navy Blue and Orange) -->
+    <div id="print-repeating-header">
+        <span id="header_tx_tag" style="color: #000080 !important;">TR-XX</span> 
+        <span style="color: #ea580c !important; font-weight: 800; margin: 0 4px;">|</span> 
+        <span id="header_tx_rating" style="color: #000080 !important;">XXX KVA</span>
+    </div>
+
+    <div id="app-toast" class="fixed top-16 right-4 z-[2000] hidden max-w-sm px-4 py-3 rounded-lg shadow-lg border text-xs font-bold flex items-center gap-2 transition-all duration-300 no-print"></div>
+
     <div class="app-header flex justify-between items-center no-print flex-wrap gap-3">
         <div class="text-sm font-semibold text-slate-700 flex items-center gap-2">
             <i class="fa-solid fa-key text-slate-400"></i>
@@ -344,622 +460,753 @@
         </div>
     </div>
 
-    <div class="document-container" id="report-document">
-        
-        <div class="flex justify-between items-center w-full p-4 mb-4 bg-white rounded-lg shadow-sm border border-slate-200" style="page-break-inside: avoid;">
-            <div class="w-1/3 flex justify-start">
+    <!-- Live AI Assistant Bar -->
+    <div id="ai-assistant-container" class="no-print bg-slate-800 text-white shadow-md z-40 relative w-full text-sm border-b border-slate-700">
+        <div class="px-4 py-2 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition" id="assistant_toggle">
+            <span class="font-bold text-yellow-400 flex items-center gap-2"><i class="fa-solid fa-sparkles"></i> Live AI Assistant (Auto-Updates App Data)</span>
+            <i class="fa-solid fa-chevron-down text-slate-400" id="assistant_toggle_icon"></i>
+        </div>
+        <div id="assistant_panel" class="hidden px-4 pb-4 flex-col gap-2 border-t border-slate-600 bg-slate-800">
+            <div id="assistant_chat" class="bg-slate-900 border border-slate-700 p-3 rounded mt-3 h-48 overflow-y-auto text-[13px] whitespace-pre-wrap flex flex-col gap-2 shadow-inner">
+                <div class="text-slate-400 italic">Welcome! Ask me to verify tests, check standard parameters, or dynamically update data (e.g., "Change location to Pune" or "Are these Winding Resistances acceptable?").</div>
             </div>
-            <div class="w-1/3 flex justify-center">
-                <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG Transformer Logo" id="main_company_logo" style="width: 150px;" class="object-contain border-none outline-none">
-            </div>
-            <div class="w-1/3 flex flex-col items-end justify-center">
-                <h2 class="text-[18px] font-black tracking-wider mb-2" contenteditable="true" style="font-family: 'Inter', sans-serif; color: var(--primary-orange);">ROUTINE TEST REPORT</h2>
-                <div id="qrcode_container" class="flex flex-col items-center">
-                    <div id="qrcode" class="p-1 border border-slate-200 rounded-sm bg-white shadow-sm"></div>
-                    <div id="qr_status_badge" class="mt-1 text-[11.5px] font-bold px-2 py-0.5 rounded w-full text-center border bg-green-100 text-green-800 border-green-300 shadow-sm">HEALTHY</div>
-                </div>
+            <div class="flex gap-2 mt-2">
+                <input type="text" id="assistant_input" class="flex-1 bg-slate-700 border border-slate-600 text-white px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-yellow-400 text-[13.5px] placeholder-slate-400" placeholder="Type a command or question...">
+                <button id="assistant_send" class="bg-yellow-600 hover:bg-yellow-500 text-slate-900 px-4 py-2 rounded font-bold transition shadow-sm flex items-center gap-2"><i class="fa-solid fa-paper-plane"></i> Send</button>
             </div>
         </div>
+    </div>
 
-        <div class="report-content">
-            <div class="general-details-card">
-                <div class="section-title">
-                    <span><i class="fa-solid fa-circle-info mr-2 no-print"></i>1. GENERAL & NAMEPLATE DETAILS</span>
-                    <div class="no-print btn-group">
-                        <input type="file" id="nameplate_camera_input" accept="image/*" capture="environment" style="display: none;">
-                        <input type="file" id="nameplate_file_input" accept="image/*" style="display: none;">
-                        <button id="nameplate_camera_btn" class="ai-extract-btn"><i class="fa-solid fa-camera"></i> Scan Plate</button>
-                        <button id="nameplate_upload_btn" class="ai-extract-btn"><i class="fa-solid fa-image"></i> Upload</button>
-                        <span id="ai_status" style="font-size: 11px; color: var(--primary-orange); align-self: center; display: none; font-weight: bold;"><i class="fa-solid fa-spinner fa-spin"></i> Extracting...</span>
+    <div class="document-container" id="report-document">
+        
+        <!-- WRAPPER TABLE: Forces exactly 25px of blank space at the top of every printed page -->
+        <table class="print-spacing-table" style="width:100%; border:none; border-collapse:collapse;">
+            <thead class="print-only-table-header">
+                <tr><td style="height: 25px; border: none; padding: 0;"></td></tr>
+            </thead>
+            <tbody style="border: none; margin: 0; padding: 0;">
+                <tr><td class="print-spacing-wrapper-td" style="border: none; padding: 0;">
+
+                    <!-- Logo Box: Print media mask to hide the fixed repeating header on page 1 -->
+                    <div id="logo-box-print-cover" class="flex justify-between items-center w-full p-4 mb-4 bg-white rounded-lg shadow-sm border border-slate-200" style="page-break-inside: avoid;">
+                        <div class="w-1/3 flex justify-start">
+                        </div>
+                        <div class="w-1/3 flex justify-center">
+                            <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG Transformer Logo" id="main_company_logo" style="width: 150px;" class="object-contain border-none outline-none">
+                        </div>
+                        <div class="w-1/3 flex flex-col items-end justify-center">
+                            <h2 class="text-[18px] font-black tracking-wider mb-2" contenteditable="true" style="font-family: 'Inter', sans-serif; color: var(--primary-orange);">ROUTINE TEST REPORT</h2>
+                            <div id="qrcode_container" class="flex flex-col items-center">
+                                <div id="qrcode" class="p-1 border border-slate-200 rounded-sm bg-white shadow-sm"></div>
+                                <div id="qr_status_badge" class="mt-1 text-[11.5px] font-bold px-2 py-0.5 rounded w-full text-center border bg-green-100 text-green-800 border-green-300 shadow-sm">HEALTHY</div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                
-                <div class="table-responsive-wrapper">
-                    <table class="erp-table mb-2 uppercase w-full">
-                        <tr>
-                            <th class="w-[18%] text-left whitespace-nowrap">CLIENT NAME</th>
-                            <td class="w-[32%] font-bold"><input type="text" id="client_name" class="bold-input qr-trigger" placeholder="Enter Client Name"></td>
-                            <th class="w-[18%] text-left whitespace-nowrap">REPORT NO.</th>
-                            <td class="w-[32%] font-bold">
-                                <input type="text" id="report_no_full" class="bold-input w-full qr-trigger" placeholder="MGTRF/RT/...">
-                            </td>
-                        </tr>
-                        <tr>
-                            <th class="text-left">SITE LOCATION</th>
-                            <td class="font-bold"><input type="text" id="site_location" class="bold-input" placeholder="Enter Location"></td>
-                            <th class="text-left">DATE OF TESTING</th>
-                            <td class="font-bold"><input type="date" id="test_date" class="bold-input qr-trigger"></td>
-                        </tr>
-                    </table>
-                </div>
 
-                <div class="table-responsive-wrapper">
-                    <table class="erp-table mb-2 uppercase w-full">
-                        <tr>
-                            <th class="w-[18%] text-left">TX TAG NO.</th>
-                            <td class="w-[32%] font-bold"><input type="text" id="tx_tag_no" class="bold-input qr-trigger" placeholder="e.g. TR-01"></td>
-                            <th class="w-[18%] text-left">MAKE & YOM</th>
-                            <td class="w-[32%] font-bold"><input type="text" id="tx_make_yom" class="bold-input" placeholder="e.g. VOLTAMP / 2017"></td>
-                        </tr>
-                        <tr>
-                            <th class="text-left">SERIAL NO.</th>
-                            <td class="font-bold"><input type="text" id="tx_serial" class="bold-input" placeholder="Serial Number"></td>
-                            <th class="text-left">RATED MVA/KVA</th>
-                            <td class="font-bold"><input type="text" id="tx_rating" class="bold-input" placeholder="e.g. 4000 KVA"></td>
-                        </tr>
-                        <tr>
-                            <th class="text-left">RATED KV (HV/LV)</th>
-                            <td class="font-bold"><input type="text" id="tx_voltage" class="bold-input vr-dependency" placeholder="e.g. 22000 / 415"></td>
-                            <th class="text-left">RATED AMPS</th>
-                            <td class="font-bold"><input type="text" id="tx_amps" class="bold-input" placeholder="e.g. 82.66A / 4382.29A"></td>
-                        </tr>
-                        <tr>
-                            <th class="text-left">VECTOR GROUP</th>
-                            <td class="font-bold">
-                                <select id="tx_vector" class="bold-input" value="Dyn11">
-                                    <option>Dd0</option>
-                                    <option>Dyn1</option>
-                                    <option selected>Dyn11</option>
-                                    <option>YNd1</option>
-                                    <option>YNd11</option>
-                                    <option>YNyn0</option>
-                                    <option>Other (Custom)</option>
-                                </select>
-                            </td>
-                            <th class="text-left">% IMPEDANCE</th>
-                            <td class="font-bold"><input type="text" id="tx_impedance" class="bold-input" placeholder="% Z"></td>
-                        </tr>
-                        <tr>
-                            <th class="text-left">TAP CHANGER</th>
-                            <td class="font-bold">
-                                <div class="no-print">
-                                    <label class="checkbox-label"><input type="radio" name="tap_type" value="OLTC" checked> OLTC</label>
-                                    <label class="checkbox-label"><input type="radio" name="tap_type" value="OCTC"> OCTC</label>
+                    <div class="report-content">
+                        <div class="general-details-card">
+                            <div class="section-title">
+                                <span><i class="fa-solid fa-circle-info mr-2"></i>1. GENERAL & NAMEPLATE DETAILS</span>
+                                <div class="no-print btn-group">
+                                    <input type="file" id="nameplate_camera_input" accept="image/*" capture="environment" style="display: none;">
+                                    <input type="file" id="nameplate_file_input" accept="image/*" style="display: none;">
+                                    <button id="nameplate_camera_btn" class="ai-extract-btn"><i class="fa-solid fa-camera"></i> Scan Plate</button>
+                                    <button id="nameplate_upload_btn" class="ai-extract-btn"><i class="fa-solid fa-image"></i> Upload</button>
+                                    <span id="ai_status" style="font-size: 11px; color: var(--primary-orange); align-self: center; display: none; font-weight: bold;"><i class="fa-solid fa-spinner fa-spin"></i> Extracting...</span>
                                 </div>
-                                <span id="tap_type_print" class="print-only">OLTC</span>
-                            </td>
-                            <th class="text-left tap-details">NO. OF TAPS</th>
-                            <td class="font-bold tap-details">
-                                <select id="tx_tap_count" class="no-print bold-input vr-dependency" value="21">
-                                    <option>5</option><option>7</option><option>9</option><option>13</option><option>17</option><option>19</option><option selected>21</option>
-                                </select>
-                                <span id="tx_tap_count_print" class="print-only">21</span>
-                            </td>
-                        </tr>
-                        <tr class="tap-details">
-                            <th class="text-left">PRINCIPAL TAP</th>
-                            <td class="font-bold"><input type="number" id="tx_principal_tap" class="bold-input vr-dependency" placeholder="e.g. 13"></td>
-                            <th class="text-left">TAP STEP (%)</th>
-                            <td class="font-bold"><input type="number" step="0.01" id="tx_tap_step" class="bold-input vr-dependency" placeholder="e.g. 1.25"></td>
-                        </tr>
-                        <tr>
-                            <th class="text-left">OIL QUANTITY</th>
-                            <td class="font-bold"><input type="text" id="tx_oil_qty" class="bold-input" placeholder="e.g. 3595 LTRS"></td>
-                            <th class="text-left">TYPE OF COOLING</th>
-                            <td class="font-bold"><input type="text" id="tx_cooling" class="bold-input" placeholder="e.g. ONAN"></td>
-                        </tr>
-                        <tr>
-                            <th class="text-left">CORE & WINDING WT.</th>
-                            <td class="font-bold"><input type="text" id="tx_cw_wt" class="bold-input" placeholder="e.g. 4850 KGS"></td>
-                            <th class="text-left">WEIGHT OF OIL</th>
-                            <td class="font-bold"><input type="text" id="tx_oil_wt" class="bold-input" placeholder="e.g. 3200 KGS"></td>
-                        </tr>
-                        <tr>
-                            <th class="text-left">TOTAL WEIGHT</th>
-                            <td class="font-bold"><input type="text" id="tx_total_wt" class="bold-input" placeholder="e.g. 11150 KGS"></td>
-                            <th class="text-left">FREQUENCY</th>
-                            <td class="font-bold"><input type="text" id="tx_freq" class="bold-input" value="50 Hz"></td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-
-            <h3 class="section-title" id="tests-heading">
-                <span><i class="fa-solid fa-list-check mr-2 no-print"></i>2. TESTS PERFORMED</span>
-            </h3>
-            
-            <div class="border border-slate-300 rounded-md p-4 mb-4 no-print bg-slate-50 shadow-sm">
-                <div class="flex flex-wrap gap-x-6 gap-y-3">
-                    <label class="checkbox-label"><input type="checkbox" id="perform_vr_test" class="summary-trigger" checked> Voltage Ratio</label>
-                    <label class="checkbox-label"><input type="checkbox" id="perform_mb_test" class="summary-trigger" checked> Magnetic Balance</label>
-                    <label class="checkbox-label"><input type="checkbox" id="perform_mc_test" class="summary-trigger" checked> Magnetizing Current</label>
-                    <label class="checkbox-label"><input type="checkbox" id="perform_vg_test" class="summary-trigger" checked> Vector Group</label>
-                    <label class="checkbox-label"><input type="checkbox" id="perform_wr_test" class="summary-trigger" checked> HT & LT Winding Resistance</label>
-                    <label class="checkbox-label"><input type="checkbox" id="perform_ir_test" class="summary-trigger" checked> IR Value</label>
-                </div>
-                <div class="mt-3 pt-3 border-t border-slate-300">
-                    <label class="checkbox-label" style="color: var(--primary-orange); font-weight: 700;">
-                        <input type="checkbox" id="toggle_dev_cols"> Show Deviation Columns (% Dev) for VR, MB & WR
-                    </label>
-                </div>
-            </div>
-
-            <div id="vr_test_container" class="test-section" style="display: block;">
-                <h4 class="sub-heading">
-                    <span><i class="fa-solid fa-bolt mr-2 no-print text-yellow-500"></i>VOLTAGE RATIO TEST</span>
-                    <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
-                </h4>
-                
-                <table class="test-details-table text-[12px]">
-                    <tr>
-                        <td><strong>TEST DIRECTION:</strong></td>
-                        <td>
-                            <label class="checkbox-label no-print"><input type="radio" name="vr_direction" value="hv_to_lv" checked class="vr-calc-trigger"> HV → LV</label>
-                            <label class="checkbox-label no-print"><input type="radio" name="vr_direction" value="lv_to_hv" class="vr-calc-trigger"> LV → HV</label>
-                            <span class="print-only font-bold">HV → LV</span>
-                        </td>
-                        <td><strong>MEASURED VOLTAGE:</strong></td>
-                        <td>
-                            <label class="checkbox-label no-print"><input type="checkbox" id="vr_measure_ll" class="vr-calc-trigger"> (L-L)</label>
-                            <label class="checkbox-label no-print"><input type="checkbox" id="vr_measure_ln" class="vr-calc-trigger" checked> (L-N)</label>
-                            <span class="print-only font-bold">L-N</span>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><strong>APPLIED VOLTAGE (L-L):</strong></td>
-                        <td colspan="3">
-                            <div class="voltage-inputs flex items-center gap-2">
-                                <div><label id="vr_applied_label_1" class="font-bold">1U-1V</label><br><input type="number" id="vr_applied_1" class="vr-calc-trigger" placeholder="Volts"> V</div>
-                                <div><label id="vr_applied_label_2" class="font-bold">1V-1W</label><br><input type="number" id="vr_applied_2" class="vr-calc-trigger" placeholder="Volts"> V</div>
-                                <div><label id="vr_applied_label_3" class="font-bold">1W-1U</label><br><input type="number" id="vr_applied_3" class="vr-calc-trigger" placeholder="Volts"> V</div>
                             </div>
-                        </td>
-                    </tr>
-                </table>
+                            
+                            <!-- Hidden non-printing Nameplate Reference -->
+                            <div id="nameplate_ref_container" class="mb-4 hidden no-print bg-slate-50 p-3 rounded border border-slate-200">
+                                <div class="flex justify-between items-center mb-2">
+                                    <p class="text-[11.5px] font-bold text-slate-500 uppercase tracking-wide"><i class="fa-solid fa-image"></i> Nameplate Reference</p>
+                                    <button type="button" onclick="document.getElementById('nameplate_ref_container').classList.add('hidden');" class="text-slate-400 hover:text-slate-600 text-xs font-bold" title="Hide Image">Hide <i class="fa-solid fa-xmark"></i></button>
+                                </div>
+                                <img id="nameplate_ref_img" src="" alt="Nameplate Reference" class="max-h-56 w-auto rounded shadow-sm border border-slate-300 object-contain mx-auto">
+                            </div>
 
-                <div class="table-responsive-wrapper">
-                    <table class="test-data-table w-full" id="vr_table">
-                        <thead id="vr_table_head">
-                        </thead>
-                        <tbody id="vr_table_body">
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
-                    <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
-                    <select id="vr_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
-                        <option value="Satisfactory">Satisfactory</option>
-                        <option value="Not Satisfactory">Not Satisfactory</option>
-                    </select>
-                </div>
-            </div>
+                            <div class="table-responsive-wrapper">
+                                <table class="erp-table mb-2 uppercase w-full">
+                                    <tr>
+                                        <th class="w-[18%] text-left whitespace-nowrap">CLIENT NAME</th>
+                                        <td class="w-[32%] font-bold"><input type="text" id="client_name" class="bold-input qr-trigger" placeholder="Enter Client Name"></td>
+                                        <th class="w-[18%] text-left whitespace-nowrap">REPORT NO.</th>
+                                        <td class="w-[32%] font-bold">
+                                            <input type="text" id="report_no_full" class="bold-input w-full qr-trigger" placeholder="MGTRF/RT/...">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">SITE LOCATION</th>
+                                        <td class="font-bold"><input type="text" id="site_location" class="bold-input" placeholder="Enter Location"></td>
+                                        <th class="text-left">DATE OF TESTING</th>
+                                        <td class="font-bold"><input type="date" id="test_date" class="bold-input qr-trigger"></td>
+                                    </tr>
+                                </table>
+                            </div>
 
-            <div id="mb_test_container" class="test-section" style="display: block;">
-                <h4 class="sub-heading">
-                    <span><i class="fa-solid fa-magnet mr-2 no-print text-indigo-500"></i>MAGNETIC BALANCE TEST</span>
-                    <span class="ref-std">(Ref: IS 10028-2)</span>
-                </h4>
-                
-                <div id="mb_dyn_table" class="table-responsive-wrapper" style="display: block;">
-                    <table class="test-data-table w-full">
-                        <thead>
-                            <tr>
-                                <th rowspan="2">Applied Across</th>
-                                <th colspan="3">Measured Voltages (HV Side)</th>
-                                <th class="dev-col" rowspan="2">% Dev.</th>
-                                <th colspan="3">Measured Voltages (LV Side)</th>
-                                <th class="dev-col" rowspan="2">% Dev.</th>
-                            </tr>
-                            <tr>
-                                <th id="mb_dyn_hv_h1">1U-1V</th>
-                                <th id="mb_dyn_hv_h2">1V-1W</th>
-                                <th id="mb_dyn_hv_h3">1W-1U</th>
-                                <th id="mb_dyn_lv_h1">2u-2n</th>
-                                <th id="mb_dyn_lv_h2">2v-2n</th>
-                                <th id="mb_dyn_lv_h3">2w-2n</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><strong id="mb_dyn_row1_label">1U-1V</strong></td><td><input type="number" step="0.01" id="mb_dyn_uv_hv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_uv_hv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_uv_hv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_dev_1" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_dyn_uv_lv_u" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_uv_lv_v" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_uv_lv_w" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_lv_dev_1" class="bold-input text-center-input" readonly></td></tr>
-                            <tr><td><strong id="mb_dyn_row2_label">1V-1W</strong></td><td><input type="number" step="0.01" id="mb_dyn_vw_hv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_vw_hv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_vw_hv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_dev_2" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_dyn_vw_lv_u" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_vw_lv_v" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_vw_lv_w" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_lv_dev_2" class="bold-input text-center-input" readonly></td></tr>
-                            <tr><td><strong id="mb_dyn_row3_label">1W-1U</strong></td><td><input type="number" step="0.01" id="mb_dyn_wu_hv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_wu_hv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_wu_hv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_dev_3" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_dyn_wu_lv_u" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_wu_lv_v" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_wu_lv_w" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_lv_dev_3" class="bold-input text-center-input" readonly></td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                            <div class="table-responsive-wrapper">
+                                <table class="erp-table mb-2 uppercase w-full">
+                                    <tr>
+                                        <th class="w-[18%] text-left">TX TAG NO.</th>
+                                        <td class="w-[32%] font-bold"><input type="text" id="tx_tag_no" class="bold-input qr-trigger" placeholder="e.g. TR-01"></td>
+                                        <th class="w-[18%] text-left">MAKE & YOM</th>
+                                        <td class="w-[32%] font-bold"><input type="text" id="tx_make_yom" class="bold-input" placeholder="e.g. VOLTAMP / 2017"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">SERIAL NO.</th>
+                                        <td class="font-bold"><input type="text" id="tx_serial" class="bold-input" placeholder="Serial Number"></td>
+                                        <th class="text-left">RATED MVA/KVA</th>
+                                        <td class="font-bold"><input type="text" id="tx_rating" class="bold-input" placeholder="e.g. 4000 KVA"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">TRANSFORMER TYPE</th>
+                                        <td class="font-bold">
+                                            <select id="tx_type" class="bold-input no-print" value="Oil Immersed">
+                                                <option value="Oil Immersed" selected>Oil Immersed</option>
+                                                <option value="Hermetically Sealed">Hermetically Sealed</option>
+                                                <option value="Dry Type">Dry Type</option>
+                                                <option value="Cast Resin">Cast Resin</option>
+                                                <option value="Other (Custom)">Other (Custom)</option>
+                                            </select>
+                                            <input type="text" id="tx_type_custom" class="bold-input mt-1 no-print" placeholder="Specify Transformer Type" style="display: none;">
+                                            <span id="tx_type_print" class="print-only">Oil Immersed</span>
+                                        </td>
+                                        <th class="text-left">TR. DUTY / DESIGN</th>
+                                        <td class="font-bold">
+                                            <select id="tx_duty_type" class="bold-input no-print" value="Power / Distribution Transformer">
+                                                <option value="Power / Distribution Transformer" selected>Power / Distribution Transformer</option>
+                                                <option value="Furnace Transformer">Furnace Transformer</option>
+                                                <option value="Converter Duty Transformer">Converter Duty Transformer</option>
+                                                <option value="Earthing Transformer">Earthing Transformer</option>
+                                                <option value="Zig-Zag Transformer">Zig-Zag Transformer</option>
+                                                <option value="Inverter Duty / Solar Transformer">Inverter Duty / Solar Transformer</option>
+                                                <option value="Rectifier Transformer">Rectifier Transformer</option>
+                                                <option value="Auto Transformer">Auto Transformer</option>
+                                                <option value="Other (Custom)">Other (Custom)</option>
+                                            </select>
+                                            <input type="text" id="tx_duty_type_custom" class="bold-input mt-1 no-print" placeholder="Specify Duty / Type" style="display: none;">
+                                            <span id="tx_duty_type_print" class="print-only">Power / Distribution Transformer</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">RATED KV (HV/LV)</th>
+                                        <td class="font-bold"><input type="text" id="tx_voltage" class="bold-input vr-dependency" placeholder="e.g. 22000 / 415"></td>
+                                        <th class="text-left">RATED AMPS</th>
+                                        <td class="font-bold"><input type="text" id="tx_amps" class="bold-input" placeholder="e.g. 82.66A / 4382.29A"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">VECTOR GROUP</th>
+                                        <td class="font-bold">
+                                            <select id="tx_vector" class="bold-input" value="Dyn11">
+                                                <option>Dd0</option>
+                                                <option>Dyn1</option>
+                                                <option selected>Dyn11</option>
+                                                <option>YNd1</option>
+                                                <option>YNd11</option>
+                                                <option>YNyn0</option>
+                                                <option>Other (Custom)</option>
+                                            </select>
+                                        </td>
+                                        <th class="text-left">% IMPEDANCE</th>
+                                        <td class="font-bold"><input type="text" id="tx_impedance" class="bold-input" placeholder="% Z"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">LOAD LOSSES</th>
+                                        <td class="font-bold"><input type="text" id="tx_load_losses" class="bold-input" placeholder="e.g. 28.5 kW (or NLL / LL)"></td>
+                                        <th class="text-left">FREQUENCY</th>
+                                        <td class="font-bold"><input type="text" id="tx_freq" class="bold-input" value="50 Hz"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">TAP CHANGER</th>
+                                        <td class="font-bold">
+                                            <div class="no-print">
+                                                <label class="checkbox-label"><input type="radio" name="tap_type" value="OLTC" checked> OLTC</label>
+                                                <label class="checkbox-label"><input type="radio" name="tap_type" value="OCTC"> OCTC</label>
+                                            </div>
+                                            <span id="tap_type_print" class="print-only">OLTC</span>
+                                        </td>
+                                        <th class="text-left tap-details">NO. OF TAPS</th>
+                                        <td class="font-bold tap-details">
+                                            <select id="tx_tap_count" class="no-print bold-input vr-dependency" value="21">
+                                                <option>5</option><option>7</option><option>9</option><option>13</option><option>17</option><option>19</option><option selected>21</option>
+                                            </select>
+                                            <span id="tx_tap_count_print" class="print-only">21</span>
+                                        </td>
+                                    </tr>
+                                    <tr class="tap-details">
+                                        <th class="text-left">PRINCIPAL TAP</th>
+                                        <td class="font-bold"><input type="number" id="tx_principal_tap" class="bold-input vr-dependency" placeholder="e.g. 13"></td>
+                                        <th class="text-left">TAP STEP (%)</th>
+                                        <td class="font-bold"><input type="number" step="0.01" id="tx_tap_step" class="bold-input vr-dependency" placeholder="e.g. 1.25"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">COOLING MEDIUM</th>
+                                        <td class="font-bold">
+                                            <select id="tx_cooling_medium" class="bold-input no-print" value="Mineral Oil">
+                                                <option value="Mineral Oil" selected>Mineral Oil</option>
+                                                <option value="Ester Oil - Synthetic">Ester Oil - Synthetic</option>
+                                                <option value="Ester Oil - Natural">Ester Oil - Natural</option>
+                                                <option value="Dry Type (Air Cooled)">Dry Type (Air Cooled)</option>
+                                                <option value="Other (Custom)">Other (Custom)</option>
+                                            </select>
+                                            <input type="text" id="tx_cooling_medium_custom" class="bold-input mt-1 no-print" placeholder="Specify Cooling Medium" style="display: none;">
+                                            <span id="tx_cooling_medium_print" class="print-only">Mineral Oil</span>
+                                        </td>
+                                        <th class="text-left">TYPE OF COOLING</th>
+                                        <td class="font-bold">
+                                            <select id="tx_cooling" class="bold-input no-print" value="ONAN">
+                                                <option value="ONAN" selected>ONAN</option>
+                                                <option value="ONAF">ONAF</option>
+                                                <option value="ONAN / ONAF">ONAN / ONAF</option>
+                                                <option value="AN">AN</option>
+                                                <option value="ANAF">ANAF</option>
+                                                <option value="KNAN">KNAN</option>
+                                                <option value="KNAF">KNAF</option>
+                                                <option value="KNAN / KNAF">KNAN / KNAF</option>
+                                                <option value="OFAF">OFAF</option>
+                                                <option value="ODAF">ODAF</option>
+                                                <option value="Other (Custom)">Other (Custom)</option>
+                                            </select>
+                                            <input type="text" id="tx_cooling_custom" class="bold-input mt-1 no-print" placeholder="Specify Cooling Code" style="display: none;">
+                                            <span id="tx_cooling_print" class="print-only">ONAN</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">OIL QUANTITY</th>
+                                        <td class="font-bold"><input type="text" id="tx_oil_qty" class="bold-input" placeholder="e.g. 3595 LTRS"></td>
+                                        <th class="text-left">WEIGHT OF OIL</th>
+                                        <td class="font-bold"><input type="text" id="tx_oil_wt" class="bold-input" placeholder="e.g. 3200 KGS"></td>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-left">CORE & WINDING WT.</th>
+                                        <td class="font-bold"><input type="text" id="tx_cw_wt" class="bold-input" placeholder="e.g. 4850 KGS"></td>
+                                        <th class="text-left">TOTAL WEIGHT</th>
+                                        <td class="font-bold"><input type="text" id="tx_total_wt" class="bold-input" placeholder="e.g. 11150 KGS"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
 
-                <div id="mb_ynd_table" class="table-responsive-wrapper" style="display:none;">
-                    <table class="test-data-table w-full">
-                        <thead>
-                            <tr>
-                                <th rowspan="2">Applied Across</th>
-                                <th colspan="3">Measured Voltages (HV)</th>
-                                <th class="dev-col" rowspan="2">% Dev.</th>
-                                <th colspan="3">Measured Voltages (LV)</th>
-                                <th class="dev-col" rowspan="2">% Dev.</th>
-                            </tr>
-                            <tr>
-                                <th id="mb_ynd_hv_h1">1U-1N</th>
-                                <th id="mb_ynd_hv_h2">1V-1N</th>
-                                <th id="mb_ynd_hv_h3">1W-1N</th>
-                                <th id="mb_ynd_lv_h1">2u-2v</th>
-                                <th id="mb_ynd_lv_h2">2v-2w</th>
-                                <th id="mb_ynd_lv_h3">2w-2u</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><strong id="mb_ynd_row1_label">1U-1N</strong></td><td><input type="number" step="0.01" id="mb_ynd_un_hv_un" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_un_hv_vn" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_un_hv_wn" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_dev_1" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_ynd_un_lv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_un_lv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_un_lv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_lv_dev_1" class="bold-input text-center-input" readonly></td></tr>
-                            <tr><td><strong id="mb_ynd_row2_label">1V-1N</strong></td><td><input type="number" step="0.01" id="mb_ynd_vn_hv_un" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_vn_hv_vn" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_vn_hv_wn" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_dev_2" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_ynd_vn_lv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_vn_lv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_vn_lv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_lv_dev_2" class="bold-input text-center-input" readonly></td></tr>
-                            <tr><td><strong id="mb_ynd_row3_label">1W-1N</strong></td><td><input type="number" step="0.01" id="mb_ynd_wn_hv_un" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_wn_hv_vn" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_wn_hv_wn" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_dev_3" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_ynd_wn_lv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_wn_lv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_wn_lv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_lv_dev_3" class="bold-input text-center-input" readonly></td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                        <h3 class="section-title" id="tests-heading">
+                            <span><i class="fa-solid fa-list-check mr-2"></i>2. TESTS PERFORMED</span>
+                        </h3>
+                        
+                        <div class="border border-slate-300 rounded-md p-4 mb-4 no-print bg-slate-50 shadow-sm">
+                            <div class="flex flex-wrap gap-x-6 gap-y-3">
+                                <label class="checkbox-label"><input type="checkbox" id="perform_vr_test" class="summary-trigger" checked> Voltage Ratio</label>
+                                <label class="checkbox-label"><input type="checkbox" id="perform_mb_test" class="summary-trigger" checked> Magnetic Balance</label>
+                                <label class="checkbox-label"><input type="checkbox" id="perform_mc_test" class="summary-trigger" checked> Magnetizing Current</label>
+                                <label class="checkbox-label"><input type="checkbox" id="perform_vg_test" class="summary-trigger" checked> Vector Group</label>
+                                <label class="checkbox-label"><input type="checkbox" id="perform_wr_test" class="summary-trigger" checked> HT & LT Winding Resistance</label>
+                                <label class="checkbox-label"><input type="checkbox" id="perform_ir_test" class="summary-trigger" checked> IR Value</label>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-slate-300">
+                                <label class="checkbox-label" style="color: var(--primary-orange); font-weight: 700;">
+                                    <input type="checkbox" id="toggle_dev_cols"> Show Deviation Columns (% Dev) for VR, MB & WR
+                                </label>
+                            </div>
+                        </div>
 
-                <div id="mb_custom_table" class="table-responsive-wrapper" style="display:none;">
-                    <table class="test-data-table w-full">
-                        <thead>
-                            <tr>
-                                <th rowspan="2"><input type="text" id="mb_custom_h1" class="text-center-input uppercase font-bold" value="Vtg Applied Across"></th>
-                                <th colspan="3"><input type="text" id="mb_custom_h2" class="text-center-input uppercase font-bold" value="Measured Voltages (Primary)"></th>
-                                <th class="dev-col" rowspan="2">% Dev.</th>
-                                <th colspan="3"><input type="text" id="mb_custom_h3" class="text-center-input uppercase font-bold" value="Measured Voltages (Secondary)"></th>
-                                <th class="dev-col" rowspan="2">% Dev.</th>
-                            </tr>
-                            <tr>
-                                <th><input type="text" id="mb_custom_sh1" class="text-center-input uppercase font-bold" value="Phase 1"></th>
-                                <th><input type="text" id="mb_custom_sh2" class="text-center-input uppercase font-bold" value="Phase 2"></th>
-                                <th><input type="text" id="mb_custom_sh3" class="text-center-input uppercase font-bold" value="Phase 3"></th>
-                                <th><input type="text" id="mb_custom_sh4" class="text-center-input uppercase font-bold" value="Phase A"></th>
-                                <th><input type="text" id="mb_custom_sh5" class="text-center-input uppercase font-bold" value="Phase B"></th>
-                                <th><input type="text" id="mb_custom_sh6" class="text-center-input uppercase font-bold" value="Phase C"></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr><td><input type="text" id="mb_custom_r1_applied" class="text-center-input font-bold"></td><td><input type="number" step="0.01" id="mb_custom_r1_m1" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r1_m2" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r1_m3" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_dev_1" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_custom_r1_m4" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r1_m5" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r1_m6" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_lv_dev_1" class="bold-input text-center-input" readonly></td></tr>
-                            <tr><td><input type="text" id="mb_custom_r2_applied" class="text-center-input font-bold"></td><td><input type="number" step="0.01" id="mb_custom_r2_m1" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r2_m2" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r2_m3" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_dev_2" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_custom_r2_m4" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r2_m5" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r2_m6" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_lv_dev_2" class="bold-input text-center-input" readonly></td></tr>
-                            <tr><td><input type="text" id="mb_custom_r3_applied" class="text-center-input font-bold"></td><td><input type="number" step="0.01" id="mb_custom_r3_m1" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r3_m2" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r3_m3" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_dev_3" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_custom_r3_m4" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r3_m5" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r3_m6" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_lv_dev_3" class="bold-input text-center-input" readonly></td></tr>
-                        </tbody>
-                    </table>
-                </div>
+                        <div id="vr_test_container" class="test-section" style="display: block;">
+                            <h4 class="sub-heading">
+                                <span><i class="fa-solid fa-bolt mr-2 text-yellow-500"></i>VOLTAGE RATIO TEST</span>
+                                <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
+                            </h4>
+                            
+                            <table class="test-details-table text-[12px]">
+                                <tr>
+                                    <td><strong>TEST DIRECTION:</strong></td>
+                                    <td>
+                                        <label class="checkbox-label no-print"><input type="radio" name="vr_direction" value="hv_to_lv" checked class="vr-calc-trigger"> HV → LV</label>
+                                        <label class="checkbox-label no-print"><input type="radio" name="vr_direction" value="lv_to_hv" class="vr-calc-trigger"> LV → HV</label>
+                                        <span class="print-only font-bold">HV → LV</span>
+                                    </td>
+                                    <td><strong>MEASURED VOLTAGE:</strong></td>
+                                    <td>
+                                        <label class="checkbox-label no-print"><input type="checkbox" id="vr_measure_ll" class="vr-calc-trigger"> (L-L)</label>
+                                        <label class="checkbox-label no-print"><input type="checkbox" id="vr_measure_ln" class="vr-calc-trigger" checked> (L-N)</label>
+                                        <span class="print-only font-bold">L-N</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong>APPLIED VOLTAGE (L-L):</strong></td>
+                                    <td colspan="3">
+                                        <div class="voltage-inputs flex items-center gap-2">
+                                            <div><label id="vr_applied_label_1" class="font-bold">1U-1V</label><br><input type="number" id="vr_applied_1" class="vr-calc-trigger" placeholder="Volts"> V</div>
+                                            <div><label id="vr_applied_label_2" class="font-bold">1V-1W</label><br><input type="number" id="vr_applied_2" class="vr-calc-trigger" placeholder="Volts"> V</div>
+                                            <div><label id="vr_applied_label_3" class="font-bold">1W-1U</label><br><input type="number" id="vr_applied_3" class="vr-calc-trigger" placeholder="Volts"> V</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
 
-                <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
-                    <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
-                    <select id="mb_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
-                        <option value="Satisfactory">Satisfactory</option>
-                        <option value="Not Satisfactory">Not Satisfactory</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="mc_test_container" class="test-section" style="display: block;">
-                <h4 class="sub-heading">
-                    <span><i class="fa-solid fa-wave-square mr-2 no-print text-teal-500"></i>MAGNETIZING CURRENT TEST</span>
-                    <span class="ref-std">(Ref: IEEE C57.12.90)</span>
-                </h4>
-                
-                <div class="flex items-center gap-2 mb-3 text-[12px]">
-                    <strong>TAPS TO MEASURE:</strong>
-                    <div class="no-print">
-                        <select id="mc_taps_mode" class="border border-slate-300 px-2 py-1.5 rounded-sm focus:border-blue-500 bg-white" value="single">
-                            <option value="all">All Taps</option>
-                            <option value="single" selected>Single Tap (Principal)</option>
-                        </select>
-                    </div>
-                    <span id="mc_taps_mode_print" class="print-only font-bold">Single Tap (Principal)</span>
-                </div>
-
-                <div class="table-responsive-wrapper">
-                    <table class="test-data-table w-full" id="mc_table">
-                        <thead id="mc_table_head">
-                            <tr><th>Tap Position</th><th>R Phase (mA)</th><th>Y Phase (mA)</th><th>B Phase (mA)</th></tr>
-                        </thead>
-                        <tbody id="mc_table_body">
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
-                    <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
-                    <select id="mc_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
-                        <option value="Satisfactory">Satisfactory</option>
-                        <option value="Not Satisfactory">Not Satisfactory</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="vg_test_container" class="test-section" style="display: block;">
-                <h4 class="sub-heading">
-                    <span><i class="fa-solid fa-arrows-to-circle mr-2 no-print text-purple-500"></i>VECTOR GROUP TEST</span>
-                    <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
-                </h4>
-                
-                <div id="vg_container" class="text-[12px] p-4 rounded border border-slate-200">
-                </div>
-                
-                <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
-                    <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
-                    <select id="vg_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
-                        <option value="Satisfactory">Satisfactory</option>
-                        <option value="Not Satisfactory">Not Satisfactory</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="wr_test_container" class="test-section" style="display: block;">
-                <h4 class="sub-heading">
-                    <span><i class="fa-solid fa-temperature-half mr-2 no-print text-red-500"></i>HT & LT WINDING RESISTANCE TEST</span>
-                    <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
-                </h4>
-                
-                <table class="test-details-table text-[12px] mb-4">
-                    <tr>
-                        <td><strong>TAPS TO MEASURE:</strong></td>
-                        <td>
-                            <div class="no-print">
-                                <select id="wr_taps_mode" class="border border-slate-300 bg-white px-2 py-1.5 rounded-sm" value="summary">
-                                    <option value="all">All Taps</option>
-                                    <option value="summary" selected>Min / Principal / Max Taps</option>
+                            <div class="table-responsive-wrapper">
+                                <table class="test-data-table w-full" id="vr_table">
+                                    <thead id="vr_table_head">
+                                    </thead>
+                                    <tbody id="vr_table_body">
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
+                                <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
+                                <select id="vr_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
+                                    <option value="Satisfactory">Satisfactory</option>
+                                    <option value="Not Satisfactory">Not Satisfactory</option>
                                 </select>
                             </div>
-                            <span id="wr_taps_mode_print" class="print-only font-bold">Min / Principal / Max Taps</span>
-                        </td>
-                        <td><strong>TEMPERATURE (°C):</strong></td>
-                        <td>
-                            <div class="voltage-inputs flex items-center gap-2">
-                                <div><label class="font-bold">OTI</label><br><input type="number" id="wr_temp_oti" class="bold-input"></div>
-                                <div><label class="font-bold">WTI</label><br><input type="number" id="wr_temp_wti" class="bold-input"></div>
+                        </div>
+
+                        <div id="mb_test_container" class="test-section" style="display: block;">
+                            <h4 class="sub-heading">
+                                <span><i class="fa-solid fa-magnet mr-2 text-indigo-500"></i>MAGNETIC BALANCE TEST</span>
+                                <span class="ref-std">(Ref: IS 10028-2)</span>
+                            </h4>
+                            
+                            <div id="mb_dyn_table" class="table-responsive-wrapper" style="display: block;">
+                                <table class="test-data-table w-full">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">Applied Across</th>
+                                            <th colspan="3">Measured Voltages (HV Side)</th>
+                                            <th class="dev-col" rowspan="2">% Dev.</th>
+                                            <th colspan="3">Measured Voltages (LV Side)</th>
+                                            <th class="dev-col" rowspan="2">% Dev.</th>
+                                        </tr>
+                                        <tr>
+                                            <th id="mb_dyn_hv_h1">1U-1V</th>
+                                            <th id="mb_dyn_hv_h2">1V-1W</th>
+                                            <th id="mb_dyn_hv_h3">1W-1U</th>
+                                            <th id="mb_dyn_lv_h1">2u-2n</th>
+                                            <th id="mb_dyn_lv_h2">2v-2n</th>
+                                            <th id="mb_dyn_lv_h3">2w-2n</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><strong id="mb_dyn_row1_label">1U-1V</strong></td><td><input type="number" step="0.01" id="mb_dyn_uv_hv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_uv_hv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_uv_hv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_dev_1" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_dyn_uv_lv_u" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_uv_lv_v" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_uv_lv_w" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_lv_dev_1" class="bold-input text-center-input" readonly></td></tr>
+                                        <tr><td><strong id="mb_dyn_row2_label">1V-1W</strong></td><td><input type="number" step="0.01" id="mb_dyn_vw_hv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_vw_hv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_vw_hv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_dev_2" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_dyn_vw_lv_u" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_vw_lv_v" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_vw_lv_w" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_lv_dev_2" class="bold-input text-center-input" readonly></td></tr>
+                                        <tr><td><strong id="mb_dyn_row3_label">1W-1U</strong></td><td><input type="number" step="0.01" id="mb_dyn_wu_hv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_wu_hv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_wu_hv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_dev_3" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_dyn_wu_lv_u" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_wu_lv_v" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_dyn_wu_lv_w" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_dyn_lv_dev_3" class="bold-input text-center-input" readonly></td></tr>
+                                    </tbody>
+                                </table>
                             </div>
-                        </td>
-                    </tr>
-                </table>
 
-                <div id="wr_hv_container">
-                    <p class="font-bold text-[12px] mb-2 px-2 border-l-4 border-[var(--primary-orange)]">PRIMARY (HV) WINDING:</p>
-                    <div class="table-responsive-wrapper">
-                        <table class="test-data-table w-full" id="wr_hv_table">
-                            <thead>
-                                <tr>
-                                    <th>Tap Position</th>
-                                    <th id="wr_hv_h1">1U-1V</th>
-                                    <th id="wr_hv_h2">1V-1W</th>
-                                    <th id="wr_hv_h3">1W-1U</th>
-                                    <th>Unit 
-                                        <select id="wr_hv_unit" class="ml-1 border border-slate-400 bg-white rounded-sm text-xs px-1 no-print" value="Ω">
-                                            <option>mΩ</option><option selected>Ω</option>
-                                        </select>
-                                        <span class="print-only ml-1">Ω</span>
-                                    </th>
-                                    <th class="dev-col">% Dev.</th>
-                                </tr>
-                            </thead>
-                            <tbody id="wr_hv_table_body">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div id="wr_lv_container" class="mt-4">
-                    <p class="font-bold text-[12px] mb-2 px-2 border-l-4 border-[var(--persian-blue)]">SECONDARY (LV) WINDING (AT PRINCIPAL TAP):</p>
-                    <div class="table-responsive-wrapper">
-                        <table class="test-data-table w-full" id="wr_lv_table">
-                            <thead>
-                                <tr>
-                                    <th id="wr_lv_h1">2u-2n</th>
-                                    <th id="wr_lv_h2">2v-2n</th>
-                                    <th id="wr_lv_h3">2w-2n</th>
-                                    <th>Unit 
-                                        <select id="wr_lv_unit" class="ml-1 border border-slate-400 bg-white rounded-sm text-xs px-1 no-print" value="mΩ">
-                                            <option selected>mΩ</option><option>Ω</option>
-                                        </select>
-                                        <span class="print-only ml-1">mΩ</span>
-                                    </th>
-                                    <th class="dev-col">% Dev.</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td><input type="number" step="0.001" id="wr_lv_r" class="text-center-input bold-input wr-calc-trigger"></td>
-                                    <td><input type="number" step="0.001" id="wr_lv_y" class="text-center-input bold-input wr-calc-trigger"></td>
-                                    <td><input type="number" step="0.001" id="wr_lv_b" class="text-center-input bold-input wr-calc-trigger"></td>
-                                    <td class="font-bold bg-transparent">-</td>
-                                    <td class="dev-col"><input type="text" id="wr_lv_dev" class="text-center-input bold-input" readonly></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
-                    <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
-                    <select id="wr_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
-                        <option value="Satisfactory">Satisfactory</option>
-                        <option value="Not Satisfactory">Not Satisfactory</option>
-                    </select>
-                </div>
-            </div>
-
-            <div id="ir_test_container" class="test-section" style="display: block;">
-                <h4 class="sub-heading">
-                    <span><i class="fa-solid fa-shield-halved mr-2 no-print text-green-600"></i>IR VALUE TEST</span>
-                    <span class="ref-std">(Ref: IS 1180 / IEEE C57.12.90)</span>
-                </h4>
-                
-                <table class="test-details-table text-[12px] mb-4">
-                    <tr>
-                        <td><strong>TEST TYPE:</strong></td>
-                        <td>
-                            <div class="no-print">
-                                <label class="checkbox-label"><input type="radio" name="ir_test_type" value="ir_only" checked> IR Only</label>
-                                <label class="checkbox-label"><input type="radio" name="ir_test_type" value="ir_pi"> IR with PI</label>
+                            <div id="mb_ynd_table" class="table-responsive-wrapper" style="display:none;">
+                                <table class="test-data-table w-full">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2">Applied Across</th>
+                                            <th colspan="3">Measured Voltages (HV)</th>
+                                            <th class="dev-col" rowspan="2">% Dev.</th>
+                                            <th colspan="3">Measured Voltages (LV)</th>
+                                            <th class="dev-col" rowspan="2">% Dev.</th>
+                                        </tr>
+                                        <tr>
+                                            <th id="mb_ynd_hv_h1">1U-1N</th>
+                                            <th id="mb_ynd_hv_h2">1V-1N</th>
+                                            <th id="mb_ynd_hv_h3">1W-1N</th>
+                                            <th id="mb_ynd_lv_h1">2u-2v</th>
+                                            <th id="mb_ynd_lv_h2">2v-2w</th>
+                                            <th id="mb_ynd_lv_h3">2w-2u</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><strong id="mb_ynd_row1_label">1U-1N</strong></td><td><input type="number" step="0.01" id="mb_ynd_un_hv_un" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_un_hv_vn" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_un_hv_wn" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_dev_1" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_ynd_un_lv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_un_lv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_un_lv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_lv_dev_1" class="bold-input text-center-input" readonly></td></tr>
+                                        <tr><td><strong id="mb_ynd_row2_label">1V-1N</strong></td><td><input type="number" step="0.01" id="mb_ynd_vn_hv_un" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_vn_hv_vn" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_vn_hv_wn" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_dev_2" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_ynd_vn_lv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_vn_lv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_vn_lv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_lv_dev_2" class="bold-input text-center-input" readonly></td></tr>
+                                        <tr><td><strong id="mb_ynd_row3_label">1W-1N</strong></td><td><input type="number" step="0.01" id="mb_ynd_wn_hv_un" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_wn_hv_vn" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_wn_hv_wn" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_dev_3" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_ynd_wn_lv_uv" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_wn_lv_vw" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_ynd_wn_lv_wu" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_ynd_lv_dev_3" class="bold-input text-center-input" readonly></td></tr>
+                                    </tbody>
+                                </table>
                             </div>
-                            <span id="ir_test_type_print" class="print-only font-bold">IR Only</span>
-                        </td>
-                        <td><strong>TEMPERATURE (°C):</strong></td>
-                        <td>
-                            <div class="voltage-inputs flex items-center gap-2">
-                                <div><label class="font-bold" title="Test Temperature (Top Oil)">OTI</label><br><input type="number" id="ir_temp_oti" class="bold-input ir-calc-trigger"></div>
-                                <div><label class="font-bold">WTI</label><br><input type="number" id="ir_temp_wti" class="bold-input"></div>
+
+                            <div id="mb_custom_table" class="table-responsive-wrapper" style="display:none;">
+                                <table class="test-data-table w-full">
+                                    <thead>
+                                        <tr>
+                                            <th rowspan="2"><input type="text" id="mb_custom_h1" class="text-center-input uppercase font-bold" value="Vtg Applied Across"></th>
+                                            <th colspan="3"><input type="text" id="mb_custom_h2" class="text-center-input uppercase font-bold" value="Measured Voltages (Primary)"></th>
+                                            <th class="dev-col" rowspan="2">% Dev.</th>
+                                            <th colspan="3"><input type="text" id="mb_custom_h3" class="text-center-input uppercase font-bold" value="Measured Voltages (Secondary)"></th>
+                                            <th class="dev-col" rowspan="2">% Dev.</th>
+                                        </tr>
+                                        <tr>
+                                            <th><input type="text" id="mb_custom_sh1" class="text-center-input uppercase font-bold" value="Phase 1"></th>
+                                            <th><input type="text" id="mb_custom_sh2" class="text-center-input uppercase font-bold" value="Phase 2"></th>
+                                            <th><input type="text" id="mb_custom_sh3" class="text-center-input uppercase font-bold" value="Phase 3"></th>
+                                            <th><input type="text" id="mb_custom_sh4" class="text-center-input uppercase font-bold" value="Phase A"></th>
+                                            <th><input type="text" id="mb_custom_sh5" class="text-center-input uppercase font-bold" value="Phase B"></th>
+                                            <th><input type="text" id="mb_custom_sh6" class="text-center-input uppercase font-bold" value="Phase C"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td><input type="text" id="mb_custom_r1_applied" class="text-center-input font-bold"></td><td><input type="number" step="0.01" id="mb_custom_r1_m1" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r1_m2" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r1_m3" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_dev_1" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_custom_r1_m4" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r1_m5" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r1_m6" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_lv_dev_1" class="bold-input text-center-input" readonly></td></tr>
+                                        <tr><td><input type="text" id="mb_custom_r2_applied" class="text-center-input font-bold"></td><td><input type="number" step="0.01" id="mb_custom_r2_m1" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r2_m2" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r2_m3" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_dev_2" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_custom_r2_m4" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r2_m5" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r2_m6" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_lv_dev_2" class="bold-input text-center-input" readonly></td></tr>
+                                        <tr><td><input type="text" id="mb_custom_r3_applied" class="text-center-input font-bold"></td><td><input type="number" step="0.01" id="mb_custom_r3_m1" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r3_m2" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r3_m3" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_dev_3" class="bold-input text-center-input" readonly></td><td><input type="number" step="0.01" id="mb_custom_r3_m4" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r3_m5" class="mb-calc-trigger text-center-input bold-input"></td><td><input type="number" step="0.01" id="mb_custom_r3_m6" class="mb-calc-trigger text-center-input bold-input"></td><td class="dev-col"><input type="text" id="mb_custom_lv_dev_3" class="bold-input text-center-input" readonly></td></tr>
+                                    </tbody>
+                                </table>
                             </div>
-                        </td>
-                    </tr>
-                </table>
 
-                <div class="table-responsive-wrapper">
-                    <table class="test-data-table w-full">
-                        <thead>
-                            <tr>
-                                <td class="text-left font-bold bg-transparent">Parameters</td>
-                                <th>
-                                    HV-E @ 
-                                    <select id="ir_hve_voltage" class="no-print border border-slate-400 bg-white rounded-sm text-xs px-1" value="5000V">
-                                        <option>100V</option><option>250V</option><option>500V</option><option>1000V</option><option>2500V</option><option selected>5000V</option>
-                                    </select>
-                                    <span id="ir_hve_voltage_print" class="print-only">5000V</span>
-                                </th>
-                                <th>
-                                    LV-E @ 
-                                    <select id="ir_lve_voltage" class="no-print border border-slate-400 bg-white rounded-sm text-xs px-1" value="500V">
-                                        <option>100V</option><option>250V</option><option selected>500V</option><option>1000V</option><option>2500V</option><option>5000V</option>
-                                    </select>
-                                    <span id="ir_lve_voltage_print" class="print-only">500V</span>
-                                </th>
-                                <th>
-                                    HV-LV @ 
-                                    <select id="ir_hvlv_voltage" class="no-print border border-slate-400 bg-white rounded-sm text-xs px-1" value="500V">
-                                        <option>100V</option><option>250V</option><option selected>500V</option><option>1000V</option><option>2500V</option><option>5000V</option>
-                                    </select>
-                                    <span id="ir_hvlv_voltage_print" class="print-only">500V</span>
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody id="ir_table_body">
-                            <tr>
-                                <td class="text-left font-bold pl-3 border-l-4 border-l-blue-400">Measured IR (1 min)</td>
-                                <td><input type="number" step="0.01" id="ir_hve_1m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
-                                <td><input type="number" step="0.01" id="ir_lve_1m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
-                                <td><input type="number" step="0.01" id="ir_hvlv_1m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
-                            </tr>
-                            <tr id="ir_20c_row">
-                                <td class="text-left font-bold text-gray-700 pl-3">Calculated IR @ 20°C</td>
-                                <td><input type="text" id="ir_hve_20c" readonly class="text-center-input font-bold" title="Calculated automatically to 20°C"></td>
-                                <td><input type="text" id="ir_lve_20c" readonly class="text-center-input font-bold" title="Calculated automatically to 20°C"></td>
-                                <td><input type="text" id="ir_hvlv_20c" readonly class="text-center-input font-bold" title="Calculated automatically to 20°C"></td>
-                            </tr>
-                            <tr id="ir_10min_row" style="display: none;">
-                                <td class="text-left font-bold pl-3 border-l-4 border-l-purple-400">Measured IR (10 min)</td>
-                                <td><input type="number" step="0.01" id="ir_hve_10m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
-                                <td><input type="number" step="0.01" id="ir_lve_10m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
-                                <td><input type="number" step="0.01" id="ir_hvlv_10m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
-                            </tr>
-                            <tr id="pi_row" style="display: none;">
-                                <td class="text-left font-bold text-gray-700 pl-3">Polarisation Index (PI)</td>
-                                <td><input type="text" id="pi_hve" readonly class="text-center-input font-bold"></td>
-                                <td><input type="text" id="pi_lve" readonly class="text-center-input font-bold"></td>
-                                <td><input type="text" id="pi_hvlv" readonly class="text-center-input font-bold"></td>
-                            </tr>
-                            <tr>
-                                <td class="text-left font-bold pl-3 bg-transparent">Unit</td>
-                                <td class="bg-transparent"><select id="ir_hve_unit" class="text-center-input border border-slate-300 bg-white rounded-sm px-2 py-0.5 no-print" value="GΩ"><option selected>GΩ</option><option>MΩ</option></select><span class="print-only">GΩ</span></td>
-                                <td class="bg-transparent"><select id="ir_lve_unit" class="text-center-input border border-slate-300 bg-white rounded-sm px-2 py-0.5 no-print" value="GΩ"><option selected>GΩ</option><option>MΩ</option></select><span class="print-only">GΩ</span></td>
-                                <td class="bg-transparent"><select id="ir_hvlv_unit" class="text-center-input border border-slate-300 bg-white rounded-sm px-2 py-0.5 no-print" value="GΩ"><option selected>GΩ</option><option>MΩ</option></select><span class="print-only">GΩ</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-                
-                <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
-                    <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
-                    <select id="ir_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
-                        <option value="Satisfactory">Satisfactory</option>
-                        <option value="Not Satisfactory">Not Satisfactory</option>
-                    </select>
-                </div>
-            </div>
+                            <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
+                                <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
+                                <select id="mb_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
+                                    <option value="Satisfactory">Satisfactory</option>
+                                    <option value="Not Satisfactory">Not Satisfactory</option>
+                                </select>
+                            </div>
+                        </div>
 
-            <div class="summary-section">
-                <div class="section-title">
-                    <span><i class="fa-solid fa-file-signature mr-2 no-print"></i>3. SUMMARY & REMARKS</span>
-                    <button id="ai_summary_btn" class="ai-extract-btn ai-summary-btn no-print text-white font-bold"><i class="fa-solid fa-brain"></i> Generate Expert AI Diagnosis</button>
-                </div>
-                <textarea id="remarks-box" class="border border-slate-300 bg-transparent rounded shadow-inner p-4 w-full leading-relaxed resize-y font-medium text-slate-800 focus:ring-2 focus:ring-[var(--primary-orange)] outline-none transition" placeholder="No tests selected. Summary will be auto-generated here." style="min-height: 140px;">TEST OBSERVATIONS & STATUS:
+                        <div id="mc_test_container" class="test-section" style="display: block;">
+                            <h4 class="sub-heading">
+                                <span><i class="fa-solid fa-wave-square mr-2 text-teal-500"></i>MAGNETIZING CURRENT TEST</span>
+                                <span class="ref-std">(Ref: IEEE C57.12.90)</span>
+                            </h4>
+                            
+                            <div class="flex items-center gap-2 mb-3 text-[12px]">
+                                <strong>TAPS TO MEASURE:</strong>
+                                <div class="no-print">
+                                    <select id="mc_taps_mode" class="border border-slate-300 px-2 py-1.5 rounded-sm focus:border-blue-500 bg-white" value="single">
+                                        <option value="all">All Taps</option>
+                                        <option value="single" selected>Single Tap (Principal)</option>
+                                    </select>
+                                </div>
+                                <span id="mc_taps_mode_print" class="print-only font-bold">Single Tap (Principal)</span>
+                            </div>
+
+                            <div class="table-responsive-wrapper">
+                                <table class="test-data-table w-full" id="mc_table">
+                                    <thead id="mc_table_head">
+                                        <tr><th>Tap Position</th><th>R Phase (mA)</th><th>Y Phase (mA)</th><th>B Phase (mA)</th></tr>
+                                    </thead>
+                                    <tbody id="mc_table_body">
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
+                                <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
+                                <select id="mc_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
+                                    <option value="Satisfactory">Satisfactory</option>
+                                    <option value="Not Satisfactory">Not Satisfactory</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="vg_test_container" class="test-section" style="display: block;">
+                            <h4 class="sub-heading">
+                                <span><i class="fa-solid fa-arrows-to-circle mr-2 text-purple-500"></i>VECTOR GROUP TEST</span>
+                                <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
+                            </h4>
+                            
+                            <div id="vg_container" class="text-[12px] p-4 rounded border border-slate-200">
+                            </div>
+                            
+                            <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
+                                <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
+                                <select id="vg_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
+                                    <option value="Satisfactory">Satisfactory</option>
+                                    <option value="Not Satisfactory">Not Satisfactory</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="wr_test_container" class="test-section" style="display: block;">
+                            <h4 class="sub-heading">
+                                <span><i class="fa-solid fa-temperature-half mr-2 text-red-500"></i>HT & LT WINDING RESISTANCE TEST</span>
+                                <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
+                            </h4>
+                            
+                            <table class="test-details-table text-[12px] mb-4">
+                                <tr>
+                                    <td><strong>TAPS TO MEASURE:</strong></td>
+                                    <td>
+                                        <div class="no-print">
+                                            <select id="wr_taps_mode" class="border border-slate-300 bg-white px-2 py-1.5 rounded-sm" value="summary">
+                                                <option value="all">All Taps</option>
+                                                <option value="summary" selected>Min / Principal / Max Taps</option>
+                                            </select>
+                                        </div>
+                                        <span id="wr_taps_mode_print" class="print-only font-bold">Min / Principal / Max Taps</span>
+                                    </td>
+                                    <td><strong>TEMPERATURE (°C):</strong></td>
+                                    <td>
+                                        <div class="voltage-inputs flex items-center gap-2">
+                                            <div><label class="font-bold">OTI</label><br><input type="number" id="wr_temp_oti" class="bold-input"></div>
+                                            <div><label class="font-bold">WTI</label><br><input type="number" id="wr_temp_wti" class="bold-input"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div id="wr_hv_container">
+                                <p class="font-bold text-[12px] mb-2 px-2 border-l-4 border-[var(--primary-orange)]">PRIMARY (HV) WINDING:</p>
+                                <div class="table-responsive-wrapper">
+                                    <table class="test-data-table w-full" id="wr_hv_table">
+                                        <thead>
+                                            <tr>
+                                                <th>Tap Position</th>
+                                                <th id="wr_hv_h1">1U-1V</th>
+                                                <th id="wr_hv_h2">1V-1W</th>
+                                                <th id="wr_hv_h3">1W-1U</th>
+                                                <th>Unit 
+                                                    <select id="wr_hv_unit" class="ml-1 border border-slate-400 bg-white rounded-sm text-xs px-1 no-print" value="Ω">
+                                                        <option>mΩ</option><option selected>Ω</option>
+                                                    </select>
+                                                    <span class="print-only ml-1">Ω</span>
+                                                </th>
+                                                <th class="dev-col">% Dev.</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="wr_hv_table_body">
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div id="wr_lv_container" class="mt-4">
+                                <p class="font-bold text-[12px] mb-2 px-2 border-l-4 border-[var(--persian-blue)]">SECONDARY (LV) WINDING (AT PRINCIPAL TAP):</p>
+                                <div class="table-responsive-wrapper">
+                                    <table class="test-data-table w-full" id="wr_lv_table">
+                                        <thead>
+                                            <tr>
+                                                <th id="wr_lv_h1">2u-2n</th>
+                                                <th id="wr_lv_h2">2v-2n</th>
+                                                <th id="wr_lv_h3">2w-2n</th>
+                                                <th>Unit 
+                                                    <select id="wr_lv_unit" class="ml-1 border border-slate-400 bg-white rounded-sm text-xs px-1 no-print" value="mΩ">
+                                                        <option selected>mΩ</option><option>Ω</option>
+                                                    </select>
+                                                    <span class="print-only ml-1">mΩ</span>
+                                                </th>
+                                                <th class="dev-col">% Dev.</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td><input type="number" step="0.001" id="wr_lv_r" class="text-center-input bold-input wr-calc-trigger"></td>
+                                                <td><input type="number" step="0.001" id="wr_lv_y" class="text-center-input bold-input wr-calc-trigger"></td>
+                                                <td><input type="number" step="0.001" id="wr_lv_b" class="text-center-input bold-input wr-calc-trigger"></td>
+                                                <td class="font-bold bg-transparent">-</td>
+                                                <td class="dev-col"><input type="text" id="wr_lv_dev" class="text-center-input bold-input" readonly></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
+                                <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
+                                <select id="wr_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
+                                    <option value="Satisfactory">Satisfactory</option>
+                                    <option value="Not Satisfactory">Not Satisfactory</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="ir_test_container" class="test-section" style="display: block;">
+                            <h4 class="sub-heading">
+                                <span><i class="fa-solid fa-shield-halved mr-2 text-green-600"></i>IR VALUE TEST</span>
+                                <span class="ref-std">(Ref: IS 1180 / IEEE C57.12.90)</span>
+                            </h4>
+                            
+                            <table class="test-details-table text-[12px] mb-4">
+                                <tr>
+                                    <td><strong>TEST TYPE:</strong></td>
+                                    <td>
+                                        <div class="no-print">
+                                            <label class="checkbox-label"><input type="radio" name="ir_test_type" value="ir_only" checked> IR Only</label>
+                                            <label class="checkbox-label"><input type="radio" name="ir_test_type" value="ir_pi"> IR with PI</label>
+                                        </div>
+                                        <span id="ir_test_type_print" class="print-only font-bold">IR Only</span>
+                                    </td>
+                                    <td><strong>TEMPERATURE (°C):</strong></td>
+                                    <td>
+                                        <div class="voltage-inputs flex items-center gap-2">
+                                            <div><label class="font-bold" title="Test Temperature (Top Oil)">OTI</label><br><input type="number" id="ir_temp_oti" class="bold-input ir-calc-trigger"></div>
+                                            <div><label class="font-bold">WTI</label><br><input type="number" id="ir_temp_wti" class="bold-input"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <div class="table-responsive-wrapper">
+                                <table class="test-data-table w-full">
+                                    <thead>
+                                        <tr>
+                                            <td class="text-left font-bold bg-transparent">Parameters</td>
+                                            <th>
+                                                HV-E @ 
+                                                <select id="ir_hve_voltage" class="no-print border border-slate-400 bg-white rounded-sm text-xs px-1" value="5000V">
+                                                    <option>100V</option><option>250V</option><option>500V</option><option>1000V</option><option>2500V</option><option selected>5000V</option>
+                                                </select>
+                                                <span id="ir_hve_voltage_print" class="print-only">5000V</span>
+                                            </th>
+                                            <th>
+                                                LV-E @ 
+                                                <select id="ir_lve_voltage" class="no-print border border-slate-400 bg-white rounded-sm text-xs px-1" value="500V">
+                                                    <option>100V</option><option>250V</option><option selected>500V</option><option>1000V</option><option>2500V</option><option>5000V</option>
+                                                </select>
+                                                <span id="ir_lve_voltage_print" class="print-only">500V</span>
+                                            </th>
+                                            <th>
+                                                HV-LV @ 
+                                                <select id="ir_hvlv_voltage" class="no-print border border-slate-400 bg-white rounded-sm text-xs px-1" value="500V">
+                                                    <option>100V</option><option>250V</option><option selected>500V</option><option>1000V</option><option>2500V</option><option>5000V</option>
+                                                </select>
+                                                <span id="ir_hvlv_voltage_print" class="print-only">500V</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ir_table_body">
+                                        <tr>
+                                            <td class="text-left font-bold pl-3 border-l-4 border-l-blue-400">Measured IR (1 min)</td>
+                                            <td><input type="number" step="0.01" id="ir_hve_1m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
+                                            <td><input type="number" step="0.01" id="ir_lve_1m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
+                                            <td><input type="number" step="0.01" id="ir_hvlv_1m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
+                                        </tr>
+                                        <tr id="ir_20c_row">
+                                            <td class="text-left font-bold text-gray-700 pl-3">Calculated IR @ 20°C</td>
+                                            <td><input type="text" id="ir_hve_20c" readonly class="text-center-input font-bold" title="Calculated automatically to 20°C"></td>
+                                            <td><input type="text" id="ir_lve_20c" readonly class="text-center-input font-bold" title="Calculated automatically to 20°C"></td>
+                                            <td><input type="text" id="ir_hvlv_20c" readonly class="text-center-input font-bold" title="Calculated automatically to 20°C"></td>
+                                        </tr>
+                                        <tr id="ir_10min_row" style="display: none;">
+                                            <td class="text-left font-bold pl-3 border-l-4 border-l-purple-400">Measured IR (10 min)</td>
+                                            <td><input type="number" step="0.01" id="ir_hve_10m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
+                                            <td><input type="number" step="0.01" id="ir_lve_10m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
+                                            <td><input type="number" step="0.01" id="ir_hvlv_10m" class="ir-input ir-calc-trigger text-center-input bold-input"></td>
+                                        </tr>
+                                        <tr id="pi_row" style="display: none;">
+                                            <td class="text-left font-bold text-gray-700 pl-3">Polarisation Index (PI)</td>
+                                            <td><input type="text" id="pi_hve" readonly class="text-center-input font-bold"></td>
+                                            <td><input type="text" id="pi_lve" readonly class="text-center-input font-bold"></td>
+                                            <td><input type="text" id="pi_hvlv" readonly class="text-center-input font-bold"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="text-left font-bold pl-3 bg-transparent">Unit</td>
+                                            <td class="bg-transparent"><select id="ir_hve_unit" class="text-center-input border border-slate-300 bg-white rounded-sm px-2 py-0.5 no-print" value="GΩ"><option selected>GΩ</option><option>MΩ</option></select><span class="print-only">GΩ</span></td>
+                                            <td class="bg-transparent"><select id="ir_lve_unit" class="text-center-input border border-slate-300 bg-white rounded-sm px-2 py-0.5 no-print" value="GΩ"><option selected>GΩ</option><option>MΩ</option></select><span class="print-only">GΩ</span></td>
+                                            <td class="bg-transparent"><select id="ir_hvlv_unit" class="text-center-input border border-slate-300 bg-white rounded-sm px-2 py-0.5 no-print" value="GΩ"><option selected>GΩ</option><option>MΩ</option></select><span class="print-only">GΩ</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
+                                <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
+                                <select id="ir_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
+                                    <option value="Satisfactory">Satisfactory</option>
+                                    <option value="Not Satisfactory">Not Satisfactory</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="summary-section">
+                            <div class="section-title">
+                                <span><i class="fa-solid fa-file-signature mr-2"></i>3. SUMMARY & REMARKS</span>
+                                <button id="ai_summary_btn" class="ai-extract-btn ai-summary-btn no-print text-white font-bold"><i class="fa-solid fa-brain"></i> Generate Expert AI Diagnosis</button>
+                            </div>
+                            <textarea id="remarks-box" class="border border-slate-300 bg-transparent rounded shadow-inner p-4 w-full leading-relaxed resize-y font-medium text-slate-800 focus:ring-2 focus:ring-[var(--primary-orange)] outline-none transition" placeholder="No tests selected. Summary will be auto-generated here." style="min-height: 140px;">TEST OBSERVATIONS & STATUS:
 
 Test Performance: All routine electrical tests were successfully executed and verified.
 Test Results: All measured data and parameters are healthy, well within permissible limits, and highly satisfactory.
 Equipment Health: The transformer's overall physical and electrical health is intact and optimal.
 Recommendations: No immediate action or troubleshooting is required. The unit can continue normal service with standard routine maintenance and periodic testing.</textarea>
-                <div id="remarks-box-print" class="print-only-summary"></div>
-            </div>
-
-        </div> <!-- End of report-content -->
-
-        <div class="signature-card signature-wrapper mt-6 pt-4" style="border: none !important; box-shadow: none !important; background: transparent !important;">
-            <table class="w-full border-none" style="border: none !important; background: transparent !important;">
-                <tr>
-                    <td class="w-1/2 p-2 align-bottom text-center border-none relative" style="border: none !important; background: transparent !important;">
-                        <div class="flex flex-col items-center">
-                            <img src="https://i.postimg.cc/zBFs8GNd/Picsart-25-01-28-19-36-38-914.jpg" alt="MG Signature" class="h-20 object-contain mb-1 drop-shadow-sm print:drop-shadow-none" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;">
-                            
-                            <input type="text" id="signer_mg" class="text-center-input font-bold text-[12px] text-slate-800 mt-2" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;" value="MUKUND GAWALE">
-                            <p class="text-[11px] font-bold text-slate-800">MG TRANSFORMER SERVICES</p>
-                            <p class="text-[11px] mt-1 font-medium text-slate-600">Date: <input type="date" id="date_mg" class="text-center-input w-28 font-bold text-slate-800" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;"></p>
+                            <div id="remarks-box-print" class="print-only-summary"></div>
                         </div>
-                    </td>
-                    
-                    <td class="w-1/2 p-2 align-bottom text-center border-none relative" style="border: none !important; background: transparent !important;">
-                        <div class="flex flex-col items-center">
-                            <div class="h-20 mb-1 flex items-end justify-center w-full">
-                                <img id="client_signature_img" src="" alt="Client Signature" class="max-h-full object-contain drop-shadow-sm print:drop-shadow-none" style="display: none; border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;">
-                                <div class="no-print w-full text-center">
-                                    <button id="upload_client_signature_button" class="bg-white text-slate-700 px-4 py-2 text-[12px] font-bold rounded-full hover:bg-slate-100 border border-slate-300 shadow-sm transition transform hover:scale-105"><i class="fa-solid fa-pen-nib mr-1"></i> Add Sign</button>
-                                    <input type="file" id="client_signature_input" accept="image/*" style="display:none;">
-                                </div>
-                            </div>
-                            
-                            <input type="text" id="signer_client" class="text-center-input font-bold text-[12px] text-slate-800 mt-2" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;" placeholder="Client Name & Designation">
-                            <p class="text-[11px] font-bold text-slate-800 uppercase" id="client_company_display">CLIENT REPRESENTATIVE</p>
-                            <p class="text-[11px] mt-1 font-medium text-slate-600">Date: <input type="date" id="date_client" class="text-center-input w-28 font-bold text-slate-800" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;"></p>
+
+                    </div> <!-- End of report-content -->
+
+                    <div class="signature-card signature-wrapper mt-6 pt-4" style="border: none !important; box-shadow: none !important; background: transparent !important;">
+                        <table class="w-full border-none" style="border: none !important; background: transparent !important;">
+                            <tr>
+                                <td class="w-1/2 p-2 align-bottom text-center border-none relative" style="border: none !important; background: transparent !important;">
+                                    <div class="flex flex-col items-center">
+                                        <img src="https://i.postimg.cc/zBFs8GNd/Picsart-25-01-28-19-36-38-914.jpg" alt="MG Signature" class="h-20 object-contain mb-1 drop-shadow-sm print:drop-shadow-none" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;">
+                                        
+                                        <input type="text" id="signer_mg" class="text-center-input font-bold text-[12px] text-slate-800 mt-2" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;" value="MUKUND GAWALE">
+                                        <p class="text-[11px] font-bold text-slate-800">MG TRANSFORMER SERVICES</p>
+                                        <p class="text-[11px] mt-1 font-medium text-slate-600">Date: <input type="date" id="date_mg" class="text-center-input w-28 font-bold text-slate-800" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;"></p>
+                                    </div>
+                                </td>
+                                
+                                <td class="w-1/2 p-2 align-bottom text-center border-none relative" style="border: none !important; background: transparent !important;">
+                                    <div class="flex flex-col items-center">
+                                        <!-- Handwritten Client Signature Placeholder Box -->
+                                        <div id="client_sig_placeholder_box" class="handwritten-sig-placeholder mb-1">
+                                            <canvas id="inline-signature-pad" class="no-print"></canvas>
+                                            <img id="client_signature_img" src="" alt="Client Signature" class="max-h-full max-w-full object-contain drop-shadow-sm print:drop-shadow-none pointer-events-none z-[8]" style="display: none; border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;">
+                                            <div id="sig_placeholder_watermark" class="sig-placeholder-watermark no-print">
+                                                <i class="fa-solid fa-pen-clip text-slate-400 text-sm mb-0.5 block"></i>
+                                                Sign Here by Hand<br><span class="text-[9.5px] font-normal text-slate-400">(Finger / Stylus on Phone &amp; Tab)</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Mini Signature Toolbar -->
+                                        <div class="no-print flex flex-wrap items-center justify-center gap-1.5 my-1">
+                                            <button type="button" id="upload_client_signature_button" class="bg-blue-50 text-blue-700 px-2.5 py-1 text-[11px] font-bold rounded border border-blue-200 hover:bg-blue-100 transition shadow-sm" title="Open Large Signature Pad">
+                                                <i class="fa-solid fa-expand mr-1"></i>Expand Pad
+                                            </button>
+                                            <button type="button" id="clear_inline_signature_button" class="bg-amber-50 text-amber-700 px-2.5 py-1 text-[11px] font-bold rounded border border-amber-200 hover:bg-amber-100 transition shadow-sm" title="Clear Handwritten Sign">
+                                                <i class="fa-solid fa-eraser mr-1"></i>Clear
+                                            </button>
+                                            <button type="button" id="direct_upload_sig_button" class="bg-slate-100 text-slate-700 px-2.5 py-1 text-[11px] font-bold rounded border border-slate-300 hover:bg-slate-200 transition shadow-sm" title="Upload Signature Image">
+                                                <i class="fa-solid fa-upload mr-1"></i>Upload
+                                            </button>
+                                            <input type="file" id="client_signature_input" accept="image/*" style="display:none;">
+                                        </div>
+                                        
+                                        <input type="text" id="signer_client" class="text-center-input font-bold text-[12px] text-slate-800 mt-1" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;" placeholder="Client Name & Designation">
+                                        <p class="text-[11px] font-bold text-slate-800 uppercase" id="client_company_display">CLIENT REPRESENTATIVE</p>
+                                        <p class="text-[11px] mt-1 font-medium text-slate-600">Date: <input type="date" id="date_client" class="text-center-input w-28 font-bold text-slate-800" style="border: none !important; outline: none !important; box-shadow: none !important; background-color: transparent !important;"></p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div> 
+
+                    <div id="print-footer" class="w-full text-center bg-transparent print-only-block" style="border: none !important;">
+                        <div contenteditable="true" style="color: #64748b; font-family: monospace; margin-bottom: 4px; padding: 0; border: none !important; font-size: 6px !important; line-height: 1.2 !important;">
+                            *** THIS REPORT REFLECTS THE CONDITIONS AND TEST RESULTS AT THE TIME OF SERVICE ***
                         </div>
-                    </td>
-                </tr>
-            </table>
-        </div> 
+                        
+                        <div contenteditable="true" style="border-top: 1.2px solid #ea580c; border-bottom: none !important; border-left: none !important; border-right: none !important; margin: 0; padding-top: 6px; padding-bottom: 0;">
+                            <p style="color: #333333; font-weight: bold; text-transform: uppercase; letter-spacing: 0.025em; margin: 0; font-size: 6px !important; line-height: 1.2 !important;">
+                                OFFICE: NO. 6 & 7, GR. FLOOR, SURYADARSHAN RESIDENCY, PLOT 42/43, SECTOR-20, KAMOTHE, NAVI MUMBAI-410209<br>
+                                M: <span style="color: #007FFF !important; text-decoration: underline !important; font-size: 6px !important; font-weight: 800 !important;">8898517528 / 8591327528</span> | E: <span style="color: #007FFF !important; text-decoration: underline !important; font-size: 6px !important; font-weight: 800 !important;">MUKUND.GAWALE@MGTRANSFORMER.COM / SERVICE@MGTRANSFORMER.IN</span>
+                            </p>
+                        </div>
+                    </div>
 
-        <div id="print-footer" class="w-full text-center bg-transparent print-only-block" style="border: none !important;">
-            <div contenteditable="true" style="color: #64748b; font-family: monospace; margin-bottom: 4px; padding: 0; border: none !important; font-size: 6px !important; line-height: 1.2 !important;">
-                *** THIS REPORT REFLECTS THE CONDITIONS AND TEST RESULTS AT THE TIME OF SERVICE ***
-            </div>
-            
-            <div contenteditable="true" style="border-top: 1.2px solid #ea580c; border-bottom: none !important; border-left: none !important; border-right: none !important; margin: 0; padding-top: 6px; padding-bottom: 0;">
-                <p style="color: #333333; font-weight: bold; text-transform: uppercase; letter-spacing: 0.025em; margin: 0; font-size: 6px !important; line-height: 1.2 !important;">
-                    OFFICE: NO. 6 & 7, GR. FLOOR, SURYADARSHAN RESIDENCY, PLOT 42/43, SECTOR-20, KAMOTHE, NAVI MUMBAI-410209<br>
-                    M: <span style="color: #007FFF !important; text-decoration: underline !important; font-size: 6px !important; font-weight: 800 !important;">8898517528 / 8591327528</span> | E: <span style="color: #007FFF !important; text-decoration: underline !important; font-size: 6px !important; font-weight: 800 !important;">MUKUND.GAWALE@MGTRANSFORMER.COM / SERVICE@MGTRANSFORMER.IN</span>
-                </p>
-            </div>
-        </div>
-
+                </td></tr>
+            </tbody>
+        </table> <!-- END OF SPACING WRAPPER TABLE -->
     </div> 
 
     <div id="signature-modal" class="modal-overlay">
         <div class="modal-content relative">
-            <h3 class="font-bold mb-3 text-slate-800 text-lg flex items-center justify-center gap-2">
-                <i class="fa-solid fa-file-signature text-blue-600"></i> Client Signature
+            <h3 class="font-bold mb-1 text-slate-800 text-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-file-signature text-blue-600"></i> Client Handwritten Signature
             </h3>
-            <canvas id="signature-pad" height="200"></canvas>
+            <p class="text-xs text-slate-500 mb-2">Sign below by hand using your finger or stylus</p>
+            <canvas id="signature-pad" height="220"></canvas>
             <div class="flex flex-wrap justify-center gap-2 mt-4">
-                <button id="save-signature" class="bg-emerald-600 text-white px-4 py-2 rounded shadow-sm text-sm font-bold hover:bg-emerald-700 w-full sm:w-auto"><i class="fa-solid fa-check mr-1"></i> Save</button>
+                <button id="save-signature" class="bg-emerald-600 text-white px-4 py-2 rounded shadow-sm text-sm font-bold hover:bg-emerald-700 w-full sm:w-auto"><i class="fa-solid fa-check mr-1"></i> Save Sign</button>
                 <button id="clear-signature" class="bg-amber-500 text-white px-4 py-2 rounded shadow-sm text-sm font-bold hover:bg-amber-600 w-full sm:w-auto"><i class="fa-solid fa-eraser mr-1"></i> Clear</button>
                 <button id="upload-instead" class="bg-slate-600 text-white px-4 py-2 rounded shadow-sm text-sm font-bold hover:bg-slate-700 w-full sm:w-auto"><i class="fa-solid fa-upload mr-1"></i> Upload Image</button>
                 <button id="cancel-signature" class="bg-rose-600 text-white px-4 py-2 rounded shadow-sm text-sm font-bold hover:bg-rose-700 w-full sm:w-auto mt-2 sm:mt-0"><i class="fa-solid fa-xmark mr-1"></i> Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="clear-confirm-modal" class="modal-overlay">
+        <div class="modal-content relative max-w-sm">
+            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-3 text-xl">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-bold mb-2 text-slate-800 text-base">Clear All Report Data?</h3>
+            <p class="text-xs text-slate-600 mb-5">Are you sure you want to clear all entered test data? This action cannot be undone.</p>
+            <div class="flex justify-center gap-3">
+                <button id="confirm-clear-yes" class="bg-rose-600 text-white px-4 py-2 rounded shadow-sm text-xs font-bold hover:bg-rose-700">Yes, Clear All</button>
+                <button id="confirm-clear-no" class="bg-slate-200 text-slate-700 px-4 py-2 rounded shadow-sm text-xs font-bold hover:bg-slate-300">Cancel</button>
             </div>
         </div>
     </div>
@@ -969,7 +1216,6 @@ Recommendations: No immediate action or troubleshooting is required. The unit ca
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                // Only register if the protocol is HTTP or HTTPS to prevent errors in Blob/Data URI environments (like this editor)
                 if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
                     navigator.serviceWorker.register('./sw.js')
                         .then(registration => {
@@ -986,14 +1232,258 @@ Recommendations: No immediate action or troubleshooting is required. The unit ca
 
         document.addEventListener('DOMContentLoaded', () => {
             
+            let toastTimeout = null;
+            function showNotification(message, type = 'info') {
+                const toast = document.getElementById('app-toast');
+                if (!toast) return;
+                toast.className = 'fixed top-16 right-4 z-[2000] max-w-sm px-4 py-3 rounded-lg shadow-lg border text-xs font-bold flex items-center gap-2 transition-all duration-300 no-print';
+                if (type === 'error') {
+                    toast.classList.add('bg-red-50', 'text-red-800', 'border-red-300');
+                    toast.innerHTML = `<i class="fa-solid fa-circle-exclamation text-red-600 text-sm"></i><span>${message}</span>`;
+                } else if (type === 'success') {
+                    toast.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-300');
+                    toast.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 text-sm"></i><span>${message}</span>`;
+                } else {
+                    toast.classList.add('bg-blue-50', 'text-blue-800', 'border-blue-300');
+                    toast.innerHTML = `<i class="fa-solid fa-circle-info text-blue-600 text-sm"></i><span>${message}</span>`;
+                }
+                toast.classList.remove('hidden');
+                if (toastTimeout) clearTimeout(toastTimeout);
+                toastTimeout = setTimeout(() => {
+                    toast.classList.add('hidden');
+                }, 4000);
+            }
+
             function getGeminiApiKey() {
                 return document.getElementById('gemini_api_key').value.trim();
             }
 
+            // --- REPEATING PRINT HEADER LOGIC ---
+            function updatePrintHeader() {
+                const tag = document.getElementById('tx_tag_no').value || 'TR-XX';
+                const rating = document.getElementById('tx_rating').value || 'XXX KVA';
+                const ht = document.getElementById('header_tx_tag');
+                const hr = document.getElementById('header_tx_rating');
+                if(ht) ht.textContent = tag;
+                if(hr) hr.textContent = rating;
+            }
+            document.getElementById('tx_tag_no').addEventListener('input', updatePrintHeader);
+            document.getElementById('tx_rating').addEventListener('input', updatePrintHeader);
+
+            // --- GEMINI ROBUST FALLBACK MECHANISM ---
+            const GEMINI_MODELS = [
+                "gemini-3.8-flash",
+                "gemini-3.5-pro",
+                "gemini-3.5-flash",
+                "gemini-3.2-flash",
+                "gemini-3.1-flash",
+                "gemini-3.0-flash",
+                "gemini-2.8-flash",
+                "gemini-2.5-flash",
+                "gemini-2.0-flash",
+                "gemini-1.5-flash"
+            ];
+
+            async function callGeminiWithFallback(apiKey, requestBody) {
+                let lastError = null;
+                for (const model of GEMINI_MODELS) {
+                    try {
+                        console.log("Attempting Gemini API with model:", model);
+                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(requestBody)
+                        });
+                        const result = await response.json();
+                        
+                        if (result.error) {
+                            console.warn(`Model ${model} failed:`, result.error.message);
+                            lastError = new Error(result.error.message);
+                            continue; 
+                        }
+                        if (result.candidates && result.candidates.length > 0) {
+                            return result; 
+                        } else {
+                            lastError = new Error("No candidates returned from " + model);
+                            continue;
+                        }
+                    } catch (err) {
+                        console.warn(`Model ${model} request threw an error:`, err);
+                        lastError = err;
+                    }
+                }
+                throw lastError || new Error("All fallback models failed. Please check your API key or network.");
+            }
+
+            // --- LIVE AI ASSISTANT LOGIC ---
+            const assistantToggle = document.getElementById('assistant_toggle');
+            const assistantPanel = document.getElementById('assistant_panel');
+            const assistantInput = document.getElementById('assistant_input');
+            const assistantSend = document.getElementById('assistant_send');
+            const assistantChat = document.getElementById('assistant_chat');
+            const assistantToggleIcon = document.getElementById('assistant_toggle_icon');
+
+            assistantToggle.addEventListener('click', () => {
+                assistantPanel.classList.toggle('hidden');
+                assistantToggleIcon.classList.toggle('fa-chevron-down');
+                assistantToggleIcon.classList.toggle('fa-chevron-up');
+            });
+            
+            assistantInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') assistantSend.click();
+            });
+
+            assistantSend.addEventListener('click', async () => {
+                const query = assistantInput.value.trim();
+                if (!query) return;
+                const apiKey = getGeminiApiKey();
+                if(!apiKey) { showNotification("Please enter your Gemini API Key at the top.", "error"); return; }
+
+                // Display User Message
+                assistantChat.innerHTML += `<div><strong class="text-yellow-400">You:</strong> ${query}</div>`;
+                assistantInput.value = '';
+                
+                const data = collectData();
+                delete data['client_signature_img_src'];
+                delete data['company_logo_src'];
+                delete data['nameplate_ref_img_src'];
+
+                const prompt = `You are a Live Technical Assistant integrated inside an active Transformer Routine Test application.
+Current live data entered by the engineer (JSON):
+${JSON.stringify(data)}
+
+User Query: "${query}"
+
+Instructions:
+1. Answer the query technically, referencing electrical engineering standards (IEC/IS) where applicable.
+2. If the user commands you to change, update, calculate, or correct something that modifies the app's fields, you MUST provide a JSON block enclosed in \`\`\`json ... \`\`\` at the END of your response.
+   The JSON should be a flat object with the HTML element IDs as keys, and the new updated values as values.
+   Example: "I have updated the location for you. \`\`\`json { "site_location": "New Mumbai" } \`\`\`"
+3. Understand IDs like: client_name, site_location, test_date, tx_tag_no, tx_make_yom, tx_serial, tx_rating, tx_voltage, tx_amps, tx_impedance, tx_load_losses, tx_freq, tx_principal_tap, tx_tap_step, tx_oil_qty, tx_cw_wt, tx_oil_wt, tx_total_wt, tx_type, tx_cooling, tx_cooling_medium, remarks-box.`;
+
+                const loadingId = 'loading-' + Date.now();
+                assistantChat.innerHTML += `<div id="${loadingId}" class="text-slate-400 italic"><i class="fa-solid fa-spinner fa-spin"></i> Analyzing Live Data...</div>`;
+                assistantChat.scrollTop = assistantChat.scrollHeight;
+
+                try {
+                    const result = await callGeminiWithFallback(apiKey, {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { temperature: 0.2 }
+                    });
+                    const responseText = result.candidates[0].content.parts[0].text;
+                    
+                    document.getElementById(loadingId).remove();
+                    
+                    let chatDisplay = responseText;
+                    const jsonMatch = responseText.match(/```json([\s\S]*?)```/);
+                    if (jsonMatch) {
+                        chatDisplay = responseText.replace(jsonMatch[0], '').trim();
+                        try {
+                            const updates = JSON.parse(jsonMatch[1]);
+                            let fieldsUpdated = 0;
+                            for (const [id, value] of Object.entries(updates)) {
+                                const el = document.getElementById(id);
+                                if (el) {
+                                    el.value = value;
+                                    el.dispatchEvent(new Event('input', { bubbles: true }));
+                                    el.dispatchEvent(new Event('change', { bubbles: true }));
+                                    fieldsUpdated++;
+                                }
+                            }
+                            if (fieldsUpdated > 0) {
+                                chatDisplay += `<br><span class="text-emerald-400 text-[11px] mt-1 block"><i class="fa-solid fa-check"></i> Applied ${fieldsUpdated} updates to form fields automatically.</span>`;
+                                saveToSession();
+                                updatePrintHeader();
+                            }
+                        } catch (e) {
+                            console.error("Assistant JSON parse error:", e);
+                        }
+                    }
+
+                    assistantChat.innerHTML += `<div><strong class="text-blue-300">AI:</strong> ${chatDisplay.replace(/\n/g, '<br>')}</div>`;
+                    assistantChat.scrollTop = assistantChat.scrollHeight;
+
+                } catch (error) {
+                    document.getElementById(loadingId).remove();
+                    assistantChat.innerHTML += `<div class="text-red-400"><strong>Error:</strong> ${error.message}</div>`;
+                    assistantChat.scrollTop = assistantChat.scrollHeight;
+                }
+            });
+
+            const customSelectConfigs = [
+                { selectId: 'tx_type', customId: 'tx_type_custom', printId: 'tx_type_print' },
+                { selectId: 'tx_duty_type', customId: 'tx_duty_type_custom', printId: 'tx_duty_type_print' },
+                { selectId: 'tx_cooling_medium', customId: 'tx_cooling_medium_custom', printId: 'tx_cooling_medium_print' },
+                { selectId: 'tx_cooling', customId: 'tx_cooling_custom', printId: 'tx_cooling_print' }
+            ];
+
+            function syncCustomSelectUI(cfg) {
+                const selectEl = document.getElementById(cfg.selectId);
+                const customEl = document.getElementById(cfg.customId);
+                const printEl = document.getElementById(cfg.printId);
+                if (!selectEl || !customEl || !printEl) return;
+
+                if (selectEl.value === 'Other (Custom)') {
+                    customEl.style.display = 'block';
+                    printEl.textContent = customEl.value.trim() || 'Custom';
+                } else {
+                    customEl.style.display = 'none';
+                    printEl.textContent = selectEl.value;
+                }
+            }
+
+            function setSelectOrAddOption(selectId, customId, printId, extractedValue) {
+                if (!extractedValue) return;
+                const valStr = String(extractedValue).trim();
+                if (!valStr) return;
+
+                const selectEl = document.getElementById(selectId);
+                if (!selectEl) return;
+
+                let matched = false;
+                for (let i = 0; i < selectEl.options.length; i++) {
+                    const optText = selectEl.options[i].value.toUpperCase();
+                    if (optText === valStr.toUpperCase()) {
+                        selectEl.selectedIndex = i;
+                        matched = true;
+                        break;
+                    }
+                }
+
+                if (!matched) {
+                    const otherIdx = Array.from(selectEl.options).findIndex(o => o.value === 'Other (Custom)');
+                    const newOption = new Option(valStr, valStr, true, true);
+                    if (otherIdx >= 0) {
+                        selectEl.add(newOption, selectEl.options[otherIdx]);
+                    } else {
+                        selectEl.add(newOption);
+                    }
+                    selectEl.value = valStr;
+                }
+                syncCustomSelectUI({ selectId, customId, printId });
+            }
+
+            customSelectConfigs.forEach(cfg => {
+                const selectEl = document.getElementById(cfg.selectId);
+                const customEl = document.getElementById(cfg.customId);
+                if (selectEl) {
+                    selectEl.addEventListener('change', () => {
+                        syncCustomSelectUI(cfg);
+                        saveToSession();
+                    });
+                }
+                if (customEl) {
+                    customEl.addEventListener('input', () => {
+                        syncCustomSelectUI(cfg);
+                        saveToSession();
+                    });
+                }
+            });
+
             const aiSummaryBtn = document.getElementById('ai_summary_btn');
             aiSummaryBtn.addEventListener('click', async () => {
                 const apiKey = getGeminiApiKey();
-                if(!apiKey) { alert("Please enter your Gemini API Key at the top."); return; }
+                if(!apiKey) { showNotification("Please enter your Gemini API Key at the top.", "error"); return; }
 
                 const btnOriginalText = aiSummaryBtn.innerHTML;
                 aiSummaryBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Analyzing Data...';
@@ -1002,6 +1492,7 @@ Recommendations: No immediate action or troubleshooting is required. The unit ca
                 const data = collectData();
                 delete data['client_signature_img_src'];
                 delete data['company_logo_src'];
+                delete data['nameplate_ref_img_src'];
 
                 const prompt = `You are a PhD-level Transformer Diagnostics Engineer. Analyze the following routine test data for a transformer and write a professional "Summary & Remarks" section for the official test report. 
 
@@ -1017,24 +1508,18 @@ Instructions:
 6. Keep the tone authoritative, concise, and professional.`;
 
                 try {
-                    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            contents: [{ parts: [{ text: prompt }] }],
-                            generationConfig: { temperature: 0.2 }
-                        })
+                    const result = await callGeminiWithFallback(apiKey, {
+                        contents: [{ parts: [{ text: prompt }] }],
+                        generationConfig: { temperature: 0.2 }
                     });
-                    const result = await response.json();
-                    if (result.error) throw new Error(result.error.message);
 
                     let summary = result.candidates[0].content.parts[0].text;
                     const remarksBox = document.getElementById('remarks-box');
                     remarksBox.value = summary.trim();
                     remarksBox.dispatchEvent(new Event('input', { bubbles: true })); 
-                    
+                    showNotification("Expert AI Diagnosis generated!", "success");
                 } catch (error) {
-                    alert("Failed to generate AI Diagnosis: " + error.message);
+                    showNotification("Failed to generate AI Diagnosis: " + error.message, "error");
                 } finally {
                     aiSummaryBtn.innerHTML = btnOriginalText;
                     aiSummaryBtn.disabled = false;
@@ -1055,7 +1540,7 @@ Instructions:
                 if (!file) return;
 
                 const apiKey = getGeminiApiKey();
-                if(!apiKey) { alert("Please enter your Gemini API Key at the top."); return; }
+                if(!apiKey) { showNotification("Please enter your Gemini API Key at the top.", "error"); return; }
 
                 nameplateCameraBtn.disabled = true;
                 nameplateUploadBtn.disabled = true;
@@ -1063,6 +1548,13 @@ Instructions:
 
                 const reader = new FileReader();
                 reader.onload = async (event) => {
+                    const refImg = document.getElementById('nameplate_ref_img');
+                    if (refImg) {
+                        refImg.src = event.target.result;
+                        document.getElementById('nameplate_ref_container').classList.remove('hidden');
+                        saveToSession();
+                    }
+
                     const base64Data = event.target.result.split(',')[1];
                     const prompt = `Analyze this transformer nameplate image and extract the following details into a strict JSON format. 
                     Return ONLY the JSON object, no markdown, no other text.
@@ -1071,16 +1563,20 @@ Instructions:
                       "make_yom": "Manufacturer Name / Year of Manufacture (e.g., Siemens / 2011)",
                       "serial": "Serial Number",
                       "rating": "Rated MVA or KVA (e.g., 2.5 MVA or 2500 KVA)",
+                      "tx_type": "Transformer Construction/Sealing Type: choose from 'Oil Immersed', 'Hermetically Sealed', 'Dry Type', 'Cast Resin' if applicable, or exact text from nameplate",
+                      "duty_type": "Type of Transformer duty/application if mentioned on nameplate, e.g., 'Power / Distribution Transformer', 'Furnace Transformer', 'Converter Duty Transformer', 'Earthing Transformer', 'Zig-Zag Transformer', 'Inverter Duty / Solar Transformer', 'Rectifier Transformer', 'Auto Transformer'",
                       "voltage": "Rated Voltage HV/LV (e.g., 11000 / 433)",
                       "amps": "Rated Amperes HV/LV (e.g., 131.2A / 3333A)",
                       "vector": "Vector Group (e.g., Dyn11, YNd1, etc.)",
                       "impedance": "Percentage Impedance (e.g., 5.5%)",
+                      "load_losses": "Load Losses (and No-Load Losses if available) with unit (e.g., 24.5 kW or LL: 24.5 kW / NLL: 3.8 kW)",
                       "tap_count": "Number of Taps (integer, e.g., 17)",
                       "principal_tap": "Principal Tap Number (e.g., 9)",
                       "tap_step": "Tap Step Percentage without % sign (e.g., 1.25 or 2.5)",
                       "tap_type": "OLTC or OCTC",
+                      "cooling_medium": "Type of cooling/insulating medium: choose from 'Mineral Oil', 'Ester Oil - Synthetic', 'Ester Oil - Natural', 'Dry Type (Air Cooled)' (infer from cooling code if needed: ONAN/ONAF -> Mineral Oil, KNAN/KNAF -> Ester Oil - Synthetic or Ester Oil - Natural, AN/ANAF -> Dry Type (Air Cooled))",
+                      "cooling": "Type of cooling code (e.g. ONAN, ONAF, ONAN / ONAF, AN, ANAF, KNAN, KNAF)",
                       "oil_qty": "Quantity of oil (e.g. 3595 LTRS)",
-                      "cooling": "Type of cooling (e.g. ONAN)",
                       "cw_wt": "Core & Winding weight (e.g. 4850 KGS)",
                       "oil_wt": "Weight of oil (e.g. 3200 KGS)",
                       "total_wt": "Total Weight (e.g. 11150 KGS)",
@@ -1088,22 +1584,15 @@ Instructions:
                     }`;
 
                     try {
-                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key=${apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({
-                                contents: [{
-                                    parts: [
-                                        { text: prompt },
-                                        { inlineData: { mimeType: file.type, data: base64Data } }
-                                    ]
-                                }],
-                                generationConfig: { responseMimeType: "application/json" }
-                            })
+                        const result = await callGeminiWithFallback(apiKey, {
+                            contents: [{
+                                parts: [
+                                    { text: prompt },
+                                    { inlineData: { mimeType: file.type, data: base64Data } }
+                                ]
+                            }],
+                            generationConfig: { responseMimeType: "application/json" }
                         });
-
-                        const result = await response.json();
-                        if (result.error) throw new Error(result.error.message);
 
                         let responseText = result.candidates[0].content.parts[0].text;
                         const cleanJson = responseText.replace(/```json\n?|```/g, '').trim();
@@ -1115,14 +1604,27 @@ Instructions:
                         if (data.voltage) document.getElementById('tx_voltage').value = data.voltage;
                         if (data.amps) document.getElementById('tx_amps').value = data.amps;
                         if (data.impedance) document.getElementById('tx_impedance').value = data.impedance;
+                        if (data.load_losses) document.getElementById('tx_load_losses').value = data.load_losses;
                         if (data.principal_tap) document.getElementById('tx_principal_tap').value = data.principal_tap;
                         if (data.tap_step) document.getElementById('tx_tap_step').value = data.tap_step;
                         if (data.oil_qty) document.getElementById('tx_oil_qty').value = data.oil_qty;
-                        if (data.cooling) document.getElementById('tx_cooling').value = data.cooling;
                         if (data.cw_wt) document.getElementById('tx_cw_wt').value = data.cw_wt;
                         if (data.oil_wt) document.getElementById('tx_oil_wt').value = data.oil_wt;
                         if (data.total_wt) document.getElementById('tx_total_wt').value = data.total_wt;
                         if (data.freq) document.getElementById('tx_freq').value = data.freq;
+
+                        if (data.tx_type) {
+                            setSelectOrAddOption('tx_type', 'tx_type_custom', 'tx_type_print', data.tx_type);
+                        }
+                        if (data.duty_type) {
+                            setSelectOrAddOption('tx_duty_type', 'tx_duty_type_custom', 'tx_duty_type_print', data.duty_type);
+                        }
+                        if (data.cooling_medium) {
+                            setSelectOrAddOption('tx_cooling_medium', 'tx_cooling_medium_custom', 'tx_cooling_medium_print', data.cooling_medium);
+                        }
+                        if (data.cooling) {
+                            setSelectOrAddOption('tx_cooling', 'tx_cooling_custom', 'tx_cooling_print', data.cooling);
+                        }
                         
                         if (data.tap_count) {
                             const tapSelect = document.getElementById('tx_tap_count');
@@ -1162,10 +1664,12 @@ Instructions:
                         }
 
                         calculateVRDeviation(); 
-                        alert("✨ Nameplate Data Extracted & Filled Successfully!");
+                        saveToSession();
+                        updatePrintHeader();
+                        showNotification("Nameplate Data Extracted & Filled Successfully!", "success");
 
                     } catch (err) {
-                        alert("Nameplate Extraction failed: " + err.message);
+                        showNotification("Nameplate Extraction failed: " + err.message, "error");
                     } finally {
                         nameplateCameraBtn.disabled = false;
                         nameplateUploadBtn.disabled = false;
@@ -1265,16 +1769,81 @@ Instructions:
             const printPdfButton = document.getElementById('print-pdf-button');
             const clearDataButton = document.getElementById('clear-data-button');
             const uploadClientSigButton = document.getElementById('upload_client_signature_button');
+            const clearInlineSigButton = document.getElementById('clear_inline_signature_button');
+            const directUploadSigButton = document.getElementById('direct_upload_sig_button');
             const clientSigInput = document.getElementById('client_signature_input');
             const clientSigImg = document.getElementById('client_signature_img');
+            const sigWatermark = document.getElementById('sig_placeholder_watermark');
             
+            const inlineSigCanvas = document.getElementById('inline-signature-pad');
+            const inlineSignaturePad = new SignaturePad(inlineSigCanvas, {
+                minWidth: 0.8,
+                maxWidth: 2.2,
+                penColor: '#0f172a'
+            });
+
             const signatureModal = document.getElementById('signature-modal');
             const signaturePadCanvas = document.getElementById('signature-pad');
             const saveSignatureButton = document.getElementById('save-signature');
             const clearSignatureButton = document.getElementById('clear-signature');
             const uploadInsteadButton = document.getElementById('upload-instead');
             const cancelSignatureButton = document.getElementById('cancel-signature');
-            const signaturePad = new SignaturePad(signaturePadCanvas);
+            const signaturePad = new SignaturePad(signaturePadCanvas, {
+                minWidth: 1.0,
+                maxWidth: 2.5,
+                penColor: '#0f172a'
+            });
+
+            function updateSignaturePlaceholderState(hasSign) {
+                if (hasSign) {
+                    if (sigWatermark) sigWatermark.style.display = 'none';
+                    clientSigImg.style.display = 'block';
+                } else {
+                    if (sigWatermark) sigWatermark.style.display = 'block';
+                    clientSigImg.style.display = 'none';
+                    clientSigImg.src = '';
+                }
+            }
+
+            function resizeInlineCanvas() {
+                if (!inlineSigCanvas) return;
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                const rect = inlineSigCanvas.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) return;
+                inlineSigCanvas.width = rect.width * ratio;
+                inlineSigCanvas.height = rect.height * ratio;
+                inlineSigCanvas.getContext("2d").scale(ratio, ratio);
+                inlineSignaturePad.clear();
+            }
+
+            inlineSignaturePad.addEventListener("beginStroke", () => {
+                if (sigWatermark) sigWatermark.style.display = 'none';
+            });
+
+            inlineSignaturePad.addEventListener("endStroke", () => {
+                if (!inlineSignaturePad.isEmpty()) {
+                    const dataUrl = inlineSignaturePad.toDataURL('image/png');
+                    clientSigImg.src = dataUrl;
+                    updateSignaturePlaceholderState(true);
+                    saveToSession();
+                }
+            });
+
+            function resizeModalCanvas() {
+                const ratio = Math.max(window.devicePixelRatio || 1, 1);
+                signaturePadCanvas.width = signaturePadCanvas.offsetWidth * ratio;
+                signaturePadCanvas.height = signaturePadCanvas.offsetHeight * ratio;
+                signaturePadCanvas.getContext("2d").scale(ratio, ratio);
+                signaturePad.clear(); 
+            }
+
+            window.addEventListener("resize", () => {
+                resizeInlineCanvas();
+                if (signatureModal.style.display === 'flex') {
+                    resizeModalCanvas();
+                }
+            });
+            setTimeout(resizeInlineCanvas, 100);
 
             const tapCountSelect = document.getElementById('tx_tap_count');
             const testDateInput = document.getElementById('test_date');
@@ -1361,15 +1930,6 @@ Instructions:
                 },
                 'Other (Custom)': { custom: true }
             };
-
-            function resizeCanvas() {
-                const ratio =  Math.max(window.devicePixelRatio || 1, 1);
-                signaturePadCanvas.width = signaturePadCanvas.offsetWidth * ratio;
-                signaturePadCanvas.height = signaturePadCanvas.offsetHeight * ratio;
-                signaturePadCanvas.getContext("2d").scale(ratio, ratio);
-                signaturePad.clear(); 
-            }
-            window.addEventListener("resize", resizeCanvas);
             
             async function embedLogoPermanently() {
                 const logoImg = document.getElementById('main_company_logo');
@@ -1653,7 +2213,6 @@ Instructions:
                 
                 processRow('wr_lv_r', 'wr_lv_y', 'wr_lv_b', 'wr_lv_dev');
             }
-
 
             function updateWrTable() {
                 const vector = vectorGroupSelect.value; 
@@ -1976,6 +2535,11 @@ Instructions:
                 });
                 data['client_signature_img_src'] = clientSigImg.src;
                 data['company_logo_src'] = document.getElementById('main_company_logo').src;
+                
+                const refImg = document.getElementById('nameplate_ref_img');
+                if (refImg && refImg.src && refImg.src.startsWith('data:image')) {
+                    data['nameplate_ref_img_src'] = refImg.src;
+                }
                 return data;
             }
 
@@ -1989,6 +2553,19 @@ Instructions:
             });
 
             function populateData(data) {
+                customSelectConfigs.forEach(cfg => {
+                    if (data[cfg.selectId] !== undefined) {
+                        const selectEl = document.getElementById(cfg.selectId);
+                        if (selectEl) {
+                            const exists = Array.from(selectEl.options).some(opt => opt.value === data[cfg.selectId]);
+                            if (!exists && data[cfg.selectId]) {
+                                const newOpt = new Option(data[cfg.selectId], data[cfg.selectId], true, true);
+                                selectEl.add(newOpt);
+                            }
+                        }
+                    }
+                });
+
                 document.querySelectorAll('input, select, textarea').forEach(input => {
                     const id = input.id;
                     if (id === 'gemini_api_key') return; // NEVER load API key from data
@@ -1999,7 +2576,21 @@ Instructions:
                     else if (id && data[id] !== undefined) { input.value = data[id]; }
                 });
 
+                customSelectConfigs.forEach(cfg => syncCustomSelectUI(cfg));
+
                 if (data['company_logo_src']) { document.getElementById('main_company_logo').src = data['company_logo_src']; }
+                
+                const refImg = document.getElementById('nameplate_ref_img');
+                const refContainer = document.getElementById('nameplate_ref_container');
+                if (refImg && refContainer) {
+                    if (data['nameplate_ref_img_src']) {
+                        refImg.src = data['nameplate_ref_img_src'];
+                        refContainer.classList.remove('hidden');
+                    } else {
+                        refImg.src = '';
+                        refContainer.classList.add('hidden');
+                    }
+                }
                 
                 updateVectorGroupTest();
                 updateVrTable();
@@ -2014,7 +2605,9 @@ Instructions:
 
                 if (data['client_signature_img_src'] && data['client_signature_img_src'].startsWith('data:image')) {
                     clientSigImg.src = data['client_signature_img_src'];
-                    clientSigImg.style.display = 'block';
+                    updateSignaturePlaceholderState(true);
+                } else {
+                    updateSignaturePlaceholderState(false);
                 }
                 
                 toggleTestSections();
@@ -2032,6 +2625,8 @@ Instructions:
                     const event = new Event('change');
                     toggleDevColsCheckbox.dispatchEvent(event);
                 }
+                
+                updatePrintHeader();
             }
             
             saveHtmlButton.addEventListener('click', () => {
@@ -2046,7 +2641,6 @@ Instructions:
                 const clonedRemarksBox = docClone.getElementById('remarks-box');
                 if (clonedRemarksBox) clonedRemarksBox.style.height = '';
 
-                // Safely convert and embed the Live QR code to an image so it renders offline
                 const clonedQr = docClone.getElementById('qrcode');
                 const liveQrCanvas = document.querySelector('#qrcode canvas');
                 const liveQrImg = document.querySelector('#qrcode img');
@@ -2106,7 +2700,6 @@ Instructions:
 
                 docClone.getElementById('report-data').textContent = JSON.stringify(data, null, 2);
                 
-                // FORCE DOCTYPE inclusion to completely prevent Quirks Mode size inflation
                 const htmlContent = '<!DOCTYPE html>\n' + docClone.documentElement.outerHTML;
                 const blob = new Blob([htmlContent], { type: 'text/html' });
                 const a = document.createElement('a');
@@ -2120,40 +2713,69 @@ Instructions:
                 window.print();
             });
 
+            const clearConfirmModal = document.getElementById('clear-confirm-modal');
+            const confirmClearYes = document.getElementById('confirm-clear-yes');
+            const confirmClearNo = document.getElementById('confirm-clear-no');
+
             clearDataButton.addEventListener('click', () => {
-                if(confirm("Are you sure you want to clear all data? This cannot be undone.")) {
-                    document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(el => {
-                        if (el.id !== 'gemini_api_key' && el.id !== 'report_no_full') { el.value = ''; }
-                    });
-                    document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
-                    document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
-                    
-                    const defaultRadios = ['vr_direction', 'tap_type', 'ir_test_type'];
-                    defaultRadios.forEach(name => {
-                        const radios = document.querySelectorAll(`input[name="${name}"]`);
-                        if(radios.length > 0) radios[0].checked = true;
-                    });
-                    
-                    if(tapCountSelect) tapCountSelect.value = "21"; 
-                    if(vectorGroupSelect) vectorGroupSelect.value = "Dyn11";
-                    if(wrTapsModeSelect) wrTapsModeSelect.value = "all";
-                    if(mcTapsModeSelect) mcTapsModeSelect.value = "all";
+                clearConfirmModal.style.display = 'flex';
+            });
 
-                    clientSigImg.style.display = 'none';
-                    clientSigImg.src = '';
-                    
-                    updateVrTable();
-                    updateWrTable();
-                    updateMcTable();
-                    toggleTestSections();
-                    updateVectorGroupTest();
-                    updateMbTable();
-                    
-                    toggleDevColsCheckbox.checked = true;
-                    toggleDevColsCheckbox.dispatchEvent(new Event('change'));
+            confirmClearNo.addEventListener('click', () => {
+                clearConfirmModal.style.display = 'none';
+            });
 
-                    sessionStorage.removeItem('mgtrf_live_report_data');
+            clearConfirmModal.addEventListener('click', (e) => {
+                if (e.target === clearConfirmModal) clearConfirmModal.style.display = 'none';
+            });
+
+            confirmClearYes.addEventListener('click', () => {
+                clearConfirmModal.style.display = 'none';
+                document.querySelectorAll('input[type="text"], input[type="number"], input[type="date"], textarea').forEach(el => {
+                    if (el.id !== 'gemini_api_key' && el.id !== 'report_no_full') { el.value = ''; }
+                });
+                document.getElementById('tx_freq').value = '50 Hz';
+                document.getElementById('signer_mg').value = 'MUKUND GAWALE';
+
+                document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+                document.querySelectorAll('select').forEach(el => el.selectedIndex = 0);
+                
+                const refImg = document.getElementById('nameplate_ref_img');
+                if (refImg) {
+                    refImg.src = '';
+                    document.getElementById('nameplate_ref_container').classList.add('hidden');
                 }
+
+                const defaultRadios = ['vr_direction', 'tap_type', 'ir_test_type'];
+                defaultRadios.forEach(name => {
+                    const radios = document.querySelectorAll(`input[name="${name}"]`);
+                    if(radios.length > 0) radios[0].checked = true;
+                });
+                
+                if(tapCountSelect) tapCountSelect.value = "21"; 
+                if(vectorGroupSelect) vectorGroupSelect.value = "Dyn11";
+                if(wrTapsModeSelect) wrTapsModeSelect.value = "all";
+                if(mcTapsModeSelect) mcTapsModeSelect.value = "all";
+
+                customSelectConfigs.forEach(cfg => syncCustomSelectUI(cfg));
+
+                inlineSignaturePad.clear();
+                updateSignaturePlaceholderState(false);
+                
+                updateVrTable();
+                updateWrTable();
+                updateMcTable();
+                toggleTestSections();
+                updateVectorGroupTest();
+                updateMbTable();
+                
+                toggleDevColsCheckbox.checked = true;
+                toggleDevColsCheckbox.dispatchEvent(new Event('change'));
+                
+                updatePrintHeader();
+
+                sessionStorage.removeItem('mgtrf_live_report_data');
+                showNotification("All report data cleared.", "info");
             });
             
             function loadEmbeddedData() {
@@ -2178,6 +2800,7 @@ Instructions:
                      updateWrTable();
                      updateMcTable();
                      clientNameInput.dispatchEvent(new Event('input'));
+                     updatePrintHeader();
                 }
             }
 
@@ -2189,6 +2812,8 @@ Instructions:
                 document.getElementById('ir_lve_voltage_print').textContent = document.getElementById('ir_lve_voltage').value;
                 document.getElementById('ir_hvlv_voltage_print').textContent = document.getElementById('ir_hvlv_voltage').value;
                 
+                customSelectConfigs.forEach(cfg => syncCustomSelectUI(cfg));
+
                 const wrMode = document.getElementById('wr_taps_mode');
                 document.getElementById('wr_taps_mode_print').textContent = wrMode.options[wrMode.selectedIndex].text;
                 
@@ -2211,7 +2836,7 @@ Instructions:
             
             function openSignatureModal() {
                 signatureModal.style.display = 'flex';
-                resizeCanvas();
+                resizeModalCanvas();
             }
 
             function closeSignatureModal() {
@@ -2230,13 +2855,24 @@ Instructions:
                 signaturePad.clear();
             });
 
+            clearInlineSigButton.addEventListener('click', () => {
+                inlineSignaturePad.clear();
+                updateSignaturePlaceholderState(false);
+                saveToSession();
+            });
+
+            directUploadSigButton.addEventListener('click', () => {
+                clientSigInput.click();
+            });
+
             saveSignatureButton.addEventListener('click', () => {
                 if (signaturePad.isEmpty()) {
-                    alert("Please provide a signature first.");
+                    showNotification("Please provide a handwritten signature first.", "error");
                 } else {
-                    const dataURL = signaturePad.toDataURL();
+                    const dataURL = signaturePad.toDataURL('image/png');
+                    inlineSignaturePad.clear();
                     clientSigImg.src = dataURL;
-                    clientSigImg.style.display = 'block';
+                    updateSignaturePlaceholderState(true);
                     closeSignatureModal();
                     saveToSession(); 
                 }
@@ -2252,8 +2888,9 @@ Instructions:
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = (event) => {
+                        inlineSignaturePad.clear();
                         clientSigImg.src = event.target.result;
-                        clientSigImg.style.display = 'block';
+                        updateSignaturePlaceholderState(true);
                         saveToSession(); 
                     };
                     reader.readAsDataURL(file);
@@ -2314,7 +2951,9 @@ Instructions:
             toggleTestSections();
             updateMbTable();
             generateQRCode(); 
+            updatePrintHeader(); 
         });
     </script>
 </body>
 </html>
+```
