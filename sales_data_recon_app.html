@@ -12,7 +12,7 @@
     <link rel="apple-touch-icon" href="https://ui-avatars.com/api/?name=SR&background=4f46e5&color=fff&size=256">
     
     <!-- Unique Embedded Manifest for Sales App -->
-    <link rel="manifest" href='data:application/manifest+json,{"name":"Smart Sales Data Reconciliation PRO","short_name":"Sales Recon","start_url":".?app=sales","display":"standalone","background_color":"#f8fafc","theme_color":"#4f46e5","icons":[{"src":"https://ui-avatars.com/api/?name=SR&background=4f46e5&color=fff&size=512","sizes":"512x512","type":"image/png"}]}'>
+    <link rel="manifest" href='data:application/manifest+json,{"id":"sales-recon-pro-app-v2","name":"Smart Sales Data Reconciliation PRO","short_name":"Sales Recon","start_url":"./?app=sales_pro","display":"standalone","background_color":"#f8fafc","theme_color":"#4f46e5","icons":[{"src":"https://ui-avatars.com/api/?name=SR&background=4f46e5&color=fff&size=512","sizes":"512x512","type":"image/png"}]}'>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -2000,16 +2000,59 @@ ${csvData}`;
                 let fileData = null;
                 if (db && userId) { const docSnap = await getDoc(doc(db, filesCollectionPath, id)); if (docSnap.exists()) fileData = docSnap.data(); } 
                 else fileData = await getLocalFile(id);
+                
                 if (fileData) {
-                    const src = `data:${fileData.mimeType};base64,${fileData.data}`;
-                    document.getElementById('viewer_download_btn').onclick = () => { const ext = fileData.mimeType.split('/')[1] || 'jpeg'; downloadFileUrl(src, `Document_${id}.${ext}`); };
-                    if (fileData.mimeType.startsWith('image/')) contentDiv.innerHTML = `<img src="${src}" class="max-w-full h-auto object-contain border-4 border-slate-700 shadow-2xl bg-white rounded">`;
-                    else if (fileData.mimeType === 'application/pdf') contentDiv.innerHTML = `<iframe src="${src}" class="w-[85vw] h-[85vh] border-0 bg-white shadow-2xl rounded"></iframe>`;
+                    const ext = fileData.mimeType.split('/')[1] || 'jpeg';
+                    const isPdf = fileData.mimeType === 'application/pdf';
+                    
+                    // --- IMAGES: Use reliable Data URI ---
+                    if (fileData.mimeType.startsWith('image/')) {
+                        const src = `data:${fileData.mimeType};base64,${fileData.data}`;
+                        document.getElementById('viewer_download_btn').onclick = () => { downloadFileUrl(src, `Document_${id}.${ext}`); };
+                        contentDiv.innerHTML = `<img src="${src}" class="max-w-full h-auto object-contain border-4 border-slate-700 shadow-2xl bg-white rounded">`;
+                    }
+                    // --- PDFs: Smart Device Detection ---
+                    else if (isPdf) {
+                        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+                        
+                        if (isMobile) {
+                            // MOBILE: Show a clean UI with a native Download/Open button
+                            contentDiv.innerHTML = `
+                                <div class="flex flex-col items-center justify-center p-8 bg-white rounded-xl shadow-2xl max-w-sm text-center mx-4">
+                                    <i class="fa-solid fa-file-pdf text-6xl text-red-500 mb-4"></i>
+                                    <h3 class="text-lg font-black text-slate-800 mb-2">PDF Document</h3>
+                                    <p class="text-xs font-bold text-slate-500 mb-6 leading-relaxed">Mobile browsers often block inline PDF viewing.<br>Tap below to view it using your phone's native PDF reader.</p>
+                                    <button id="mobile_pdf_btn" class="bg-brand-600 hover:bg-brand-700 text-white px-6 py-3 rounded-lg font-black uppercase tracking-wider text-sm shadow-md transition flex items-center gap-2">
+                                        <i class="fa-solid fa-external-link-alt"></i> View / Download PDF
+                                    </button>
+                                </div>
+                            `;
+                            
+                            // Attach the safe conversion logic to the button click
+                            const downloadHandler = () => {
+                                const byteCharacters = atob(fileData.data);
+                                const byteNumbers = new Array(byteCharacters.length);
+                                for (let i = 0; i < byteCharacters.length; i++) { byteNumbers[i] = byteCharacters.charCodeAt(i); }
+                                const blob = new Blob([new Uint8Array(byteNumbers)], {type: 'application/pdf'});
+                                const blobUrl = URL.createObjectURL(blob);
+                                downloadFileUrl(blobUrl, `Document_${id}.pdf`);
+                            };
+                            
+                            document.getElementById('mobile_pdf_btn').onclick = downloadHandler;
+                            document.getElementById('viewer_download_btn').onclick = downloadHandler;
+                            
+                        } else {
+                            // DESKTOP: Render seamlessly in iframe using standard Data URI
+                            const src = `data:application/pdf;base64,${fileData.data}`;
+                            document.getElementById('viewer_download_btn').onclick = () => { downloadFileUrl(src, `Document_${id}.pdf`); };
+                            contentDiv.innerHTML = `<iframe src="${src}#view=FitH" class="w-[85vw] h-[85vh] border-0 bg-white shadow-2xl rounded"></iframe>`;
+                        }
+                    }
                 } else {
                     contentDiv.innerHTML = `<div class="text-center text-slate-500"><i class="fa-solid fa-file-circle-xmark text-6xl mb-4 text-slate-600"></i><p class="font-bold">File missing or deleted.</p></div>`;
                     document.getElementById('viewer_download_btn').onclick = null;
                 }
-            } catch (e) { contentDiv.innerHTML = `<p class="text-red-500 font-bold">Error loading file.</p>`; }
+            } catch (e) { contentDiv.innerHTML = `<p class="text-red-500 font-bold mt-4">Error loading file.</p>`; console.error(e); }
         }
         window.zoomViewer = function(delta) { window.viewerZoomLevel += delta; if(window.viewerZoomLevel < 0.2) window.viewerZoomLevel = 0.2; if(window.viewerZoomLevel > 5) window.viewerZoomLevel = 5; document.getElementById('file-viewer-content').style.transform = `scale(${window.viewerZoomLevel})`; }
         window.resetViewer = function() { window.viewerZoomLevel = 1; document.getElementById('file-viewer-content').style.transform = `scale(1)`; }
@@ -2077,7 +2120,14 @@ ${csvData}`;
             }, 500);
         }
 
-        function downloadFileUrl(dataUrl, name) { const a = document.createElement("a"); a.href = dataUrl; a.download = name; document.body.appendChild(a); a.click(); document.body.removeChild(a); }
+        function downloadFileUrl(dataUrl, name) { 
+            const a = document.createElement("a"); 
+            a.href = dataUrl; 
+            a.download = name; 
+            document.body.appendChild(a); 
+            a.click(); 
+            document.body.removeChild(a); 
+        }
 
         window.showCustomAlert = function(title, message, type = 'info', confirmCallback = null) {
             const modal = document.getElementById('alert-modal'); const iconEl = document.getElementById('alert-icon'); const confirmBtn = document.getElementById('alert-confirm-btn');
