@@ -1,0 +1,11 @@
+{
+  "id": "/mg-smart-quotation-pro",
+  "name": "MG Smart Quotation Pro",
+  "short_name": "MG Quotation",
+  "description": "Create and manage MG Transformer quotations.",
+  "start_url": "./smart_quotation_pro.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f1f5f9",
+  "theme_color": "#0f172a"
+}
