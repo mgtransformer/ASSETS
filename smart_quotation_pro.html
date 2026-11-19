@@ -15,7 +15,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --erp-border: #000000; --erp-bg-header: #f3f4f6; }
+        :root { --erp-border: #334155; --erp-bg-header: #ffffff; --erp-navy: #1e40af; --erp-orange: #ea580c; }
         body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #0f172a; overflow-x: hidden; }
         
         /* Editor Specific Styles */
@@ -23,7 +23,14 @@
         .fredoka-text { font-family: 'Fredoka', sans-serif; font-weight: 500; text-transform: uppercase; }
         .erp-table { width: 100%; border-collapse: collapse; }
         .erp-table th, .erp-table td { border: 1px solid var(--erp-border); padding: 4px 6px; vertical-align: top; }
-        .erp-table th { background-color: var(--erp-bg-header); font-weight: 600; text-transform: uppercase; }
+        .erp-table th { background: #ffffff; color: var(--erp-navy); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
+        #address-pair .erp-table th, #sow-section .erp-table th, #scope-pair .erp-table th, #terms-table th { background: linear-gradient(90deg, #ea580c 0px, #ea580c 4px, #ffffff 4px, #ffffff 100%) !important; padding-left: 10px !important; }
+        #document-area .erp-table thead th { border-bottom: 2px solid var(--erp-orange) !important; }
+        .navy-label { color: var(--erp-orange); font-weight: 700; }
+        #document-area input::placeholder, #document-area textarea::placeholder { color: transparent !important; opacity: 0 !important; }
+        #sow-text, #mg-scope-text, #client-scope-text, #notes-terms { font-weight: 400; color: #1e293b; line-height: 1.5; }
+        #sow-text li, #mg-scope-text li, #client-scope-text li, #notes-terms li { margin-bottom: 3px; line-height: 1.5; }
+        #sow-text li:last-child, #mg-scope-text li:last-child, #client-scope-text li:last-child, #notes-terms li:last-child { margin-bottom: 0; }
         
         .editable-input, [contenteditable="true"] { background: transparent; border: 1px dashed transparent; width: 100%; color: inherit; font-family: inherit; font-size: inherit; font-weight: inherit; outline: none; transition: all 0.2s; }
         .editable-input:hover, .editable-input:focus, [contenteditable="true"]:hover, [contenteditable="true"]:focus { border-color: #fdba74; background-color: #fff7ed; }
@@ -62,6 +69,17 @@
         .chat-bubble-ai { background-color: #f1f5f9; border: 1px solid #e2e8f0; color: #1e293b; border-radius: 12px 12px 12px 0; }
         .chat-bubble-user { background-color: #f97316; color: white; border-radius: 12px 12px 0 12px; }
 
+        .item-desc ul { list-style-type: disc; padding-left: 14px; margin: 2px 0 0 0; }
+        .item-desc ol { list-style-type: decimal; padding-left: 14px; margin: 2px 0 0 0; }
+        .item-desc li { margin-bottom: 1px; line-height: 1.35; }
+        #scope-pair .erp-table tr:first-child,
+        #scope-pair .erp-table tr:first-child th,
+        #address-pair .erp-table tr:first-child,
+        #address-pair .erp-table tr:first-child th { height: 24px !important; line-height: 1.3 !important; vertical-align: middle !important; }
+        #scope-pair .erp-table tr:last-child,
+        #scope-pair .erp-table tr:last-child td,
+        #address-pair .erp-table tr:last-child,
+        #address-pair .erp-table tr:last-child td { height: 100% !important; vertical-align: top !important; }
         .item-discount-print { display: none; color: #15803d !important; font-weight: 700 !important; }
         .item-discount-value { color: #15803d !important; font-weight: 700 !important; }
         #overall-discount-row td { color: #15803d; }
@@ -83,7 +101,10 @@
             .erp-table thead { display: table-header-group; }
             .erp-table tr, .erp-table th, .erp-table td { page-break-inside: avoid; break-inside: avoid; }
             .item-discount-print { display: inline !important; }
-            .erp-table th, .bg-gray-50, .bg-gray-200 { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .no-print-discount { display: none !important; }
+            .erp-table th, .navy-label, .bg-gray-50, .bg-gray-200 { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .erp-table th { color: #1e40af !important; }
+            .navy-label { color: #ea580c !important; }
             .editable-input, [contenteditable="true"] { border: none !important; background: transparent !important; }
             input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
             [contenteditable="true"]:empty:before { display: none; }
@@ -332,7 +353,7 @@
                     </tr>
                     <tr>
                         <th class="text-left"><div class="outline-none" contenteditable="true">YOUR REF.</div></th>
-                        <td><input type="text" id="doc-ref" value="Email Inquiry" class="editable-input w-full"></td>
+                        <td><input type="text" id="doc-ref" value="" class="editable-input w-full"></td>
                         <th class="text-left"><div class="outline-none" contenteditable="true">PLACE OF SUPPLY</div></th>
                         <td><input type="text" id="doc-place" value="Maharashtra (27)" class="editable-input w-full"></td>
                     </tr>
@@ -344,10 +365,10 @@
                             <tr><th class="text-left"><div class="outline-none" contenteditable="true">BILL TO DETAILS</div></th></tr>
                             <tr>
                                 <td class="p-3 h-28 relative">
-                                    <div id="bill-to-address" contenteditable="true" class="outline-none leading-relaxed w-full min-h-[50px] whitespace-pre-wrap font-semibold" data-placeholder="[Client Name]\n[Address Line 1]\n[City, State, PIN]" oninput="syncBillToShip();"></div>
+                                    <div id="bill-to-address" contenteditable="true" class="outline-none leading-relaxed w-full min-h-[50px] whitespace-pre-wrap font-semibold" oninput="syncBillToShip();"></div>
                                     <div class="mt-2 flex items-start text-xs font-bold gap-2">
-                                        <span class="outline-none whitespace-nowrap pt-0.5" contenteditable="true">GSTIN:</span>
-                                        <input type="text" id="bill-to-gstin" class="border-b border-gray-400 w-full max-w-[200px] font-semibold text-xs rounded-none pb-0.5 bg-transparent outline-none uppercase" placeholder="Enter GSTIN..." oninput="syncBillToShip(); generateQRCode();">
+                                        <span class="outline-none whitespace-nowrap pt-0.5 navy-label" contenteditable="true">GSTIN:</span>
+                                        <input type="text" id="bill-to-gstin" class="border-b border-slate-400 w-full max-w-[200px] font-semibold text-xs rounded-none pb-0.5 bg-transparent outline-none uppercase" oninput="syncBillToShip(); generateQRCode();">
                                     </div>
                                 </td>
                             </tr>
@@ -365,10 +386,10 @@
                             </tr>
                             <tr>
                                 <td class="p-3 h-28 border-t border-black relative">
-                                    <div id="ship-to-address" contenteditable="true" class="outline-none leading-relaxed w-full min-h-[50px] whitespace-pre-wrap font-semibold" data-placeholder="[Client Name]\n[Address Line 1]\n[City, State, PIN]"></div>
+                                    <div id="ship-to-address" contenteditable="true" class="outline-none leading-relaxed w-full min-h-[50px] whitespace-pre-wrap font-semibold"></div>
                                     <div class="mt-2 flex items-start text-xs font-bold gap-2">
-                                        <span class="outline-none whitespace-nowrap pt-0.5" contenteditable="true">GSTIN:</span>
-                                        <input type="text" id="ship-to-gstin" class="border-b border-gray-400 w-full max-w-[200px] font-semibold text-xs rounded-none pb-0.5 bg-transparent outline-none uppercase" placeholder="Enter GSTIN...">
+                                        <span class="outline-none whitespace-nowrap pt-0.5 navy-label" contenteditable="true">GSTIN:</span>
+                                        <input type="text" id="ship-to-gstin" class="border-b border-slate-400 w-full max-w-[200px] font-semibold text-xs rounded-none pb-0.5 bg-transparent outline-none uppercase">
                                     </div>
                                 </td>
                             </tr>
@@ -427,26 +448,26 @@
                     </div>
                 </div>
 
-                <div id="sow-section" class="group relative mb-2 transition-all">
+                <div id="sow-section" class="group relative mb-3.5 transition-all">
                     <button class="no-print absolute -left-6 top-1 text-red-500 hover:text-red-700 font-bold opacity-0 group-hover:opacity-100 transition px-1 bg-red-50 rounded" onclick="toggleSection('sow-section', false)" title="Remove Section">×</button>
                     <table class="erp-table" style="table-layout: fixed; width: 100%;">
                         <tr><th class="text-left"><div class="outline-none" contenteditable="true">SCOPE OF WORK (SOW)</div></th></tr>
                         <tr>
                             <td class="p-3">
-                                <div contenteditable="true" id="sow-text" class="outline-none min-h-[30px] whitespace-pre-wrap normal-case text-xs font-semibold" data-placeholder="Enter detailed scope of work here..."><ul class="list-disc pl-4 m-0"><li>Installation, Testing and Commissioning as per standard procedures.</li></ul></div>
+                                <div contenteditable="true" id="sow-text" class="outline-none min-h-[30px] whitespace-pre-wrap normal-case text-xs font-normal text-slate-800"><ul class="list-disc pl-4 m-0"><li>Installation, Testing and Commissioning as per standard procedures.</li></ul></div>
                             </td>
                         </tr>
                     </table>
                 </div>
                 
-                <div class="flex gap-2 mb-3" id="scope-pair">
+                <div class="flex gap-2.5 mb-3.5" id="scope-pair">
                     <div class="w-1/2 group relative transition-all" id="mg-scope-section">
                         <button class="no-print absolute -left-6 top-1 text-red-500 hover:text-red-700 font-bold opacity-0 group-hover:opacity-100 transition px-1 bg-red-50 rounded" onclick="toggleSection('mg-scope-section', false)" title="Remove Section">×</button>
                         <table class="erp-table h-full" style="table-layout: fixed; width: 100%;">
                             <tr><th class="text-left"><div class="outline-none" contenteditable="true">MG SCOPE (SUPPLY & SERVICES)</div></th></tr>
                             <tr>
                                 <td class="p-3 h-24 align-top">
-                                    <div contenteditable="true" id="mg-scope-text" class="outline-none min-h-[60px] normal-case text-xs font-semibold"><ul class="list-disc pl-4 m-0"><li>Supply of materials as per BOQ.</li><li>Tools and tackles required for execution.</li></ul></div>
+                                    <div contenteditable="true" id="mg-scope-text" class="outline-none min-h-[60px] normal-case text-xs font-normal text-slate-800"><ul class="list-disc pl-4 m-0"><li>Supply of materials as per BOQ.</li><li>Tools and tackles required for execution.</li></ul></div>
                                 </td>
                             </tr>
                         </table>
@@ -457,19 +478,19 @@
                             <tr><th class="text-left"><div class="outline-none" contenteditable="true">CLIENT SCOPE</div></th></tr>
                             <tr>
                                 <td class="p-3 h-24 align-top">
-                                    <div contenteditable="true" id="client-scope-text" class="outline-none min-h-[60px] normal-case text-xs font-semibold"><ul class="list-disc pl-4 m-0"><li>Safe storage space for materials.</li><li>Free power and water supply at site.</li></ul></div>
+                                    <div contenteditable="true" id="client-scope-text" class="outline-none min-h-[60px] normal-case text-xs font-normal text-slate-800"><ul class="list-disc pl-4 m-0"><li>Safe storage space for materials.</li><li>Free power and water supply at site.</li></ul></div>
                                 </td>
                             </tr>
                         </table>
                     </div>
                 </div>
 
-                <table class="erp-table mb-3" style="table-layout: fixed; width: 100%;" id="terms-table">
-                    <tr><th class="text-left p-1.5 bg-gray-100 font-semibold uppercase"><div class="outline-none" contenteditable="true">NOTES & TERMS</div></th></tr>
+                <table class="erp-table mb-3.5" style="table-layout: fixed; width: 100%;" id="terms-table">
+                    <tr><th class="text-left p-1.5 font-bold uppercase"><div class="outline-none" contenteditable="true">NOTES & TERMS</div></th></tr>
                     <tr>
                         <td class="p-3 align-top h-auto">
-                            <div contenteditable="true" id="notes-terms" class="h-full w-full outline-none normal-case text-xs">
-                                <ul class="list-disc pl-4 m-0 space-y-1 font-semibold text-gray-800" id="terms-list-ul">
+                            <div contenteditable="true" id="notes-terms" class="h-full w-full outline-none normal-case text-xs min-h-[40px] font-normal text-slate-800">
+                                <ul class="list-disc pl-4 m-0 space-y-1 font-normal text-slate-800" id="terms-list-ul">
                                     <li class="pl-1"><strong>Prices:</strong> Ex-Works / FOR Site</li>
                                     <li class="pl-1"><strong>Taxes:</strong> GST Extra as applicable at the time of invoicing.</li>
                                     <li class="pl-1"><strong>Payment Terms:</strong> 100% advance along with confirmed PO.</li>
@@ -485,7 +506,7 @@
                     <tr>
                         <td class="w-1/2 p-3 align-top h-28">
                             <div class="text-[10px] text-gray-800 normal-case mb-4 outline-none" contenteditable="true">
-                                <b class="text-[11px] uppercase">Bank Details:</b><br>
+                                <b class="text-[11px] uppercase navy-label">Bank Details:</b><br>
                                 Account Name: <span class="font-bold">MG TRANSFORMER SERVICES AND SUPPLIES</span><br>
                                 Bank Name: Kotak Mahindra Bank (Kamothe Navi Mumbai Branch)<br>
                                 Account No: <span class="font-bold">8898517528</span> (Current Acc)<br>
@@ -516,20 +537,25 @@
             <div class="p-3 bg-slate-800 text-white flex justify-between items-center shrink-0 border-b border-slate-700">
                 <div>
                     <h3 class="font-black text-base flex items-center gap-2"><i class="fa-solid fa-sparkles text-indigo-400"></i> ERP AI Copilot</h3>
-                    <p class="text-[10px] text-slate-300 font-bold tracking-wide mt-0.5">Ask questions about your quotes, draft emails, or analyze data.</p>
+                    <p class="text-[10px] text-slate-300 font-bold tracking-wide mt-0.5">Lead Technical Quotation Generator — drafts full quotes, audits SOW/scopes for overlaps, and suggests pro improvements.</p>
                 </div>
                 <button onclick="closeGlobalAI()" class="text-slate-400 hover:text-red-400 transition bg-slate-700/50 hover:bg-slate-700 rounded-full h-8 w-8 flex items-center justify-center"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
             <div id="global-ai-history" class="flex-grow overflow-y-auto p-4 space-y-4 bg-slate-50 relative">
                 <div class="flex justify-start">
-                    <div class="chat-bubble-ai p-3 max-w-[85%] text-sm shadow-sm font-medium leading-relaxed whitespace-pre-wrap"><i class="fa-solid fa-robot text-indigo-500 mr-1 mb-1 block text-xs opacity-80"></i>Hello! I can answer questions using quote summaries and prepare changes to your current draft. You can review each proposed edit before applying it.</div>
+                    <div class="chat-bubble-ai p-3 max-w-[85%] text-sm shadow-sm font-medium leading-relaxed whitespace-pre-wrap"><i class="fa-solid fa-robot text-indigo-500 mr-1 mb-1 block text-xs opacity-80"></i>Hello! I'm your lead technical quotation generator. Paste an RFQ, raw notes, or ask me to audit your current draft — I'll build or refine line items, Scope of Work, MG Scope, Client Scope, and Terms, catch any MG vs. Client scope overlaps or duplicates, and suggest pro additions for your final approval.</div>
                 </div>
             </div>
             
-            <div class="p-3 bg-white border-t border-slate-200 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+            <div class="p-3 bg-white border-t border-slate-200 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] space-y-2">
+                <div class="flex flex-wrap gap-1.5">
+                    <button type="button" onclick="triggerCopilotQuickAction('Audit the current quotation: check Scope of Work, MG Scope, Client Scope, and Terms for any duplications, contradictions, or items mistakenly placed in both MG Scope and Client Scope. Fix them cleanly and suggest any missing technical or commercial points I should add or remove.')" class="text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-2.5 py-1 rounded-full transition"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Audit &amp; Fix Scopes</button>
+                    <button type="button" onclick="triggerCopilotQuickAction('Review this quotation like a senior transformer engineering manager and suggest pro-level technical additions, exclusions, or risk-protection terms to strengthen it before sending to the client.')" class="text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full transition"><i class="fa-solid fa-shield-halved mr-1"></i>Suggest Pro Additions</button>
+                    <button type="button" onclick="triggerCopilotQuickAction('Upgrade the wording of all line items (using stacked bulleted lists for multi-item inclusions), SOW, MG Scope, and Client Scope to crisp, tender-grade technical English while keeping all prices, quantities, and facts intact.')" class="text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full transition"><i class="fa-solid fa-file-signature mr-1"></i>Polish to Pro Technical</button>
+                </div>
                 <div class="flex gap-2">
-                    <input type="text" id="global_ai_input" onkeypress="if(event.key==='Enter') sendGlobalAIMessage()" placeholder="E.g., 'Summarize this month's quotes' or 'Draft an email to this client'" class="flex-grow border-2 border-slate-300 rounded-lg p-2.5 text-sm font-bold focus:border-indigo-500 outline-none shadow-inner placeholder-slate-400">
+                    <input type="text" id="global_ai_input" onkeypress="if(event.key==='Enter') sendGlobalAIMessage()" placeholder="Paste an RFQ/inquiry, request a full quote build, or ask to audit &amp; refine scopes..." class="flex-grow border-2 border-slate-300 rounded-lg p-2.5 text-sm font-bold focus:border-indigo-500 outline-none shadow-inner placeholder-slate-400">
                     <button onclick="sendGlobalAIMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded-lg font-black uppercase tracking-wider text-xs shadow-md transition flex items-center gap-2">
                         Send <i class="fa-solid fa-paper-plane"></i>
                     </button>
@@ -645,7 +671,13 @@
     <div id="ai-review-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[160] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
         <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 flex flex-col overflow-hidden">
             <div class="p-4 bg-indigo-700 text-white"><h3 class="font-black text-base"><i class="fa-solid fa-list-check mr-2"></i>Review AI changes</h3><p class="text-xs text-indigo-100 mt-1">Nothing is applied until you choose Apply to draft.</p></div>
-            <div class="p-4 max-h-[55vh] overflow-y-auto"><p id="ai-review-summary" class="text-sm font-bold text-slate-700 mb-2"></p><ul id="ai-review-list" class="text-xs text-slate-600 space-y-1 list-disc pl-5"></ul></div>
+            <div class="p-4 max-h-[55vh] overflow-y-auto space-y-3">
+                <div><p id="ai-review-summary" class="text-sm font-bold text-slate-700 mb-2"></p><ul id="ai-review-list" class="text-xs text-slate-600 space-y-1 list-disc pl-5"></ul></div>
+                <div id="ai-review-suggestions-box" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    <p class="text-[11px] font-black uppercase tracking-wider text-amber-800 mb-1"><i class="fa-solid fa-lightbulb mr-1"></i>Copilot Audit &amp; Suggestions</p>
+                    <ul id="ai-review-suggestions-list" class="text-xs text-amber-900 space-y-1 list-disc pl-5"></ul>
+                </div>
+            </div>
             <div class="p-3 border-t bg-slate-50 flex justify-end gap-2"><button onclick="closeAIReview()" class="px-4 py-2 rounded text-xs font-bold text-slate-600 hover:bg-slate-200">Cancel</button><button onclick="applyPendingAIState()" class="px-5 py-2 rounded text-xs font-black text-white bg-indigo-600 hover:bg-indigo-700">Apply to draft</button></div>
         </div>
     </div>
@@ -1273,7 +1305,47 @@
             document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
         }
 
+        function syncTermsModalFromDocument() {
+            const notesEl = document.getElementById('notes-terms');
+            if (!notesEl) return;
+            const fieldMap = [
+                { prefix: 'payment terms:', selectId: 'term-payment', inputId: 'custom-payment' },
+                { prefix: 'delivery:', selectId: 'term-delivery', inputId: 'custom-delivery' },
+                { prefix: 'freight:', selectId: 'term-freight', inputId: 'custom-freight' },
+                { prefix: 'warranty:', selectId: 'term-warranty', inputId: 'custom-warranty' },
+                { prefix: 'p&f:', selectId: 'term-pf', inputId: 'custom-pf' },
+                { prefix: 'insurance:', selectId: 'term-insurance', inputId: 'custom-insurance' },
+                { prefix: 'ld clause:', selectId: 'term-ld', inputId: 'custom-ld' },
+                { prefix: 'validity:', selectId: 'term-validity', inputId: 'custom-validity' }
+            ];
+            const items = Array.from(notesEl.querySelectorAll('li')).map(li => (li.innerText || '').trim());
+            fieldMap.forEach(({ prefix, selectId, inputId }) => {
+                const sel = document.getElementById(selectId);
+                const inp = document.getElementById(inputId);
+                if (!sel || !inp) return;
+                const match = items.find(t => t.toLowerCase().startsWith(prefix));
+                if (!match) {
+                    sel.selectedIndex = 0;
+                    inp.classList.add('hidden');
+                    inp.value = '';
+                    return;
+                }
+                const val = match.slice(prefix.length).trim();
+                const presetOpt = Array.from(sel.options).find(o => o.value !== 'custom' && o.value.trim().toLowerCase() === val.toLowerCase());
+                if (presetOpt) {
+                    sel.value = presetOpt.value;
+                    inp.classList.add('hidden');
+                    inp.value = '';
+                } else if (val) {
+                    sel.value = 'custom';
+                    inp.value = val;
+                    inp.classList.remove('hidden');
+                }
+            });
+        }
+
         function openTermsModal() {
+            syncTermsModalFromDocument();
             const modal = document.getElementById('terms-modal');
             modal.classList.remove('hidden');
             setTimeout(() => { modal.classList.remove('opacity-0'); document.getElementById('terms-content').classList.remove('scale-95'); }, 10);
@@ -1290,7 +1362,11 @@
         }
 
         function applyERPTerms() {
-            const getVal = (s, c) => document.getElementById(s).value === 'custom' ? document.getElementById(c).value : document.getElementById(s).value;
+            const getVal = (s, c) => {
+                const sel = document.getElementById(s);
+                const raw = (sel && sel.value === 'custom') ? (document.getElementById(c)?.value || '') : (sel?.value || '');
+                return raw.trim();
+            };
             
             const p = getVal('term-payment', 'custom-payment');
             const d = getVal('term-delivery', 'custom-delivery');
@@ -1303,17 +1379,22 @@
             
             let html = `<li class="pl-1"><strong>Prices:</strong> Ex-Works / FOR Site</li>`;
             html += `<li class="pl-1"><strong>Taxes:</strong> GST Extra as applicable at the time of invoicing.</li>`;
-            if(p) html += `<li class="pl-1"><strong>Payment Terms:</strong> ${p}</li>`;
-            if(d) html += `<li class="pl-1"><strong>Delivery:</strong> ${d}</li>`;
-            if(f) html += `<li class="pl-1"><strong>Freight:</strong> ${f}</li>`;
-            if(pf && !pf.includes('Not Applicable')) html += `<li class="pl-1"><strong>P&F:</strong> ${pf}</li>`;
-            if(ins) html += `<li class="pl-1"><strong>Insurance:</strong> ${ins}</li>`;
-            if(w && !w.includes('Not Applicable')) html += `<li class="pl-1"><strong>Warranty:</strong> ${w}</li>`;
-            if(ld && !ld.includes('Not Applicable')) html += `<li class="pl-1"><strong>LD Clause:</strong> ${ld}</li>`;
-            if(v) html += `<li class="pl-1"><strong>Validity:</strong> ${v}</li>`;
+            if(p) html += `<li class="pl-1"><strong>Payment Terms:</strong> ${escapeHTML(p)}</li>`;
+            if(d) html += `<li class="pl-1"><strong>Delivery:</strong> ${escapeHTML(d)}</li>`;
+            if(f) html += `<li class="pl-1"><strong>Freight:</strong> ${escapeHTML(f)}</li>`;
+            if(pf && !pf.includes('Not Applicable')) html += `<li class="pl-1"><strong>P&amp;F:</strong> ${escapeHTML(pf)}</li>`;
+            if(ins) html += `<li class="pl-1"><strong>Insurance:</strong> ${escapeHTML(ins)}</li>`;
+            if(w && !w.includes('Not Applicable')) html += `<li class="pl-1"><strong>Warranty:</strong> ${escapeHTML(w)}</li>`;
+            if(ld && !ld.includes('Not Applicable')) html += `<li class="pl-1"><strong>LD Clause:</strong> ${escapeHTML(ld)}</li>`;
+            if(v) html += `<li class="pl-1"><strong>Validity:</strong> ${escapeHTML(v)}</li>`;
             
-            document.getElementById('terms-list-ul').innerHTML = html;
-            closeTermsModal(); triggerDraftAutoSave();
+            const notesEl = document.getElementById('notes-terms');
+            if (notesEl) {
+                notesEl.innerHTML = `<ul class="list-disc pl-4 m-0 space-y-1 font-normal text-slate-800" id="terms-list-ul">${html}</ul>`;
+            }
+            recordQuoteHistory();
+            closeTermsModal();
+            triggerDraftAutoSave();
         }
 
         function formatCurrency(num) { return num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
@@ -1371,11 +1452,14 @@
         }
 
         window.calculate = function() {
-            const applyTo=document.getElementById('discount-apply-to').value;const lineMode=applyTo==='line';let basic=0;
-            document.querySelectorAll('#items-body tr').forEach(tr=>{const qty=parseFloat(tr.querySelector('.item-qty').value)||0,rate=parseFloat(tr.querySelector('.item-rate').value)||0;const gross=qty*rate,mode=tr.querySelector('.item-discount-mode').value,value=Math.max(0,parseFloat(tr.querySelector('.item-discount-value').value)||0);const itemDiscount=lineMode?Math.min(gross,mode==='amount'?value:gross*Math.min(100,value)/100):0;const netLine=gross-itemDiscount;tr.querySelector('.item-total').innerText=formatCurrency(netLine);tr.querySelector('.item-discount-print').innerText=formatCurrency(itemDiscount);basic+=lineMode?netLine:gross;});
+            const applyTo=document.getElementById('discount-apply-to').value;const lineMode=applyTo==='line';let basic=0;let totalLineDiscount=0;
+            document.querySelectorAll('#items-body tr').forEach(tr=>{const qty=parseFloat(tr.querySelector('.item-qty').value)||0,rate=parseFloat(tr.querySelector('.item-rate').value)||0;const gross=qty*rate,mode=tr.querySelector('.item-discount-mode').value,value=Math.max(0,parseFloat(tr.querySelector('.item-discount-value').value)||0);const itemDiscount=lineMode?Math.min(gross,mode==='amount'?value:gross*Math.min(100,value)/100):0;totalLineDiscount+=itemDiscount;const netLine=gross-itemDiscount;tr.querySelector('.item-total').innerText=formatCurrency(netLine);tr.querySelector('.item-discount-print').innerText=formatCurrency(itemDiscount);basic+=lineMode?netLine:gross;});
             const mode=document.getElementById('discount-mode').value;const entered=Math.max(0,parseFloat(document.getElementById('discount-value').value)||0);const overallDiscount=!lineMode?Math.min(basic,mode==='amount'?entered:basic*Math.min(100,entered)/100):0;const taxable=Math.max(0,basic-overallDiscount);
             const type=document.getElementById('tax-type').value,tax=type==='none'?0:taxable*0.18,intra=type==='intra';
             document.getElementById('discount-label-print').innerText=mode==='amount'?'DISCOUNT (₹'+formatCurrency(overallDiscount)+')':'DISCOUNT ('+Number(Math.min(100,entered).toFixed(2))+'%):';document.getElementById('discount-amt').innerText=formatCurrency(overallDiscount);document.getElementById('taxable-amount').innerText=formatCurrency(taxable);
+            document.getElementById('overall-discount-row').classList.toggle('no-print-discount', overallDiscount <= 0);
+            document.getElementById('taxable-value-row').classList.toggle('no-print-discount', overallDiscount <= 0);
+            document.querySelectorAll('.discount-column').forEach(el => el.classList.toggle('no-print-discount', !lineMode || totalLineDiscount <= 0));
             document.getElementById('cgst-row').classList.toggle('hidden',type==='inter');document.getElementById('sgst-row').classList.toggle('hidden',!intra);document.getElementById('igst-row').classList.toggle('hidden',type!=='inter');document.getElementById('tax-label-print').innerText=intra?'CGST (9%):':'TAX (0%):';document.getElementById('basic-amount').innerText=formatCurrency(basic);document.getElementById('tax-amt').innerText=formatCurrency(intra?taxable*0.09:0);document.getElementById('sgst-amt').innerText=formatCurrency(intra?taxable*0.09:0);document.getElementById('igst-amt').innerText=formatCurrency(type==='inter'?tax:0);
             document.getElementById('grand-total').innerText='₹ '+formatCurrency(taxable+tax);document.getElementById('amount-in-words').innerText=numberToWords(taxable+tax);window.generateQRCode(formatCurrency(taxable+tax));syncDiscountModeUI();
         };
@@ -1400,7 +1484,7 @@
                         div.onclick = () => {
                             inputDiv.innerText = m.name;
                             const tr = inputDiv.closest('tr');
-                            tr.querySelector('.item-desc').innerText = m.desc || 'Description';
+                            tr.querySelector('.item-desc').innerHTML = formatItemDescHTML(m.desc || 'Description');
                             tr.querySelector('.item-hsn').value = m.hsn || '';
                             tr.querySelector('.item-uom').value = m.uom || 'NOS';
                             tr.querySelector('.item-rate').value = m.rate || 0;
@@ -1418,6 +1502,53 @@
             });
         }
 
+        function formatItemDescHTML(desc) {
+            if (Array.isArray(desc)) {
+                const items = desc.map(v => String(v == null ? '' : v).trim()).filter(Boolean);
+                if (!items.length) return '';
+                if (items.length === 1) return escapeHTML(items[0]);
+                return '<ul class="list-disc pl-4 m-0 space-y-0.5">' + items.map(v => '<li>' + escapeHTML(v) + '</li>').join('') + '</ul>';
+            }
+            const raw = String(desc == null ? '' : desc).trim();
+            if (!raw) return '';
+            if (/<(li|ul|ol)\b/i.test(raw)) {
+                return sanitizeRichHTML(raw);
+            }
+            const temp = document.createElement('div');
+            temp.innerHTML = /<\/?[a-z][\s\S]*>/i.test(raw)
+                ? sanitizeRichHTML(raw).replace(/<br\s*\/?>/gi, '\n').replace(/<\/(div|p)>/gi, '\n')
+                : escapeHTML(raw);
+            const plainText = (temp.textContent || '').trim();
+            let lines = plainText.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+            if (lines.length === 1 && lines[0].includes('•')) {
+                const splitBullets = lines[0].split(/•+/).map(l => l.trim()).filter(Boolean);
+                if (splitBullets.length > 1) lines = splitBullets;
+            }
+            const hasExplicitBullet = lines.some(l => /^([-*•]|\d+[.)])\s+/.test(l));
+            if (lines.length > 1 || hasExplicitBullet) {
+                const cleaned = lines.map(l => l.replace(/^([-*•]|\d+[.)])\s+/, '').trim()).filter(Boolean);
+                if (cleaned.length) {
+                    return '<ul class="list-disc pl-4 m-0 space-y-0.5">' + cleaned.map(l => '<li>' + escapeHTML(l) + '</li>').join('') + '</ul>';
+                }
+            }
+            return escapeHTML(plainText);
+        }
+
+        function attachItemDescListBehavior(descEl) {
+            if (!descEl) return;
+            descEl.addEventListener('blur', function() {
+                if (this.querySelector('ul, ol')) return;
+                const text = (this.innerText || '').trim();
+                if (!text) return;
+                const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                const hasExplicitBullet = lines.some(l => /^([-*•]|\d+[.)])\s+/.test(l)) || (lines.length === 1 && text.split(/•+/).filter(s => s.trim()).length > 1);
+                if (lines.length > 1 || hasExplicitBullet) {
+                    this.innerHTML = formatItemDescHTML(text);
+                    triggerDraftAutoSave();
+                }
+            });
+        }
+
         window.addRow = function(name = "ITEM NAME", desc = "Description", hsn = "998717", uom = "NOS", qty = 1, rate = 0, discountMode = "percent", discountValue = 0) {
             const tbody = document.getElementById('items-body');
             qty=Math.max(0,parseFloat(qty)||0);rate=Math.max(0,parseFloat(rate)||0);discountValue=Math.max(0,parseFloat(discountValue)||0);discountMode=discountMode==='amount'?'amount':'percent';
@@ -1431,7 +1562,7 @@
                 </td>
                 <td class="relative">
                     <div contenteditable="true" class="item-name font-bold outline-none editable-input p-1">${escapeHTML(name)}</div>
-                    <div contenteditable="true" class="item-desc text-[10px] mt-1 text-gray-800 normal-case outline-none editable-input p-1">${escapeHTML(desc)}</div>
+                    <div contenteditable="true" class="item-desc text-[10px] mt-1 text-gray-800 normal-case outline-none editable-input p-1">${formatItemDescHTML(desc)}</div>
                 </td>
                 <td class="text-center align-middle"><input type="text" value="${escapeHTML(hsn)}" class="item-hsn text-center font-bold text-xs w-full editable-input"></td>
                 <td class="text-center font-bold align-middle"><input type="text" value="${escapeHTML(uom)}" class="item-uom text-center font-bold text-xs w-full editable-input"></td>
@@ -1442,6 +1573,7 @@
             `;
             tbody.appendChild(newRow);
             setupAutoSuggest(newRow.querySelector('.item-name'));
+            attachItemDescListBehavior(newRow.querySelector('.item-desc'));
             calculate(); triggerDraftAutoSave();
         }
 
@@ -1478,7 +1610,7 @@
             document.querySelectorAll('#items-body tr').forEach(tr => {
                 items.push({
                     name: tr.querySelector('.item-name').innerText,
-                    desc: tr.querySelector('.item-desc').innerText,
+                    desc: sanitizeRichHTML(tr.querySelector('.item-desc').innerHTML || ''),
                     hsn: tr.querySelector('.item-hsn').value,
                     uom: tr.querySelector('.item-uom').value,
                     qty: parseFloat(tr.querySelector('.item-qty').value) || 0,
@@ -1560,8 +1692,21 @@
             const today=new Date().toISOString().split('T')[0];document.getElementById('doc-date').value=today;
             const validDate=new Date();validDate.setDate(validDate.getDate()+30);document.getElementById('valid-date').value=validDate.toISOString().split('T')[0];
             document.getElementById('doc-seq-num').value=nextDirectoryQuoteSequence(today);
+            document.getElementById('doc-currency').value='INR (₹)';
+            document.getElementById('doc-ref').value='';
+            document.getElementById('doc-place').value='Maharashtra (27)';
             document.getElementById('discount-apply-to').value='total';document.getElementById('discount-mode').value='percent';document.getElementById('discount-value').value='0';document.getElementById('tax-type').value='intra';syncDiscountModeUI();
             document.getElementById('bill-to-address').innerHTML='';document.getElementById('ship-to-address').innerHTML='';document.getElementById('bill-to-gstin').value='';document.getElementById('ship-to-gstin').value='';document.getElementById('same-as-bill').checked=false;
+            toggleSection('sow-section', true);
+            toggleSection('mg-scope-section', true);
+            toggleSection('client-scope-section', true);
+            document.getElementById('sow-text').innerHTML='';
+            document.getElementById('mg-scope-text').innerHTML='';
+            document.getElementById('client-scope-text').innerHTML='';
+            document.getElementById('notes-terms').innerHTML='';
+            if (window.pendingFiles) window.pendingFiles = [];
+            const fileQueueEl = document.getElementById('file-queue-display'); if (fileQueueEl) fileQueueEl.innerText = '';
+            const aiTextEl = document.getElementById('ai_text_input'); if (aiTextEl) { aiTextEl.value = ''; aiTextEl.style.height = 'auto'; }
             document.getElementById('items-body').innerHTML='';addRow();updateDocNumberDisplay();resetQuoteHistory();
         };
 
@@ -1603,21 +1748,38 @@
         const AI_STATE_LABELS = {discount_apply_to:'Discount application',discount_mode:'Overall discount type',discount_value:'Overall discount value',doc_seq_num:'Quote sequence',doc_date:'Quote date',valid_date:'Validity date',doc_currency:'Currency',doc_ref:'Reference',doc_place:'Place',bill_to_address:'Bill-to details',bill_to_gstin:'Bill-to GSTIN',ship_to_address:'Ship-to details',ship_to_gstin:'Ship-to GSTIN',same_as_bill:'Ship-to same as bill-to',sow_visible:'Scope of Work visibility',mg_visible:'MG Scope visibility',client_visible:'Client Scope visibility',sow_text:'Scope of Work',mg_scope_text:'MG Scope',client_scope_text:'Client Scope',notes_terms:'Notes and terms',tax_type:'Tax selection',items:'Line items'};
         let pendingAIState = null;
         window.closeAIReview = function() { pendingAIState = null; const modal=document.getElementById('ai-review-modal'); modal.classList.add('opacity-0'); setTimeout(()=>modal.classList.add('hidden'),250); };
-        window.stageAIState = function(proposed, summary) {
+        window.stageAIState = function(proposed, summary, suggestions) {
             if (!proposed || typeof proposed !== 'object' || !Array.isArray(proposed.items)) throw new Error('The AI response did not include a valid quotation and line-item list. Please try again.');
-            const current = window.serializeState(); const merged = Object.assign({}, current, proposed); merged.doc_seq_num=current.doc_seq_num;
+            const extraNotes = Array.isArray(suggestions) ? suggestions : (Array.isArray(proposed.copilot_suggestions) ? proposed.copilot_suggestions : []);
+            const cleanProposed = Object.assign({}, proposed);
+            delete cleanProposed.copilot_suggestions;
+            const current = window.serializeState(); const merged = Object.assign({}, current, cleanProposed); merged.doc_seq_num=current.doc_seq_num;
             const changes = [];
             Object.keys(AI_STATE_LABELS).forEach(key => {
                 const before = JSON.stringify(current[key] == null ? null : current[key]);
                 const after = JSON.stringify(merged[key] == null ? null : merged[key]);
                 if (before !== after) changes.push([AI_STATE_LABELS[key], stateDisplay(current[key]), stateDisplay(merged[key])]);
             });
-            if (!changes.length) { window.showAlert('No Changes', 'The AI did not propose any changes to this quotation.', 'info'); return; }
+            if (!changes.length) {
+                if (extraNotes.length) { window.showAlert('Copilot Suggestions', extraNotes.map(n => '• ' + n).join('\n'), 'info'); return; }
+                window.showAlert('No Changes', 'The AI did not propose any changes to this quotation.', 'info'); return;
+            }
             pendingAIState = merged;
             document.getElementById('ai-review-summary').textContent = summary || ('Review ' + changes.length + ' proposed change(s).');
             const list = document.getElementById('ai-review-list'); list.replaceChildren();
             changes.slice(0,30).forEach(change => { const li=document.createElement('li'); li.textContent=change[0]+': '+change[1]+' → '+change[2]; list.appendChild(li); });
             if(changes.length>30){const li=document.createElement('li');li.textContent='…and '+(changes.length-30)+' more changes';list.appendChild(li);}
+            const sugBox = document.getElementById('ai-review-suggestions-box');
+            const sugList = document.getElementById('ai-review-suggestions-list');
+            if (sugBox && sugList) {
+                sugList.replaceChildren();
+                if (extraNotes.length) {
+                    extraNotes.slice(0, 12).forEach(note => { const li = document.createElement('li'); li.textContent = String(note); sugList.appendChild(li); });
+                    sugBox.classList.remove('hidden');
+                } else {
+                    sugBox.classList.add('hidden');
+                }
+            }
             const modal=document.getElementById('ai-review-modal'); modal.classList.remove('hidden'); setTimeout(()=>modal.classList.remove('opacity-0'),10);
         };
         window.applyPendingAIState = function() {
@@ -1695,7 +1857,7 @@
             try{
                 const state=window.serializeState();
                 const isNewQuote=!document.getElementById('internal_quote_id').value;
-                const parts=[{text:'You edit quotations. Interpret casual, abbreviated, or misspelled user commands, but write every newly added or revised client-facing field in concise, formal, professional business English. Preserve factual details, model numbers, dates, names, and amounts. Do not copy casual command wording into the quotation. Return ONLY a JSON object containing the complete updated quotation state with the same fields and shape as CURRENT STATE. Items must be an array of objects with name, desc, hsn, uom, qty, rate, discount_mode, discount_value. Apply the selected discount scope: if the user asks for per-item or line-wise discount, set discount_apply_to to line and update requested item discount fields; if the user asks for total/basic-value discount, set discount_apply_to to total and update discount_mode and discount_value. Do not apply both unless explicitly requested. Do not invent prices, GSTIN, dates, or terms. Keep all existing line items unless asked to add, remove, or replace them.\nNEW QUOTATION SCOPE SUGGESTIONS: '+(isNewQuote?'This is a new quotation. When the supplied text or files contain an inquiry, request, or source details for creating a quote, draft concise, professional suggested wording for all three sections: sow_text (work included), mg_scope_text (supplier responsibilities), and client_scope_text (customer responsibilities). Base wording on the supplied request, client/site details, and extracted items. Do not claim specific quantities, equipment, timelines, tests, warranties, or obligations unless supported by the source or already present in CURRENT STATE. Use cautious, relevant standard wording only when clearly implied; otherwise mark a point “To be confirmed” or omit it. Return each scope as an array of strings. For ordinary edits to an existing saved quote, preserve all scopes unless the user asks to change them.':'This request is not being treated as a new quote; preserve existing scopes unless the user asks to revise them.')+'\nCURRENT STATE JSON:\n'+JSON.stringify(state)}];
+                const parts=[{text:'You are the Senior Technical Quotation Engineer & Lead Generator for MG Transformer Services & Supplies. Operate in the driver\x27s seat: turn raw RFQs, inquiries, files, or brief user commands into a polished, tender-grade technical quotation while leaving final approval to the user. Interpret casual, abbreviated, or misspelled user input, but write every newly added or revised client-facing field in crisp, formal, technical business English. Preserve factual details, model numbers, ratings, dates, names, and amounts. Do not invent prices, GSTINs, or unstated commercial commitments.\nRETURN FORMAT: Return ONLY a valid JSON object matching the exact fields and shape of CURRENT STATE, plus an optional "copilot_suggestions" array of short strings highlighting any duplicates/overlaps you resolved, recommended technical/commercial additions or removals, or missing details (like rates/GSTIN) to confirm.\nLINE ITEMS RULE: Items must be an array of objects with name, desc, hsn, uom, qty, rate, discount_mode, discount_value. Whenever a single line item includes multiple sub-items, inclusions, components, tests, activities, or specifications, format its desc as a bulleted HTML list (<ul><li>Point 1</li><li>Point 2</li></ul>) with each point on its own line underneath the previous one; never lump multiple items into one run-on sentence. Keep existing line items unless asked to add, remove, or replace them.\nDISCOUNT RULE: If the user asks for per-item/line-wise discount, set discount_apply_to to "line" and update item discount fields; if asked for total/basic-value discount, set discount_apply_to to "total" and update discount_mode and discount_value. Do not apply both unless explicitly requested.\nSCOPE ARCHITECTURE & ANTI-DUPLICATION RULE (STRICT):\n- sow_text: High-level technical Scope of Work (what engineering work, testing, supply, or service is being executed).\n- mg_scope_text: Responsibilities strictly belonging to MG Transformer Services & Supplies (e.g., supply of specified materials/consumables, skilled manpower, PPE, standard tools/tackles, test kits, supervision, test reports).\n- client_scope_text: Responsibilities strictly belonging to the Client (e.g., site access, work permits, electrical shutdown/LOTO clearance, auxiliary power & utility water, safe storage space, crane/hydra if excluded from MG scope, inspection & sign-off).\n- MUTUAL EXCLUSIVITY & ZERO DUPLICATION: Audit all three sections together. NEVER list the same responsibility in both mg_scope_text and client_scope_text (e.g., if scaffolding, crane, consumables, or oil drums are in MG Scope, they MUST NOT appear in Client Scope, and vice versa). Remove redundant or duplicate points within any section. Return sow_text, mg_scope_text, and client_scope_text as clean arrays of concise strings.\nNEW VS EXISTING QUOTE BEHAVIOR: '+(isNewQuote?'This is a new quotation: proactively generate complete, pro-level technical sow_text, mg_scope_text, client_scope_text, and appropriate notes_terms (if empty) tailored to the transformer job described, and populate copilot_suggestions with any recommended add-ons, exclusions, or missing inputs.':'Preserve existing scopes unless the user asks to revise/audit them or new items/changes create an overlap or gap; if you spot duplicates or MG-vs-Client scope conflicts, flag them in copilot_suggestions or fix them when requested.')+'\nCURRENT STATE JSON:\n'+JSON.stringify(state)}];
                 if(input)parts.push({text:'\nUSER REQUEST / SOURCE MATERIAL:\n'+input});
                 for(const f of window.pendingFiles){
                     if(f.name&&(/\.(xls|xlsx|csv)$/i).test(f.name)){parts.push({text:'\nFILE '+f.name+' (CSV):\n'+await readExcelToCSV(f)});}
@@ -1750,20 +1912,33 @@
             bubble.appendChild(document.createTextNode(String(text||'')));row.appendChild(bubble);history.appendChild(row);history.scrollTop=history.scrollHeight;
         }
         let globalAIHistory=[];
+        window.triggerCopilotQuickAction=function(promptText){
+            const inp=document.getElementById('global_ai_input');
+            if(!inp)return;
+            inp.value=promptText;
+            window.sendGlobalAIMessage();
+        };
         window.openGlobalAI=function(){
             document.getElementById('global-ai-modal').classList.remove('hidden');setTimeout(()=>document.getElementById('global-ai-modal').classList.remove('opacity-0'),10);
             const quoteContext=(window.quotesData||[]).slice().sort((a,b)=>(b.timestamp||0)-(a.timestamp||0)).slice(0,100).map(q=>({quoteNo:q.quoteNo||'',clientName:q.clientName||'',clientCity:q.clientCity||'',date:q.date||'',amount:q.amount||0,status:q.status||'Draft'}));
-            globalAIHistory=[{role:'user',parts:[{text:'You are the MG Transformer quotation assistant. Always communicate in concise, formal, professional language, even when the user writes casually or with shorthand. For quotation edits, rewrite newly added or revised client-facing wording in professional business English while preserving intent, facts, names, model numbers, dates, and amounts. Answer questions using the supplied quote summaries and current draft. If the user asks to change the current draft, return JSON only: {"action":"edit","summary":"short professional summary","state":<complete updated state object>}. Otherwise return JSON only: {"action":"answer","answer":"formal professional answer"}. Preserve fields and items the user did not ask to change; do not invent prices or customer details. Item objects include name, desc, hsn, uom, qty, rate, discount_mode, discount_value. If asked for a line-wise discount, set discount_apply_to to line and update item discount fields; if asked for a quote-total/basic-value discount, set discount_apply_to to total and update discount_mode and discount_value. Do not apply both unless the user requests both.\nQUOTE SUMMARIES (up to 100): '+JSON.stringify(quoteContext)+'\nCURRENT DRAFT STATE: '+JSON.stringify(window.serializeState())}]},{role:'model',parts:[{text:'{"action":"answer","answer":"Ready. I can answer using the supplied summaries or prepare a draft edit for your review."}'}]}];
+            globalAIHistory=[{role:'user',parts:[{text:'You are the Lead Technical Quotation Generator & Senior Engineering Manager for MG Transformer Services & Supplies. Operate in the driver\x27s seat to build, audit, and refine complete, tender-grade quotations end-to-end while leaving revisions and final approval to the user.\nCOMMUNICATION & TECHNICAL QUALITY:\n- Always communicate in crisp, formal, professional technical English even if the user writes casually or in shorthand.\n- When generating or updating a quotation from an RFQ, inquiry, or notes, proactively draft or refine ALL relevant sections: client details, structured line items (with appropriate HSN/SAC & UOM), Scope of Work (sow_text), MG Scope (mg_scope_text), Client Scope (client_scope_text), and Notes & Terms (notes_terms). Never invent prices, GSTINs, or unconfirmed commercial figures — leave rate as 0 or flag missing figures in suggestions.\n- LINE ITEM DESCRIPTION RULE: Whenever a single line item includes multiple sub-items, inclusions, components, tests, activities, or specifications, format its desc as a bulleted HTML list (<ul><li>Point 1</li><li>Point 2</li></ul>) with each point on its own line underneath the previous one; never lump multiple items into one run-on sentence.\n- SCOPE AUDIT, ANTI-DUPLICATION & MUTUAL EXCLUSIVITY (MANDATORY ON EVERY DRAFT EDIT OR REVIEW):\n  1. sow_text = technical work/deliverables to be performed.\n  2. mg_scope_text = items, consumables, manpower, tools, test kits, PPE, supervision, and deliverables provided by MG Transformer Services & Supplies.\n  3. client_scope_text = site prerequisites and items provided by the Client (shutdown/LOTO, permits, site access, auxiliary power/water, storage, crane/forklift if excluded from MG scope, inspection/sign-off).\n  4. NEVER duplicate any item within a section or place the same responsibility in BOTH mg_scope_text and client_scope_text. If an item belongs in MG Scope, ensure it is NOT in Client Scope (and vice versa).\n  5. Proactively suggest valuable technical/commercial additions, exclusions, or removals (e.g., NABL lab testing, waste oil disposal, crane/hydra clarity, shutdown duration, safety compliance) in the "suggestions" array.\n  6. Return sow_text, mg_scope_text, and client_scope_text as clean arrays of concise strings.\n- DISCOUNT RULE: If asked for a line-wise discount, set discount_apply_to to "line" and update item discount fields; if asked for a quote-total/basic-value discount, set discount_apply_to to "total" and update discount_mode and discount_value. Do not apply both unless requested.\nRESPONSE FORMAT (JSON ONLY):\n- Whenever the user asks to create, build, edit, fix, audit, or polish the quotation (or feeds an inquiry/RFQ), return JSON ONLY: {"action":"edit","summary":"concise summary of changes made and conflicts resolved","suggestions":["proactive suggestion 1","proactive suggestion 2"],"state":<complete updated state object>}.\n- For pure Q&A, analytics, email drafting, or advisory review without modifying the draft yet, return JSON ONLY: {"action":"answer","answer":"formal professional answer including any proactive scope/risk suggestions"}.\nQUOTE SUMMARIES (up to 100): '+JSON.stringify(quoteContext)+'\nCURRENT DRAFT STATE: '+JSON.stringify(window.serializeState())}]},{role:'model',parts:[{text:'{"action":"answer","answer":"Ready. Share an RFQ, rough notes, or ask me to audit your current draft—I will build or refine the quotation, eliminate scope overlaps/duplications, and present changes and suggestions for your final approval."}'}]}];
         };
         window.closeGlobalAI=function(){document.getElementById('global-ai-modal').classList.add('opacity-0');setTimeout(()=>document.getElementById('global-ai-modal').classList.add('hidden'),300);};
         window.sendGlobalAIMessage=async function(){
             const inputEl=document.getElementById('global_ai_input'),text=inputEl.value.trim();if(!text)return;inputEl.value='';appendChatMessage('user',text);
-            const historyDiv=document.getElementById('global-ai-history'),loadId='load_'+Date.now(),loader=document.createElement('div');loader.id=loadId;loader.className='flex justify-start';const bubble=document.createElement('div');bubble.className='chat-bubble-ai p-3 max-w-[85%] text-sm shadow-sm font-medium';bubble.textContent='Thinking…';loader.appendChild(bubble);historyDiv.appendChild(loader);historyDiv.scrollTop=historyDiv.scrollHeight;
+            const historyDiv=document.getElementById('global-ai-history'),loadId='load_'+Date.now(),loader=document.createElement('div');loader.id=loadId;loader.className='flex justify-start';const bubble=document.createElement('div');bubble.className='chat-bubble-ai p-3 max-w-[85%] text-sm shadow-sm font-medium';bubble.textContent='Analyzing & preparing quotation update…';loader.appendChild(bubble);historyDiv.appendChild(loader);historyDiv.scrollTop=historyDiv.scrollHeight;
             try{
-                globalAIHistory.push({role:'user',parts:[{text:text}]});
+                const liveSnapshot = '\n[LIVE CURRENT DRAFT STATE]: ' + JSON.stringify(window.serializeState());
+                globalAIHistory.push({role:'user',parts:[{text:text + liveSnapshot}]});
                 const raw=await fetchGeminiWithFallback({contents:globalAIHistory,generationConfig:{responseMimeType:'application/json',temperature:0.2}});const result=JSON.parse(extractJSON(raw));
                 const load=document.getElementById(loadId);if(load)load.remove();
-                if(result.action==='edit'&&result.state){appendChatMessage('model',result.summary||'I prepared changes for the current draft. Review them before applying.');window.stageAIState(result.state,result.summary||'Copilot proposed a draft update.');}
+                if(result.action==='edit'&&result.state){
+                    const sugs = Array.isArray(result.suggestions) ? result.suggestions.filter(Boolean) : [];
+                    let msg = result.summary || 'I prepared a pro-level update for the current draft. Review before applying.';
+                    if (sugs.length) msg += '\n\nSuggestions & Audit Notes:\n• ' + sugs.join('\n• ');
+                    appendChatMessage('model', msg);
+                    window.stageAIState(result.state, result.summary || 'Copilot proposed a draft update.', sugs);
+                }
                 else appendChatMessage('model',result.answer||'I could not prepare a response. Please try again.');
                 globalAIHistory.push({role:'model',parts:[{text:raw}]});
             }catch(e){const load=document.getElementById(loadId);if(load)load.remove();appendChatMessage('model','Error: '+e.message);if(globalAIHistory.length&&globalAIHistory[globalAIHistory.length-1].role==='user')globalAIHistory.pop();}
@@ -1857,6 +2032,7 @@
                 switchView('editor');
                 resetQuoteHistory();
                 document.querySelectorAll('.item-name').forEach(el => setupAutoSuggest(el));
+                document.querySelectorAll('.item-desc').forEach(el => attachItemDescListBehavior(el));
                 return;
             }
 
