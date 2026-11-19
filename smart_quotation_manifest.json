@@ -7,7 +7,7 @@
   "scope": "./",
   "display": "standalone",
   "background_color": "#f1f5f9",
-  "theme_color": "#0f172a"
+  "theme_color": "#0f172a",
   "icons": [
     {
       "src": "./MG_LOGO_WITH_NAME-removebg-preview.png",
