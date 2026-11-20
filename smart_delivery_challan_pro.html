@@ -1,8 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="manifest" href="./smart_dc_manifest.json">
-    <link rel="apple-touch-icon" href="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png">
+    <link rel="apple-touch-icon" href="./icons/icon_dc_512.png">
+    <link rel="icon" type="image/png" href="./icons/icon_dc_192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart Delivery Challan PRO — MG Transformer</title>
@@ -168,6 +170,34 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
+        /* Mobile 9:16 Native App Mode (< 768px) */
+        @media (max-width: 767px) {
+            body { background-color: #f1f5f9; }
+            .mobile-tab-active { color: #ea580c !important; border-bottom: 2.5px solid #ea580c !important; font-weight: 800 !important; }
+            .mobile-input {
+                width: 100%;
+                border: 1.5px solid #cbd5e1;
+                border-radius: 10px;
+                padding: 10px 12px;
+                font-size: 14px;
+                font-weight: 600;
+                color: #0f172a;
+                background: #ffffff;
+                outline: none;
+            }
+            .mobile-input:focus { border-color: #ea580c; box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12); }
+            .mobile-label { display: block; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #64748b; margin-bottom: 4px; }
+            #editor-view.mobile-form-active #document-area { display: none !important; }
+            #editor-view.mobile-preview-active #mobile-editor-form { display: none !important; }
+            #editor-view.mobile-preview-active #document-area {
+                display: flex !important;
+                width: 794px !important;
+                max-width: 794px !important;
+                transform-origin: top left;
+                margin: 0 !important;
+            }
+        }
+
         /* A4 Print Engine */
         @page { size: A4 portrait; margin: 0; }
         @media print {
@@ -233,7 +263,7 @@
     </script>
 
     <!-- App Header -->
-    <header id="app-header" class="bg-slate-900 border-b-4 border-orange-500 shadow-sm z-40 h-[60px] flex items-center justify-between px-4 shrink-0">
+    <header id="app-header" class="bg-slate-900 border-b-4 border-orange-500 shadow-sm z-40 min-h-[60px] py-1.5 flex items-center justify-between px-3 sm:px-4 shrink-0">
         <div class="flex items-center gap-3 min-w-0">
             <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG Transformer" class="h-10 w-auto object-contain bg-white rounded p-1 shrink-0" onerror="this.style.display='none'">
             <div class="min-w-0">
@@ -245,20 +275,20 @@
             </div>
         </div>
 
-        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar" id="nav-buttons">
-            <button onclick="openGlobalAI()" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-indigo-200 whitespace-nowrap">
-                <i class="fa-solid fa-sparkles text-indigo-500"></i> AI Copilot
+        <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar" id="nav-buttons">
+            <button onclick="openGlobalAI()" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-indigo-200 whitespace-nowrap" title="AI Copilot">
+                <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i> <span class="hidden sm:inline">AI Copilot</span>
             </button>
             <div class="w-px h-6 bg-slate-700 mx-0.5 hidden sm:block"></div>
-            <button onclick="switchView('dashboard')" id="btn-nav-dash" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700 whitespace-nowrap">
-                <i class="fa-solid fa-folder-open"></i> Directory
+            <button onclick="switchView('dashboard')" id="btn-nav-dash" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700 whitespace-nowrap" title="Directory">
+                <i class="fa-solid fa-folder-open"></i> <span class="hidden sm:inline">Directory</span>
             </button>
-            <button onclick="switchView('editor'); createNewDC();" id="btn-nav-new" class="bg-orange-600 text-white hover:bg-orange-700 px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-orange-700 whitespace-nowrap">
-                <i class="fa-solid fa-plus"></i> New Challan
+            <button onclick="switchView('editor'); createNewDC();" id="btn-nav-new" class="bg-orange-600 text-white hover:bg-orange-700 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-orange-700 whitespace-nowrap" title="New Challan">
+                <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">New Challan</span>
             </button>
-            <div class="w-px h-6 bg-slate-700 mx-0.5"></div>
-            <button onclick="openSettings()" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700 whitespace-nowrap">
-                <i class="fa-solid fa-shield-halved text-emerald-400"></i> Settings
+            <div class="w-px h-6 bg-slate-700 mx-0.5 hidden sm:block"></div>
+            <button onclick="openSettings()" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700 whitespace-nowrap" title="Settings">
+                <i class="fa-solid fa-shield-halved text-emerald-400"></i> <span class="hidden sm:inline">Settings</span>
             </button>
         </div>
     </header>
@@ -266,10 +296,41 @@
     <main class="flex-1 relative overflow-hidden flex flex-col">
 
         <!-- ==================== DIRECTORY / DASHBOARD VIEW ==================== -->
-        <div id="dashboard-view" class="flex-1 flex flex-col p-4 max-w-[1600px] mx-auto w-full gap-4 overflow-y-auto hidden">
+        <div id="dashboard-view" class="flex-1 flex flex-col p-0 md:p-4 max-w-[1600px] mx-auto w-full md:gap-4 overflow-y-auto hidden">
 
-            <!-- Status KPI Filter Cards -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 shrink-0">
+            <!-- MOBILE 9:16 ZOHO-STYLE DIRECTORY HEADER & TABS -->
+            <div class="md:hidden bg-white border-b border-slate-200 sticky top-0 z-20">
+                <div class="flex items-center justify-between px-3.5 pt-3 pb-2 gap-2">
+                    <h2 class="text-base font-black text-slate-900">Delivery Challans</h2>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="document.getElementById('mobile-search-wrap').classList.toggle('hidden'); document.getElementById('mobile_dash_search').focus();" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-search text-xs"></i></button>
+                        <button onclick="exportLocalBackup()" class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center" title="Backup JSON"><i class="fa-solid fa-box-archive text-xs"></i></button>
+                        <button onclick="document.getElementById('import_legacy_input').click()" class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center" title="Import Old DCs"><i class="fa-solid fa-file-import text-xs"></i></button>
+                    </div>
+                </div>
+                <div id="mobile-search-wrap" class="hidden px-3.5 pb-2">
+                    <input type="text" id="mobile_dash_search" oninput="document.getElementById('dash_search').value=this.value; renderDashboard();" placeholder="Search DC no, consignee, vehicle..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold outline-none focus:border-orange-500">
+                </div>
+                <div class="flex items-center overflow-x-auto no-scrollbar px-2 border-t border-slate-100 gap-1" id="mobile-status-tabs">
+                    <button onclick="setDashboardFilter('All')" id="m-tab-All" class="mobile-tab-active px-3 py-2.5 text-xs font-bold text-slate-600 whitespace-nowrap">All (<span id="m-count-All">0</span>)</button>
+                    <button onclick="setDashboardFilter('Draft')" id="m-tab-Draft" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Draft (<span id="m-count-Draft">0</span>)</button>
+                    <button onclick="setDashboardFilter('Dispatched')" id="m-tab-Dispatched" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Dispatched (<span id="m-count-Dispatched">0</span>)</button>
+                    <button onclick="setDashboardFilter('Delivered')" id="m-tab-Delivered" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Delivered (<span id="m-count-Delivered">0</span>)</button>
+                    <button onclick="setDashboardFilter('Pending Return')" id="m-tab-Pending Return" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Pending Return (<span id="m-count-Pending Return">0</span>)</button>
+                    <button onclick="setDashboardFilter('Returned')" id="m-tab-Returned" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Returned (<span id="m-count-Returned">0</span>)</button>
+                </div>
+            </div>
+
+            <!-- MOBILE 9:16 CARD LIST -->
+            <div id="mobile_dash_list" class="md:hidden divide-y divide-slate-200 bg-white pb-24 flex-1"></div>
+
+            <!-- MOBILE FLOATING '+' ACTION BUTTON -->
+            <button onclick="switchView('editor'); createNewDC();" class="md:hidden fixed bottom-5 right-5 z-30 w-14 h-14 rounded-full bg-slate-900 hover:bg-orange-600 text-white shadow-2xl flex items-center justify-center text-2xl transition active:scale-95 border-2 border-orange-500" title="New Delivery Challan">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+
+            <!-- DESKTOP / TABLET Status KPI Filter Cards -->
+            <div class="hidden md:grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 shrink-0">
                 <div onclick="setDashboardFilter('All')" class="cursor-pointer bg-white p-3 rounded-xl border-2 border-slate-200 hover:border-slate-400 shadow-sm flex flex-col items-center transition-all" id="filter-All">
                     <span class="text-[10px] font-black uppercase text-slate-500">All Challans</span>
                     <span class="text-lg font-black text-slate-800" id="count-All">0</span>
@@ -297,7 +358,7 @@
             </div>
 
             <!-- Filter & Action Bar -->
-            <div class="flex flex-wrap justify-between items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <div class="hidden md:flex flex-wrap justify-between items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
                 <div class="flex flex-wrap items-center gap-2">
                     <div class="relative">
                         <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -336,7 +397,7 @@
             </div>
 
             <!-- Directory Table -->
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col relative min-h-[340px]">
+            <div class="hidden md:flex bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex-col relative min-h-[340px]">
                 <div id="ai_loading_indicator" class="absolute inset-0 bg-white/90 z-30 hidden flex-col items-center justify-center backdrop-blur-sm">
                     <i class="fa-solid fa-microchip fa-bounce text-4xl text-indigo-500 mb-3"></i>
                     <h3 class="text-lg font-black text-slate-800" id="ai_loading_title">Processing...</h3>
@@ -377,10 +438,20 @@
         </div>
 
         <!-- ==================== EDITOR VIEW ==================== -->
-        <div id="editor-view" class="flex-1 overflow-y-auto bg-slate-100 p-3 sm:p-4 pb-20 flex flex-col relative">
+        <div id="editor-view" class="mobile-form-active flex-1 overflow-y-auto bg-slate-100 p-2.5 md:p-4 pb-24 md:pb-20 flex flex-col relative">
 
-            <!-- Sticky Action Toolbar -->
-            <div class="no-print sticky top-0 z-30 max-w-[210mm] mx-auto bg-white/95 backdrop-blur border border-slate-200 p-2.5 rounded-xl shadow-md mb-3 flex flex-wrap justify-between items-center gap-2 w-full">
+            <!-- MOBILE 9:16 TOP MODE BAR (Form vs A4 Preview) -->
+            <div class="no-print md:hidden sticky top-0 z-30 bg-white border border-slate-200 rounded-xl shadow-sm p-2 mb-2.5 flex items-center justify-between gap-2">
+                <button onclick="switchView('dashboard')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-arrow-left"></i> List</button>
+                <div class="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                    <button id="mob-tab-form" onclick="setMobileEditorMode('form')" class="px-3 py-1 rounded-md text-xs font-black bg-white text-orange-600 shadow-sm">Edit Form</button>
+                    <button id="mob-tab-preview" onclick="setMobileEditorMode('preview')" class="px-3 py-1 rounded-md text-xs font-bold text-slate-600">A4 Preview</button>
+                </div>
+                <button onclick="openMobilePresetsMenu()" class="px-2.5 py-1.5 rounded-lg bg-orange-50 text-orange-700 border border-orange-200 text-xs font-bold"><i class="fa-solid fa-bolt"></i></button>
+            </div>
+
+            <!-- DESKTOP / TABLET Sticky Action Toolbar -->
+            <div class="no-print hidden md:flex sticky top-0 z-30 max-w-[210mm] mx-auto bg-white/95 backdrop-blur border border-slate-200 p-2.5 rounded-xl shadow-md mb-3 flex-wrap justify-between items-center gap-2 w-full">
                 <div class="flex items-center gap-2">
                     <button onclick="switchView('dashboard')" class="text-slate-500 hover:text-orange-600 transition p-1.5" title="Back to Directory"><i class="fa-solid fa-arrow-left"></i></button>
                     <span class="text-xs font-black text-slate-700 uppercase tracking-wider" id="editor_mode_text">New Draft</span>
@@ -436,22 +507,27 @@
             </div>
 
             <!-- AI Builder & Multi-File Extraction Bar -->
-            <div id="drop-zone" class="no-print max-w-[210mm] mx-auto bg-white p-3 mb-4 rounded-xl shadow-sm border-2 border-dashed border-indigo-200 flex flex-col gap-2 transition-colors duration-200 w-full">
-                <div class="flex items-start gap-2 w-full">
-                    <span class="text-xs font-bold text-indigo-700 flex items-center gap-1 whitespace-nowrap mt-1.5"><i class="fa-solid fa-robot"></i> AI Dispatch:</span>
-
-                    <div class="flex-grow flex flex-col gap-1 w-full">
-                        <textarea id="ai_text_input" rows="2" placeholder="Type 1 command or paste Invoice / PO / Quote / WhatsApp msg (auto-extracts Invoice No. & Dt., E-Way Bill No., PO Ref, Vehicle, Consignee & Items)..." class="border border-slate-300 px-2.5 py-1.5 text-xs font-medium rounded w-full focus:border-indigo-500 outline-none placeholder-slate-400 overflow-hidden resize-none leading-snug" oninput="this.style.height='auto'; this.style.height=this.scrollHeight+'px'"></textarea>
-                        <div id="file-queue-display" class="text-[10px] text-indigo-600 font-bold flex gap-2 flex-wrap empty:hidden"></div>
-                    </div>
-
-                    <div class="flex items-center gap-1 shrink-0 mt-0.5">
-                        <button id="ai_text_btn" onclick="handleAITextExtraction()" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-indigo-700 transition shadow-sm whitespace-nowrap">Process</button>
-                        <span class="text-[10px] font-bold text-slate-400 mx-0.5">OR</span>
-                        <input type="file" id="ai_file_input" accept="image/*,application/pdf,text/plain,.csv,.xls,.xlsx" multiple class="hidden" onchange="handleAIExtraction(event)">
-                        <button id="ai_file_btn" onclick="document.getElementById('ai_file_input').click()" class="bg-slate-100 text-slate-700 border border-slate-300 px-2.5 py-1.5 rounded text-xs font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> Upload Inv/PO/Quote</button>
-                    </div>
+            <div id="drop-zone" class="no-print max-w-[210mm] mx-auto bg-white p-3 mb-4 rounded-xl shadow-sm border-2 border-dashed border-indigo-200 flex flex-col gap-2.5 transition-colors duration-200 w-full">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-black text-indigo-700 flex items-center gap-1.5"><i class="fa-solid fa-robot"></i> AI Dispatch &amp; Data Extractor</span>
+                    <span class="text-[10px] text-slate-400 font-semibold hidden sm:inline">Paste Invoice / PO / Quote / WhatsApp text or drop files</span>
                 </div>
+
+                <!-- Full-Width Multi-Line Textarea (Consignee-Box Style) -->
+                <div class="w-full flex flex-col gap-1.5">
+                    <textarea id="ai_text_input" rows="3" placeholder="Click here and paste full Invoice, PO, Quotation, or WhatsApp dispatch details — or type any 1-line command..." class="w-full min-h-[82px] border-2 border-slate-200 bg-slate-50/50 focus:bg-white px-3 py-2 text-xs sm:text-sm font-medium rounded-lg focus:border-indigo-500 outline-none placeholder-slate-400 resize-y leading-relaxed shadow-inner transition" oninput="this.style.height='auto'; this.style.height=Math.min(240, Math.max(82, this.scrollHeight))+'px'"></textarea>
+                    <div id="file-queue-display" class="text-[10px] text-indigo-600 font-bold flex gap-2 flex-wrap empty:hidden"></div>
+                </div>
+
+                <!-- Full-Width Action Buttons Row -->
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <input type="file" id="ai_file_input" accept="image/*,application/pdf,text/plain,.csv,.xls,.xlsx" multiple class="hidden" onchange="handleAIExtraction(event)">
+                        <button id="ai_file_btn" onclick="document.getElementById('ai_file_input').click()" class="bg-slate-100 text-slate-700 border border-slate-300 px-3 py-2 rounded-lg text-xs font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap flex items-center gap-1.5"><i class="fa-solid fa-paperclip text-indigo-600"></i> Upload Inv/PO/Quote</button>
+                    </div>
+                    <button id="ai_text_btn" onclick="handleAITextExtraction()" class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-xs font-black uppercase tracking-wider hover:bg-indigo-700 transition shadow-sm whitespace-nowrap flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles"></i> Process with AI</button>
+                </div>
+
                 <!-- 1-Click AI Quick Commands -->
                 <div class="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-100">
                     <span class="text-[9px] font-black uppercase text-slate-400 mr-1">1-Click AI:</span>
@@ -461,6 +537,147 @@
                     <button type="button" onclick="runQuickAIBuilder('Audit this Delivery Challan for GST Rule 55 compliance, missing vehicle/driver/GSTIN/return-date details, duplicate items, and suggest improvements in copilot_suggestions.')" class="text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full transition"><i class="fa-solid fa-shield-check mr-1"></i>Audit Compliance</button>
                     <span class="text-[9px] text-slate-400 ml-auto hidden sm:inline">Drag &amp; drop or Ctrl+V images/PDFs/Excel here</span>
                 </div>
+            </div>
+
+            <!-- ==================== NATIVE MOBILE 9:16 FORM EDITOR ==================== -->
+            <div id="mobile-editor-form" class="no-print md:hidden space-y-3 pb-4">
+                <!-- Card 1: Challan Header & References -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-file-invoice text-orange-500 mr-1.5"></i>Challan &amp; References</span>
+                        <span id="mob-dc-badge" class="font-mono text-xs font-black text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">DC-2627-11/001</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="mobile-label">Challan Date</label>
+                            <input type="date" id="mob-doc-date" class="mobile-input" onchange="syncFromMobileField('doc-date', this.value, true)">
+                        </div>
+                        <div>
+                            <label class="mobile-label">Seq. No.</label>
+                            <input type="text" id="mob-doc-seq" class="mobile-input font-mono" oninput="syncFromMobileField('doc-seq-num', this.value, true)">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="mobile-label">Ref / PO No.</label>
+                        <input type="text" id="mob-doc-ref" class="mobile-input" placeholder="PO No. or Verbal" oninput="syncFromMobileField('doc-ref', this.value)">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="mobile-label">Invoice No. &amp; Dt.</label>
+                            <input type="text" id="mob-invoice-no" class="mobile-input" placeholder="N/A" oninput="syncFromMobileField('invoice-no', this.value)">
+                        </div>
+                        <div>
+                            <label class="mobile-label">E-Way Bill No.</label>
+                            <input type="text" id="mob-eway-no" class="mobile-input" placeholder="N/A" oninput="syncFromMobileField('eway-no', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Consignee Details -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
+                    <div class="border-b border-slate-100 pb-2 text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-building text-orange-500 mr-1.5"></i>Consignee (Ship To)</div>
+                    <div>
+                        <label class="mobile-label">Client Name &amp; Full Address</label>
+                        <textarea id="mob-bill-to" rows="3" class="mobile-input leading-snug" placeholder="Company Name&#10;Address Line 1&#10;City, State, PIN" oninput="syncMobileAddress(this.value)"></textarea>
+                    </div>
+                    <div>
+                        <label class="mobile-label">GSTIN</label>
+                        <input type="text" id="mob-gstin" class="mobile-input uppercase font-mono" placeholder="15-digit GSTIN" oninput="syncFromMobileField('bill-to-gstin', this.value)">
+                    </div>
+                    <div class="grid grid-cols-1 gap-2.5">
+                        <div>
+                            <label class="mobile-label">Contact Person Name</label>
+                            <input type="text" id="mob-contact-name" class="mobile-input" placeholder="Site Engineer / Receiver Name" oninput="syncMobileContentEditable('consignee-contact-name', this.value)">
+                        </div>
+                        <div>
+                            <label class="mobile-label">Contact Mobile Number(s)</label>
+                            <input type="tel" id="mob-contact-phone" class="mobile-input font-mono" placeholder="e.g. 9764438934" oninput="syncMobileContentEditable('consignee-contact-phone', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Card 3: Purpose & Transport -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
+                    <div class="border-b border-slate-100 pb-2 text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-truck-fast text-orange-500 mr-1.5"></i>Purpose &amp; Logistics</div>
+                    <div>
+                        <label class="mobile-label">Purpose of Challan (GST Rule 55)</label>
+                        <select id="mob-purpose" class="mobile-input" onchange="syncMobilePurpose(this.value)">
+                            <option value="Against PO / Billable">Against PO / Billable</option>
+                            <option value="Job Work / Without PO (Billable)">Job Work / Without PO (Billable)</option>
+                            <option value="Free Repair / Under Warranty">Free Repair / Under Warranty</option>
+                            <option value="Returnable Basis">Returnable Basis (Tools / Equipment)</option>
+                            <option value="Non-Returnable / Site Consumables">Non-Returnable / Site Consumables</option>
+                            <option value="Inter-Site / Stock Transfer">Inter-Site / Stock Transfer</option>
+                        </select>
+                    </div>
+                    <div id="mob-returnable-box" class="hidden bg-purple-50 border border-purple-200 rounded-lg p-2.5 space-y-2">
+                        <label class="flex items-center gap-2 text-xs font-bold text-purple-800">
+                            <input type="checkbox" id="mob-one-day" class="w-4 h-4 accent-purple-600" onchange="document.getElementById('one-day-cb').checked=this.checked; handleOneDayToggle(); syncMobileFormFromDOM();">
+                            One Day Basis (Same-Day Return)
+                        </label>
+                        <div>
+                            <label class="mobile-label text-purple-700">Expected Return Date</label>
+                            <input type="date" id="mob-return-date" class="mobile-input" onchange="syncFromMobileField('expected-return-date', this.value)">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="mobile-label">Mode of Transport</label>
+                            <select id="mob-mode-tr" class="mobile-input" onchange="document.getElementById('mode-tr').value=this.value; handleTransportModeChange(true);">
+                                <option value="By Road">By Road</option>
+                                <option value="By Hand">By Hand</option>
+                                <option value="By Courier">By Courier</option>
+                                <option value="By Air">By Air</option>
+                                <option value="By Rail">By Rail</option>
+                                <option value="By Marine">By Marine / Sea</option>
+                                <option value="Company Vehicle">Company Vehicle</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="mobile-label">Vehicle / Agency</label>
+                            <input type="text" id="mob-vehicle" list="vehicle-list" class="mobile-input uppercase" placeholder="MH 05 DH 9441" oninput="syncFromMobileField('vehicle-num', this.value)">
+                        </div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label id="mob-driver-label" class="mobile-label m-0">LR / Driver / Carrier Details</label>
+                            <button type="button" onclick="openTransportModal()" class="text-[11px] font-bold text-orange-600"><i class="fa-solid fa-pen-to-square mr-0.5"></i>Popup</button>
+                        </div>
+                        <input type="text" id="mob-driver-lr" class="mobile-input" placeholder="Driver / Carrier Name &amp; Mobile or LR No." oninput="syncMobileContentEditable('driver-lr', this.value)">
+                    </div>
+                    <div>
+                        <label class="mobile-label">Packing / Gross Weight</label>
+                        <input type="text" id="mob-packing" class="mobile-input" placeholder="e.g. 1 BOX | 10 KG" oninput="syncFromMobileField('packing-summary', this.value)">
+                    </div>
+                </div>
+
+                <!-- Card 4: Dispatched Items -->
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-boxes-stacked text-orange-500 mr-1.5"></i>Items (<span id="mob-items-count">0</span>)</span>
+                        <button type="button" onclick="addRow(); renderMobileItemsList();" class="bg-orange-600 text-white px-3 py-1 rounded-lg text-xs font-black shadow-sm">+ Add Item</button>
+                    </div>
+                    <div id="mob-items-container" class="space-y-3"></div>
+                </div>
+
+                <!-- Quick Terms Button -->
+                <button type="button" onclick="openTermsModal()" class="w-full bg-white border border-slate-200 rounded-xl p-3 text-xs font-black text-slate-700 flex items-center justify-between shadow-sm">
+                    <span><i class="fa-solid fa-list-check text-orange-500 mr-2"></i>Configure Delivery Challan Terms</span>
+                    <i class="fa-solid fa-chevron-right text-slate-400"></i>
+                </button>
+            </div>
+
+            <!-- MOBILE STICKY BOTTOM ACTION BAR -->
+            <div class="no-print md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 px-2.5 py-2 flex items-center gap-2 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+                <button onclick="openWhatsAppModal()" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition">
+                    <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+                </button>
+                <button onclick="triggerSmartPrint()" class="px-3.5 bg-blue-600 text-white py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1 shadow-sm active:scale-95 transition">
+                    <i class="fa-solid fa-print"></i> Print
+                </button>
+                <button onclick="saveDCToCloud()" class="flex-1 bg-orange-600 text-white py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Save
+                </button>
             </div>
 
             <!-- ==================== A4 DELIVERY CHALLAN DOCUMENT ==================== -->
@@ -725,7 +942,7 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl h-[85vh] mx-4 flex flex-col overflow-hidden border border-slate-300">
             <div class="p-3 bg-slate-800 text-white flex justify-between items-center shrink-0 border-b border-slate-700">
                 <div>
-                    <h3 class="font-black text-base flex items-center gap-2"><i class="fa-solid fa-sparkles text-indigo-400"></i> Dispatch AI Copilot</h3>
+                    <h3 class="font-black text-base flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i> Dispatch AI Copilot</h3>
                     <p class="text-[10px] text-slate-300 font-bold tracking-wide mt-0.5">Lead Logistics &amp; Dispatch Engine — generates complete DCs, audits GST Rule 55 compliance, tracks returnables, and drafts WhatsApp alerts.</p>
                 </div>
                 <button onclick="closeGlobalAI()" class="text-slate-400 hover:text-red-400 transition bg-slate-700/50 hover:bg-slate-700 rounded-full h-8 w-8 flex items-center justify-center"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -744,11 +961,14 @@
                     <button type="button" onclick="triggerCopilotQuickAction('Polish all line item descriptions in the current DC into crisp, professional technical dispatch wording with stacked bullet lists for sub-accessories, and deduce accurate 8-digit HSN/SAC codes without changing quantities.')" class="text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full transition"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Polish &amp; Fill HSN</button>
                     <button type="button" onclick="triggerCopilotQuickAction('Draft a crisp, professional WhatsApp dispatch notification message for the current Delivery Challan that I can forward directly to the client site engineer.')" class="text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full transition"><i class="fa-brands fa-whatsapp mr-1"></i>Draft WhatsApp Alert</button>
                 </div>
-                <div class="flex gap-2">
-                    <input type="text" id="global_ai_input" onkeypress="if(event.key==='Enter') sendGlobalAIMessage()" placeholder="Type a 1-line dispatch command, paste PO/quote text, or ask about your DC directory..." class="flex-grow border-2 border-slate-300 rounded-lg p-2.5 text-sm font-bold focus:border-indigo-500 outline-none shadow-inner placeholder-slate-400">
-                    <button onclick="sendGlobalAIMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded-lg font-black uppercase tracking-wider text-xs shadow-md transition flex items-center gap-2">
-                        Send <i class="fa-solid fa-paper-plane"></i>
-                    </button>
+                <div class="flex flex-col gap-2 w-full">
+                    <textarea id="global_ai_input" rows="3" onkeydown="if(event.key==='Enter' && (event.ctrlKey || event.metaKey)){ event.preventDefault(); sendGlobalAIMessage(); }" oninput="this.style.height='auto'; this.style.height=Math.min(180, Math.max(76, this.scrollHeight))+'px'" placeholder="Click here and paste full Invoice / PO / WhatsApp text, or type any dispatch command..." class="w-full min-h-[76px] border-2 border-slate-300 rounded-lg p-2.5 text-sm font-medium focus:border-indigo-500 outline-none shadow-inner placeholder-slate-400 resize-y leading-relaxed"></textarea>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[10px] text-slate-400 font-semibold">Tip: Paste multi-line data freely (Ctrl+Enter or tap Send)</span>
+                        <button onclick="sendGlobalAIMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-black uppercase tracking-wider text-xs shadow-md transition flex items-center gap-2">
+                            Send <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1082,6 +1302,9 @@
 
         async function initFirebase() {
             try {
+                if (window.location.protocol === 'content:') {
+                    throw new Error("Opened from local Android Downloads (content://). Open from https://mgtransformer.com/smart_delivery_challan_pro.html for Cloud Sync.");
+                }
                 const fbKey = safeGetLS('mg_dc_fb_key') || safeGetLS('mg_quote_fb_key');
                 const pin = safeGetLS('mg_dc_sync_pin') || safeGetLS('mg_quote_sync_pin');
                 if (!fbKey || !pin) throw new Error("Credentials missing. Running local only.");
@@ -1093,7 +1316,10 @@
                     db = getFirestore(app);
                 }
 
-                await signInAnonymously(auth);
+                await Promise.race([
+                    signInAnonymously(auth),
+                    new Promise((_, rej) => setTimeout(() => rej(new Error("Cloud Sync timed out. Check internet or open via HTTPS.")), 7000))
+                ]);
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
                         userId = `custom_sync_${pin}`;
@@ -1916,6 +2142,7 @@
             recordDCHistory();
             triggerDraftAutoSave();
             closeTransportModal();
+            if (typeof syncMobileFormFromDOM === 'function') syncMobileFormFromDOM();
             showToast(`${mode} transport details applied!`);
         };
 
@@ -2485,6 +2712,7 @@
             }
             handlePurposeChange();
             updateDocNumberDisplay();
+            if (typeof syncMobileFormFromDOM === 'function') syncMobileFormFromDOM();
         };
 
         // Undo / Redo History & Auto-save
@@ -2575,6 +2803,7 @@
             handlePurposeChange();
             updateDocNumberDisplay();
             resetDCHistory();
+            if (typeof syncMobileFormFromDOM === 'function') syncMobileFormFromDOM();
         };
 
         // Save Offline Frozen HTML
@@ -2619,6 +2848,10 @@
                 active.classList.remove('border-2');
                 active.classList.add('ring-4', 'ring-opacity-50', `ring-${getStatusRingColor(status)}`);
             }
+            ['All', 'Draft', 'Dispatched', 'Delivered', 'Pending Return', 'Returned'].forEach(s => {
+                const mt = document.getElementById(`m-tab-${s}`);
+                if (mt) mt.classList.toggle('mobile-tab-active', s === status);
+            });
             renderDashboard();
         };
 
@@ -2695,6 +2928,8 @@
             Object.keys(counts).forEach(k => {
                 const el = document.getElementById(`count-${k}`);
                 if (el) el.innerText = counts[k];
+                const mel = document.getElementById(`m-count-${k}`);
+                if (mel) mel.innerText = counts[k];
             });
 
             filtered.sort((a, b) => {
@@ -2740,6 +2975,40 @@
                         </td>
                     </tr>`;
                 });
+            }
+
+            // Render Zoho-style Mobile 9:16 Card List
+            const mobList = document.getElementById('mobile_dash_list');
+            if (mobList) {
+                if (filtered.length === 0) {
+                    mobList.innerHTML = `<div class="py-16 text-center text-slate-400 px-4"><i class="fa-solid fa-truck-fast text-4xl mb-2 opacity-40"></i><p class="text-xs font-black uppercase tracking-wider">No Delivery Challans Found</p></div>`;
+                } else {
+                    mobList.innerHTML = filtered.map(dc => {
+                        const d = dc.date ? new Date(dc.date) : new Date(dc.timestamp || Date.now());
+                        const dText = isNaN(d) ? (dc.date || 'N/A') : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                        const isOverdue = dc.status === 'Pending Return' && dc.expectedReturnDate && dc.expectedReturnDate < todayStr;
+                        const statusText = isOverdue ? `OVERDUE (DUE ${dc.expectedReturnDate})` : (dc.status || 'Dispatched').toUpperCase();
+                        const stColor = isOverdue ? 'text-red-600' : (dc.status === 'Delivered' || dc.status === 'Returned' ? 'text-emerald-600' : (dc.status === 'Pending Return' ? 'text-purple-700' : (dc.status === 'Dispatched' ? 'text-orange-600' : 'text-slate-500')));
+                        const idArg = escapeHTML(JSON.stringify(String(dc.id)));
+                        return `
+                            <div onclick="loadDCForEdit(${idArg})" class="px-4 py-3.5 active:bg-orange-50/60 transition cursor-pointer flex justify-between items-start gap-3">
+                                <div class="min-w-0 flex-1 space-y-0.5">
+                                    <div class="text-[13.5px] font-black text-slate-900 leading-snug break-words">${escapeHTML(dc.consigneeName || 'Unknown Consignee')}</div>
+                                    <div class="text-[11.5px] font-semibold text-slate-500">${escapeHTML(dText)} &bull; <span class="font-mono font-bold text-slate-700">${escapeHTML(dc.dcNo || 'N/A')}</span></div>
+                                    <div class="text-[11px] font-medium text-slate-500 truncate">${escapeHTML(dc.docRef || dc.purpose || '')}</div>
+                                    <div class="text-[10.5px] font-black tracking-wide pt-0.5 ${stColor}">${escapeHTML(statusText)}</div>
+                                </div>
+                                <div class="text-right shrink-0 flex flex-col items-end gap-1.5">
+                                    <div class="text-[13px] font-black text-slate-900">${dc.totalQty || 0} Qty</div>
+                                    <div class="text-[10.5px] font-bold text-slate-500 font-mono">${escapeHTML(dc.vehicleNo || dc.purpose?.split(' ')[0] || '')}</div>
+                                    <div class="flex items-center gap-1 pt-0.5" onclick="event.stopPropagation()">
+                                        <button onclick="previewDC(${idArg})" class="px-2 py-1 rounded bg-slate-100 text-slate-600 text-[10px] font-bold" title="Preview"><i class="fa-solid fa-eye"></i></button>
+                                        <button onclick="duplicateDC(${idArg})" class="px-2 py-1 rounded bg-orange-50 text-orange-600 text-[10px] font-bold" title="Duplicate"><i class="fa-solid fa-copy"></i></button>
+                                    </div>
+                                </div>
+                            </div>`;
+                    }).join('');
+                }
             }
 
             document.getElementById('foot_items_summary').innerText = `${filtered.length} DCs / ${totalItems} items`;
@@ -3354,6 +3623,179 @@ CURRENT DRAFT STATE: ${JSON.stringify(serializeState())}`
             }
         };
 
+        // ==================== MOBILE 9:16 NATIVE UI SYNC ENGINE ====================
+        window.setMobileEditorMode = function(mode) {
+            const view = document.getElementById('editor-view');
+            const tabForm = document.getElementById('mob-tab-form');
+            const tabPrev = document.getElementById('mob-tab-preview');
+            const docEl = document.getElementById('document-area');
+            if (!view) return;
+            if (mode === 'preview') {
+                view.classList.remove('mobile-form-active');
+                view.classList.add('mobile-preview-active');
+                tabPrev.className = 'px-3 py-1 rounded-md text-xs font-black bg-white text-orange-600 shadow-sm';
+                tabForm.className = 'px-3 py-1 rounded-md text-xs font-bold text-slate-600';
+                // Scale 794px A4 cleanly to fit phone screen width
+                if (window.innerWidth < 768 && docEl) {
+                    const scale = Math.min(1, (window.innerWidth - 20) / 794);
+                    docEl.style.transform = `scale(${scale})`;
+                    docEl.style.marginBottom = `-${Math.round(docEl.offsetHeight * (1 - scale))}px`;
+                }
+            } else {
+                view.classList.remove('mobile-preview-active');
+                view.classList.add('mobile-form-active');
+                tabForm.className = 'px-3 py-1 rounded-md text-xs font-black bg-white text-orange-600 shadow-sm';
+                tabPrev.className = 'px-3 py-1 rounded-md text-xs font-bold text-slate-600';
+                if (docEl) { docEl.style.transform = ''; docEl.style.marginBottom = ''; }
+                syncMobileFormFromDOM();
+            }
+        };
+
+        window.openMobilePresetsMenu = function() {
+            const modal = document.getElementById('alert-modal');
+            document.getElementById('alert-icon').innerHTML = '<i class="fa-solid fa-bolt text-orange-500"></i>';
+            document.getElementById('alert-title').textContent = '1-Click Dispatch Presets';
+            document.getElementById('alert-message').textContent = 'Choose a ready template to pre-fill this challan:';
+            document.getElementById('alert-btn-container').innerHTML = `
+                <div class="space-y-2 text-left">
+                    <button onclick="applyQuickPreset('site_tools'); syncMobileFormFromDOM(); closeAlert();" class="w-full px-3 py-2.5 rounded-lg bg-purple-50 text-purple-800 border border-purple-200 text-xs font-black">🔧 Site Tools (Returnable)</button>
+                    <button onclick="applyQuickPreset('oil_spares'); syncMobileFormFromDOM(); closeAlert();" class="w-full px-3 py-2.5 rounded-lg bg-orange-50 text-orange-800 border border-orange-200 text-xs font-black">🛢️ Oil &amp; Spares (Against PO)</button>
+                    <button onclick="applyQuickPreset('job_work'); syncMobileFormFromDOM(); closeAlert();" class="w-full px-3 py-2.5 rounded-lg bg-blue-50 text-blue-800 border border-blue-200 text-xs font-black">⚙️ Job Work / Repair Dispatch</button>
+                    <button onclick="applyQuickPreset('warranty'); syncMobileFormFromDOM(); closeAlert();" class="w-full px-3 py-2.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-black">🛡️ Warranty / Free Replacement</button>
+                    <button onclick="closeAlert()" class="w-full px-3 py-2 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold mt-1">Cancel</button>
+                </div>`;
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        };
+
+        window.syncFromMobileField = function(targetId, val, isDocNumField = false) {
+            const el = document.getElementById(targetId);
+            if (el) el.value = val;
+            if (isDocNumField) {
+                updateDocNumberDisplay();
+                const badge = document.getElementById('mob-dc-badge');
+                if (badge) badge.textContent = document.getElementById('full-doc-num')?.innerText || '';
+            } else {
+                generateQRCode();
+                triggerDraftAutoSave();
+            }
+        };
+
+        window.syncMobileAddress = function(val) {
+            document.getElementById('bill-to-address').innerHTML = escapeHTML(val).replace(/\r?\n/g, '<br>');
+            generateQRCode();
+            triggerDraftAutoSave();
+        };
+
+        window.syncMobileContentEditable = function(targetId, val) {
+            const el = document.getElementById(targetId);
+            if (el) el.innerText = val;
+            triggerDraftAutoSave();
+        };
+
+        window.syncMobilePurpose = function(val) {
+            const rad = document.querySelector(`input[name="purpose"][value="${val}"]`);
+            if (rad) rad.checked = true;
+            handlePurposeChange();
+            syncMobileFormFromDOM();
+        };
+
+        window.renderMobileItemsList = function() {
+            const container = document.getElementById('mob-items-container');
+            if (!container) return;
+            const rows = Array.from(document.querySelectorAll('#items-body tr'));
+            const cnt = document.getElementById('mob-items-count');
+            if (cnt) cnt.textContent = rows.length;
+            container.innerHTML = '';
+            rows.forEach((tr, idx) => {
+                const name = tr.querySelector('.item-name')?.innerText || '';
+                const descLines = htmlToCleanLines(tr.querySelector('.item-desc')?.innerHTML || '').join('\n');
+                const hsn = tr.querySelector('.item-hsn')?.value || '';
+                const uom = tr.querySelector('.item-uom')?.value || 'NOS';
+                const qty = tr.querySelector('.item-qty')?.value || 1;
+                const rem = tr.querySelector('.item-remarks')?.value || '';
+
+                const card = document.createElement('div');
+                card.className = 'bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2 relative';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-black uppercase text-orange-600">Item #${idx + 1}</span>
+                        <button type="button" onclick="removeMobileItemRow(${idx})" class="text-red-500 text-xs font-bold px-2 py-0.5 rounded bg-red-50"><i class="fa-solid fa-trash mr-1"></i>Remove</button>
+                    </div>
+                    <input type="text" value="${escapeHTML(name)}" placeholder="Item Name" class="mobile-input text-xs font-bold" oninput="updateItemRowFromMobile(${idx}, 'name', this.value)">
+                    <textarea rows="2" placeholder="Specs / Serial No (one per line for bullets)" class="mobile-input text-xs leading-snug" oninput="updateItemRowFromMobile(${idx}, 'desc', this.value)">${escapeHTML(descLines)}</textarea>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div>
+                            <label class="mobile-label">Qty</label>
+                            <input type="number" min="0" step="any" value="${escapeHTML(qty)}" class="mobile-input text-xs text-center" oninput="updateItemRowFromMobile(${idx}, 'qty', this.value)">
+                        </div>
+                        <div>
+                            <label class="mobile-label">UOM</label>
+                            <input type="text" value="${escapeHTML(uom)}" class="mobile-input text-xs text-center uppercase" oninput="updateItemRowFromMobile(${idx}, 'uom', this.value)">
+                        </div>
+                        <div>
+                            <label class="mobile-label">HSN</label>
+                            <input type="text" value="${escapeHTML(hsn)}" class="mobile-input text-xs text-center font-mono" oninput="updateItemRowFromMobile(${idx}, 'hsn', this.value)">
+                        </div>
+                    </div>
+                    <input type="text" value="${escapeHTML(rem)}" placeholder="Condition / Remarks (e.g. Good)" class="mobile-input text-xs" oninput="updateItemRowFromMobile(${idx}, 'remarks', this.value)">
+                `;
+                container.appendChild(card);
+            });
+        };
+
+        window.updateItemRowFromMobile = function(idx, field, val) {
+            const tr = document.querySelectorAll('#items-body tr')[idx];
+            if (!tr) return;
+            if (field === 'name') tr.querySelector('.item-name').innerText = val;
+            else if (field === 'desc') tr.querySelector('.item-desc').innerHTML = formatItemDescHTML(val);
+            else if (field === 'hsn') tr.querySelector('.item-hsn').value = val;
+            else if (field === 'uom') { tr.querySelector('.item-uom').value = val; updateDispatchTotals(); }
+            else if (field === 'qty') { tr.querySelector('.item-qty').value = val; updateDispatchTotals(); }
+            else if (field === 'remarks' && tr.querySelector('.item-remarks')) tr.querySelector('.item-remarks').value = val;
+            triggerDraftAutoSave();
+        };
+
+        window.removeMobileItemRow = function(idx) {
+            const rows = document.querySelectorAll('#items-body tr');
+            if (rows[idx]) {
+                rows[idx].remove();
+                reindexRows();
+                updateDispatchTotals();
+                renderMobileItemsList();
+                triggerDraftAutoSave();
+            }
+        };
+
+        window.syncMobileFormFromDOM = function() {
+            const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+            setVal('mob-doc-date', document.getElementById('doc-date')?.value);
+            setVal('mob-doc-seq', document.getElementById('doc-seq-num')?.value);
+            setVal('mob-doc-ref', document.getElementById('doc-ref')?.value);
+            setVal('mob-invoice-no', document.getElementById('invoice-no')?.value);
+            setVal('mob-eway-no', document.getElementById('eway-no')?.value);
+            setVal('mob-bill-to', htmlToCleanLines(document.getElementById('bill-to-address')?.innerHTML || '').join('\n'));
+            setVal('mob-gstin', document.getElementById('bill-to-gstin')?.value);
+            setVal('mob-contact-name', document.getElementById('consignee-contact-name')?.innerText?.trim());
+            setVal('mob-contact-phone', document.getElementById('consignee-contact-phone')?.innerText?.trim());
+            setVal('mob-mode-tr', document.getElementById('mode-tr')?.value || 'By Road');
+            setVal('mob-vehicle', document.getElementById('vehicle-num')?.value);
+            setVal('mob-driver-lr', document.getElementById('driver-lr')?.innerText?.trim());
+            setVal('mob-packing', document.getElementById('packing-summary')?.value);
+            const badge = document.getElementById('mob-dc-badge');
+            if (badge) badge.textContent = document.getElementById('full-doc-num')?.innerText || '';
+            const dLbl = document.getElementById('mob-driver-label');
+            if (dLbl) dLbl.textContent = document.getElementById('transport-doc-label')?.innerText || 'LR / Driver Details';
+            const selPurp = document.querySelector('input[name="purpose"]:checked')?.value || 'Against PO / Billable';
+            setVal('mob-purpose', selPurp);
+            const retBox = document.getElementById('mob-returnable-box');
+            if (retBox) retBox.classList.toggle('hidden', selPurp !== 'Returnable Basis');
+            const mOne = document.getElementById('mob-one-day');
+            if (mOne) mOne.checked = !!document.getElementById('one-day-cb')?.checked;
+            setVal('mob-return-date', document.getElementById('expected-return-date')?.value);
+            renderMobileItemsList();
+        };
+
         // Initialization
         window.onload = function() {
             if (window.__IS_FROZEN_DC__) {
@@ -3376,3 +3818,4 @@ CURRENT DRAFT STATE: ${JSON.stringify(serializeState())}`
     </script>
 </body>
 </html>
+```
