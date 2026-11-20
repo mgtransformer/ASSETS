@@ -1,0 +1,31 @@
+{
+  "id": "./smart_delivery_challan_pro.html",
+  "name": "MG Smart Delivery Challan PRO",
+  "short_name": "Challan PRO",
+  "description": "AI-Powered GST Rule 55 Delivery Challan & Dispatch Manager for MG Transformer Services & Supplies",
+  "start_url": "./smart_delivery_challan_pro.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0f172a",
+  "theme_color": "#f97316",
+  "categories": [
+    "business",
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "./icons/icon_dc_192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon_dc_512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
