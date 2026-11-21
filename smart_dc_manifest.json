@@ -6,7 +6,7 @@
   "start_url": "/smart_delivery_challan_pro.html",
   "scope": "/smart_delivery_challan_pro.html",
   "display": "standalone",
-  "orientation": "portrait-primary",
+  "orientation": "any",
   "background_color": "#0f172a",
   "theme_color": "#f97316",
   "categories": [
