@@ -1,23 +1,31 @@
 {
-  "id": "/mg-smart-quotation-pro",
-  "name": "MG Smart Quotation Pro",
-  "short_name": "MG Quotation",
-  "description": "Create and manage MG Transformer quotations.",
-  "start_url": "./smart_quotation_pro.html",
-  "scope": "./",
+  "id": "/smart_quotation_pro.html",
+  "name": "MG Smart Quotation PRO",
+  "short_name": "Quote PRO",
+  "description": "AI-Powered Technical Quotation & Scope Generator for MG Transformer Services & Supplies",
+  "start_url": "/smart_quotation_pro.html",
+  "scope": "/smart_quotation_pro.html",
   "display": "standalone",
-  "background_color": "#f1f5f9",
-  "theme_color": "#0f172a",
+  "orientation": "any",
+  "background_color": "#0f172a",
+  "theme_color": "#f97316",
+  "categories": [
+    "business",
+    "productivity",
+    "finance"
+  ],
   "icons": [
     {
-      "src": "./MG_LOGO_WITH_NAME-removebg-preview.png",
+      "src": "/icons/icon_q_192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "./MG_LOGO_WITH_NAME-removebg-preview.png",
+      "src": "/icons/icon_q_512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
