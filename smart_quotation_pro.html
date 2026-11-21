@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -124,7 +125,18 @@
         @media print {
             html, body { width: auto !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
             body { display: block !important; }
-            #app-header, #dashboard-view, .no-print, .modal-backdrop { display: none !important; }
+            #app-header, #dashboard-view, .no-print, .modal-backdrop, #toast-container { display: none !important; }
+            body.layout-mobile .no-print, body.layout-mobile .mobile-only-block, body.layout-mobile .mobile-only-flex, body.layout-mobile #mobile-editor-form { display: none !important; }
+            body.layout-mobile #editor-view #document-area,
+            body.layout-mobile #editor-view.mobile-form-active #document-area,
+            body.layout-mobile #editor-view.mobile-preview-active #document-area {
+                display: block !important;
+                width: 100% !important;
+                max-width: none !important;
+                transform: none !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
             #editor-view { display: block !important; position: static !important; width: auto !important; height: auto !important; min-height: 0 !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: transparent !important; }
             .document-container { width: 100% !important; max-width: none !important; min-height: 0 !important; box-sizing: border-box !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; -webkit-box-decoration-break: clone; box-decoration-break: clone; border: none !important; overflow: visible !important; }
             #document-area > #sow-section, #document-area > #scope-pair, #document-area > #address-pair, #terms-table, #quote-footer-table, #quote-disclaimer { page-break-inside: avoid !important; break-inside: avoid-page !important; }
@@ -3111,3 +3123,4 @@
     </script>
 </body>
 </html>
+```
