@@ -28,7 +28,8 @@
         .erp-table th, .erp-table td { border: 1px solid var(--erp-border); padding: 4px 6px; vertical-align: top; }
         .erp-table th { background: #ffffff; color: var(--erp-navy); font-weight: 700; text-transform: uppercase; letter-spacing: 0.02em; }
         #address-pair .erp-table th, #sow-section .erp-table th, #scope-pair .erp-table th, #terms-table th { background: linear-gradient(90deg, #ea580c 0px, #ea580c 4px, #ffffff 4px, #ffffff 100%) !important; padding-left: 10px !important; }
-        #document-area .erp-table thead th { border-bottom: 2px solid var(--erp-orange) !important; }
+        #document-area .erp-table thead th, .pdf-export-root .erp-table thead th { border-bottom: 2px solid var(--erp-orange) !important; }
+        .pdf-export-root { display: block !important; margin: 0 !important; padding: 0 !important; border: none !important; box-shadow: none !important; transform: none !important; background: #ffffff !important; box-sizing: border-box !important; overflow: visible !important; min-height: 0 !important; height: auto !important; position: relative !important; font-size: 11px; line-height: 1.4; color: #000; }
         .navy-label { color: var(--erp-orange); font-weight: 700; }
         .field-label-inline { width: auto !important; flex-shrink: 0; display: inline-block; }
         .auto-wrap-field { width: auto !important; flex: 1 1 0%; min-width: 0; word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
@@ -119,13 +120,13 @@
         .item-discount-value { color: #15803d !important; font-weight: 700 !important; }
         #overall-discount-row td { color: #15803d; }
         /* A4 print layout */
-        @page { size: A4 portrait; margin: 0; }
+        @page { size: A4 portrait; margin: 6mm 5mm; }
         @media print {
             html, body { width: auto !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
             body { display: block !important; }
             #app-header, #dashboard-view, .no-print, .modal-backdrop { display: none !important; }
             #editor-view { display: block !important; position: static !important; width: auto !important; height: auto !important; min-height: 0 !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: transparent !important; }
-            .document-container { width: 100% !important; max-width: none !important; min-height: 0 !important; box-sizing: border-box !important; box-shadow: none !important; margin: 0 !important; padding: 8mm !important; -webkit-box-decoration-break: clone; box-decoration-break: clone; border: none !important; overflow: visible !important; }
+            .document-container { width: 100% !important; max-width: none !important; min-height: 0 !important; box-sizing: border-box !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; -webkit-box-decoration-break: clone; box-decoration-break: clone; border: none !important; overflow: visible !important; }
             #document-area > #sow-section, #document-area > #scope-pair, #document-area > #address-pair, #terms-table, #quote-footer-table, #quote-disclaimer { page-break-inside: avoid !important; break-inside: avoid-page !important; }
             #scope-pair { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; align-items: stretch !important; gap: 2mm !important; }
             #scope-pair > div, #scope-pair table, #sow-section table, #terms-table, #quote-footer-table { page-break-inside: avoid !important; break-inside: avoid-page !important; }
@@ -406,7 +407,10 @@
                 </div>
 
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
-                    <div class="border-b border-slate-100 pb-2 text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-building text-orange-500 mr-1.5"></i>Bill To / Client Details</div>
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 gap-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-building text-orange-500 mr-1.5"></i>Bill To / Client Details</span>
+                        <button type="button" onclick="pickPhoneContact()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-lg text-[11px] font-black flex items-center gap-1 shadow-sm active:scale-95 transition"><i class="fa-solid fa-address-book"></i> Phone Contacts</button>
+                    </div>
                     <div><label class="mobile-label">Client Name &amp; Full Address</label><textarea id="mob-bill-to" rows="3" class="mobile-input leading-snug" placeholder="Company Name&#10;Address&#10;City, State, PIN" oninput="syncMobileBillTo(this.value)"></textarea></div>
                     <div><label class="mobile-label">GSTIN</label><input type="text" id="mob-bill-gstin" class="mobile-input uppercase font-mono" placeholder="15-digit GSTIN" oninput="syncFromMobileField('bill-to-gstin', this.value); syncBillToShip();"></div>
                     <div class="grid grid-cols-1 gap-2.5">
@@ -543,6 +547,7 @@
                                         <div class="flex items-start gap-1.5">
                                             <span class="field-label-inline whitespace-nowrap navy-label pt-0.5">CONTACT PERSON:</span>
                                             <div id="bill-contact-name" contenteditable="true" class="auto-wrap-field border-b border-slate-300 font-semibold text-[10.5px] pb-0.5 bg-transparent outline-none normal-case leading-snug" data-placeholder="Contact person name..." oninput="triggerDraftAutoSave()"></div>
+                                            <button type="button" onclick="pickPhoneContact()" class="no-print text-blue-600 hover:text-blue-800 bg-blue-50 border border-blue-200 rounded px-1.5 py-0.5 text-[9px] font-bold shrink-0" title="Pick from Phone Contacts (Android Chrome)"><i class="fa-solid fa-address-book"></i></button>
                                         </div>
                                         <div class="flex items-start gap-1.5">
                                             <span class="field-label-inline whitespace-nowrap navy-label pt-0.5">CONTACT NO.:</span>
@@ -938,21 +943,26 @@
                 <button onclick="closeWhatsAppModal()" class="text-emerald-200 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <div class="p-4 space-y-3.5 max-h-[75vh] overflow-y-auto">
-                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 space-y-2">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-3 space-y-2">
                     <div class="flex items-center justify-between gap-2">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <div id="wa-png-thumb-wrap" class="w-10 h-14 rounded border border-emerald-300 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-sm"><i class="fa-solid fa-spinner fa-spin text-emerald-600 text-sm"></i></div>
+                            <div class="w-10 h-10 rounded-lg bg-red-50 border border-red-200 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-file-pdf text-red-600 text-lg"></i>
+                            </div>
                             <div class="min-w-0">
-                                <div id="wa-png-status-title" class="text-xs font-black text-emerald-900">Preparing HD PNG Photo...</div>
-                                <div id="wa-png-status-sub" class="text-[10px] text-emerald-700 font-medium leading-tight">Pre-rendering <span id="wa-pdf-chip" class="font-mono font-bold">Quote.png</span> for instant clipboard paste...</div>
+                                <div class="text-xs font-black text-emerald-950">Smart Auto-Margin Multi-Page PDF</div>
+                                <div class="text-[10px] text-emerald-800 font-medium leading-tight">Auto-fits every table, scope &amp; signature block cleanly across A4 pages with zero mid-section cuts.</div>
                             </div>
                         </div>
-                        <button type="button" onclick="copyQuotePngToClipboardOnly()" class="bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1.5 rounded-md text-[10px] font-black transition whitespace-nowrap shrink-0 shadow-sm"><i class="fa-regular fa-copy mr-1"></i>Copy PNG</button>
+                        <button type="button" onclick="downloadSmartQuotePdfOnly()" class="bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1.5 rounded-md text-[10px] font-black transition whitespace-nowrap shrink-0 shadow-sm"><i class="fa-solid fa-download mr-1"></i>PDF Only</button>
                     </div>
-                    <label class="flex items-center gap-2 pt-1.5 border-t border-emerald-200/70 cursor-pointer">
-                        <input type="checkbox" id="wa-include-pdf" class="w-3.5 h-3.5 accent-emerald-600">
-                        <span class="text-[10px] font-bold text-emerald-800">Also save <span class="font-mono">.png</span> file to Downloads folder (clipboard auto-copy is always ON)</span>
-                    </label>
+                    <div class="flex flex-wrap items-center justify-between gap-2 pt-1.5 border-t border-emerald-200/70">
+                        <label class="flex items-center gap-1.5 cursor-pointer">
+                            <input type="checkbox" id="wa-include-pdf" class="w-3.5 h-3.5 accent-emerald-600" checked>
+                            <span class="text-[10px] font-bold text-emerald-900">Auto-download <span id="wa-pdf-chip" class="font-mono">Quote.pdf</span> when opening WhatsApp</span>
+                        </label>
+                        <button type="button" onclick="saveNamedVectorPDF()" class="bg-blue-600 hover:bg-blue-700 text-white px-2.5 py-1 rounded text-[10px] font-black transition whitespace-nowrap" title="Open Chrome Print dialog with exact filename pre-set"><i class="fa-solid fa-print mr-1"></i>Chrome Print PDF</button>
+                    </div>
                 </div>
                 <div class="space-y-2">
                     <div class="text-[10px] font-black uppercase tracking-wider text-slate-500">Choose Who to Send To:</div>
@@ -966,7 +976,7 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <button onclick="launchWhatsAppShare('picker')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2.5 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 shadow-sm"><i class="fa-brands fa-whatsapp text-sm"></i> Pick Contact in WhatsApp</button>
-                        <button onclick="nativeShareQuotePNG()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2.5 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 shadow-sm"><i class="fa-solid fa-share-nodes"></i> Direct Share HD Image</button>
+                        <button onclick="nativeShareQuotePDF()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2.5 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 shadow-sm"><i class="fa-solid fa-share-nodes"></i> Direct Share PDF</button>
                     </div>
                     <div class="flex items-center gap-2 pt-1">
                         <input type="text" id="wa-custom-number" class="flex-1 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold focus:border-emerald-500 outline-none" placeholder="Or type any 10-digit WhatsApp number...">
@@ -2470,56 +2480,66 @@
             m.forEach(x => { const n = normalizeWhatsAppPhone(x); if (n && !seen.has(n)) { seen.add(n); out.push({ raw: x.trim(), wa: n }); } });
             return out;
         }
-        function getQuotePngFilename() {
+        function getQuoteBaseFilename() {
             const qNo = (document.getElementById('full-doc-num')?.innerText || 'Quote_Draft').trim().replace(/[\/\\:*?"<>|\s]+/g, '_');
             const lines = htmlToCleanLines(document.getElementById('bill-to-address')?.innerHTML || '');
             const shortC = (lines[0] || 'Client').replace(/[^a-zA-Z0-9\s]/g, ' ').trim().split(/\s+/).slice(0, 3).join('_').slice(0, 26) || 'Client';
-            return `${qNo}_${shortC}.png`;
+            return `${qNo}_${shortC}`;
         }
+        function getQuotePngFilename() { return getQuoteBaseFilename() + '_Summary.png'; }
+        function getQuotePdfFilename() { return getQuoteBaseFilename() + '.pdf'; }
+
+        function buildBriefQuoteSummary(items) {
+            const valid = (items || []).filter(i => i && i.name && i.name.trim() && i.name.trim().toUpperCase() !== 'ITEM NAME');
+            if (!valid.length) return 'Technical Supply & Services Offer as discussed.';
+            if (valid.length === 1) return valid[0].name.trim();
+            if (valid.length === 2) return `${valid[0].name.trim()} & ${valid[1].name.trim()}`;
+            return `${valid[0].name.trim()}, ${valid[1].name.trim()} & ${valid.length - 2} more item(s)`;
+        }
+
         function buildWhatsAppQuoteText() {
             const st = serializeState();
             const qNo = document.getElementById('full-doc-num')?.innerText || 'DRAFT';
             const lines = htmlToCleanLines(st.bill_to_address || '');
             const clientName = lines[0] || 'Valued Client';
-            const basicAmt = document.getElementById('basic-amount')?.innerText || '0.00';
+            const briefAddr = lines.length > 1 ? lines.slice(1).join(', ') : '';
             const grandAmt = document.getElementById('grand-total')?.innerText || '₹ 0.00';
-            const itemsList = (st.items || []).map((it, i) => `${i + 1}. *${it.name}* — ${it.qty} ${it.uom}`).join('\n');
+            const briefSummary = buildBriefQuoteSummary(st.items);
             const msgLines = [
-                `💼 *TECHNICAL QUOTATION — MG TRANSFORMER*`,
-                `*MG TRANSFORMER SERVICES & SUPPLIES*`,
+                `📄 *QUOTATION — MG TRANSFORMER SERVICES & SUPPLIES*`,
                 `━━━━━━━━━━━━━━━━━━━━━━`,
                 ``,
-                `📄 *Quote No.:*  ${qNo}`,
-                `📅 *Date:*  ${formatDisplayDateIN(st.doc_date)}`,
+                `🏢 *Client:*  ${clientName}`,
+                briefAddr ? `📍 *Location:*  ${briefAddr}` : null,
+                st.bill_contact_name ? `👤 *Attn:*  ${st.bill_contact_name}` : null,
+                ``,
+                `🔢 *Quotation No.:*  ${qNo}  (${formatDisplayDateIN(st.doc_date)})`,
+                `📋 *Summary:*  ${briefSummary}`,
+                `💰 *Total Amount (Incl. GST):*  *${grandAmt}*`,
                 st.valid_date ? `⏳ *Valid Upto:*  ${formatDisplayDateIN(st.valid_date)}` : null,
-                st.doc_ref ? `📑 *Your Ref.:*  ${st.doc_ref}` : null,
-                ``,
-                `🏢 *CLIENT DETAILS*`,
-                `*${clientName}*`,
-                st.bill_contact_name ? `👤 *Attn:*  ${st.bill_contact_name}${st.bill_contact_phone ? ' (' + st.bill_contact_phone + ')' : ''}` : null,
-                ``,
-                `📋 *OFFER SUMMARY*`,
-                itemsList,
-                ``,
-                `💰 *Basic Value:*  ₹ ${basicAmt}`,
-                `✅ *Total Value (Incl. GST):*  *${grandAmt}*`,
                 ``,
                 `━━━━━━━━━━━━━━━━━━━━━━`,
-                `🖼️ _Quotation copy (${getQuotePngFilename()}) is attached for your review._`,
+                `📎 _Detailed quotation PDF (${getQuotePdfFilename()}) is attached for your kind review._`,
                 ``,
-                `🙏 _We look forward to your valued Purchase Order. Please feel free to reach out for any technical clarification._`,
+                `🙏 _We look forward to your valued Purchase Order. Please feel free to contact us for any clarification._`,
                 ``,
                 `*MG Transformer Services & Supplies*`,
-                `📞 +91-8898517528 | +91-8591327528`,
-                `✉️ mukund.gawale@mgtransformer.com`
+                `📞 +91-8898517528 | +91-8591327528`
             ];
             return msgLines.filter(l => l !== null).join('\n');
         }
 
-        async function generateQuotePngBlob() {
-            if (typeof html2pdf === 'undefined') throw new Error('Image renderer not loaded yet.');
+        // Auto-Adaptive Zero-Clip Multi-Page A4 PDF Engine (Zoho / Chrome Save-to-PDF style)
+        async function generateMultiPageQuotePdfBlob() {
+            if (typeof html2pdf === 'undefined') throw new Error('PDF library not loaded yet.');
             const orig = document.getElementById('document-area');
             const clone = orig.cloneNode(true);
+
+            // Isolate clone from #document-area desktop/mobile layout rules (prevents margin:0 auto right-shift & clipping!)
+            clone.id = 'pdf-export-clone';
+            clone.className = 'pdf-export-root uppercase relative';
+
+            // Convert live form controls into clean static text
             const oInps = orig.querySelectorAll('input, select, textarea');
             const cInps = clone.querySelectorAll('input, select, textarea');
             oInps.forEach((oi, idx) => {
@@ -2535,29 +2555,204 @@
             });
             clone.querySelectorAll('.no-print, .no-print-discount').forEach(n => n.remove());
             clone.querySelectorAll('[contenteditable="true"]').forEach(el => { el.removeAttribute('contenteditable'); el.style.borderColor = 'transparent'; });
+
+            // Copy rendered QR code canvas as static image
             const origQr = orig.querySelector('#qrcode canvas');
             const cloneQr = clone.querySelector('#qrcode');
-            if (origQr && cloneQr) { const im = document.createElement('img'); im.src = origQr.toDataURL('image/png'); im.style.width = '78px'; im.style.height = '78px'; cloneQr.innerHTML = ''; cloneQr.appendChild(im); }
+            if (origQr && cloneQr) {
+                const im = document.createElement('img');
+                im.src = origQr.toDataURL('image/png');
+                im.style.width = '78px'; im.style.height = '78px';
+                cloneQr.innerHTML = ''; cloneQr.appendChild(im);
+            }
 
-            clone.style.cssText = 'width:794px;max-width:794px;height:auto;margin:0;padding:22px 24px 18px 24px;box-shadow:none;border:none;background:#ffffff;box-sizing:border-box;display:block;';
+            // Group Bank Details + Signature + Disclaimer so they always stay together on the same page
+            const footerTbl = clone.querySelector('#quote-footer-table');
+            const discEl = clone.querySelector('#quote-disclaimer');
+            if (footerTbl && discEl && footerTbl.parentNode === clone) {
+                const keepFooter = document.createElement('div');
+                keepFooter.className = 'pdf-atomic-block';
+                footerTbl.parentNode.insertBefore(keepFooter, footerTbl);
+                keepFooter.appendChild(footerTbl);
+                keepFooter.appendChild(discEl);
+            }
+
+            // Natural A4 desktop design width (210mm = 794px) — auto-expands if any content is wider
+            const BASE_W = 794;
+            clone.style.width = BASE_W + 'px';
+            clone.style.maxWidth = 'none';
+
             const host = document.createElement('div');
-            host.style.cssText = 'position:fixed;left:0;top:0;width:794px;height:1px;overflow:hidden;opacity:0.001;pointer-events:none;z-index:-9999;background:#ffffff;';
-            const stage = document.createElement('div'); stage.style.cssText = 'position:relative;width:794px;background:#ffffff;';
-            stage.appendChild(clone); host.appendChild(stage); document.body.appendChild(host);
+            host.style.cssText = 'position:fixed;left:0;top:0;width:1200px;height:1px;overflow:hidden;opacity:0.001;pointer-events:none;z-index:-9999;background:#ffffff;';
+            host.appendChild(clone);
+            document.body.appendChild(host);
+
             try {
                 await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-                const capH = Math.max(clone.scrollHeight, clone.offsetHeight);
-                const canvas = await html2pdf().set({ margin: 0, html2canvas: { scale: 2.2, useCORS: true, allowTaint: false, logging: false, backgroundColor: '#ffffff', x: 0, y: 0, width: 794, height: capH, windowWidth: 794, windowHeight: capH, scrollX: 0, scrollY: 0 } }).from(clone).toCanvas().get('canvas');
-                return await new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('PNG encode failed')), 'image/png', 1.0));
-            } finally { host.remove(); }
+
+                // Measure true full rendered width & height (zero horizontal clipping!)
+                const actualW = Math.ceil(Math.max(clone.scrollWidth, clone.offsetWidth, BASE_W));
+                if (actualW > BASE_W) {
+                    clone.style.width = actualW + 'px';
+                    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+                }
+                const totalH = Math.ceil(Math.max(clone.scrollHeight, clone.offsetHeight)) + 2;
+
+                // Target A4 page geometry: 5mm Left & Right (centered 200mm), 6mm Top & Bottom (285mm usable)
+                const A4_W_MM = 210;
+                const A4_H_MM = 297;
+                const MARGIN_X = 5;
+                const MARGIN_Y = 6;
+                const CONTENT_W_MM = A4_W_MM - (MARGIN_X * 2); // 200mm
+                const CONTENT_H_MM = A4_H_MM - (MARGIN_Y * 2); // 285mm
+                const PAGE_H_PX = Math.floor(actualW * (CONTENT_H_MM / CONTENT_W_MM));
+
+                // Collect exact DOM bounding boxes of every atomic block (zero DOM mutation!)
+                const cloneRect = clone.getBoundingClientRect();
+                const atomicBlocks = [];
+                Array.from(clone.children).forEach(child => {
+                    if (child.tagName === 'INPUT' || child.classList.contains('hidden')) return;
+                    const tbody = child.querySelector ? child.querySelector('#items-body') : null;
+                    if (tbody) {
+                        const thead = child.querySelector('thead');
+                        if (thead) {
+                            const r = thead.getBoundingClientRect();
+                            if (r.height > 1) atomicBlocks.push({ top: r.top - cloneRect.top, bottom: r.bottom - cloneRect.top, isTableRow: false });
+                        }
+                        Array.from(tbody.children).forEach(tr => {
+                            const r = tr.getBoundingClientRect();
+                            if (r.height > 1) atomicBlocks.push({ top: r.top - cloneRect.top, bottom: r.bottom - cloneRect.top, isTableRow: true });
+                        });
+                    } else {
+                        const r = child.getBoundingClientRect();
+                        if (r.height > 1) atomicBlocks.push({ top: r.top - cloneRect.top, bottom: r.bottom - cloneRect.top, isTableRow: false });
+                    }
+                });
+                atomicBlocks.sort((a, b) => a.top - b.top);
+
+                // Compute smart page slices:
+                // 1) Auto-adapt single-page fit if content overflows 1 page by <= 8% (avoids lonely 2-line Page 2)
+                let singlePageAutoFit = false;
+                const pageSlices = [];
+                if (totalH <= PAGE_H_PX) {
+                    pageSlices.push({ startY: 0, endY: totalH });
+                } else if (totalH <= PAGE_H_PX * 1.08) {
+                    singlePageAutoFit = true;
+                    pageSlices.push({ startY: 0, endY: totalH });
+                } else {
+                    let curStart = 0;
+                    for (const blk of atomicBlocks) {
+                        const blkH = blk.bottom - blk.top;
+                        if (blk.bottom - curStart > PAGE_H_PX && blk.top > curStart + 24 && blkH < PAGE_H_PX * 0.92) {
+                            if (blk.isTableRow) {
+                                // Preserve crisp 1px shared table border on BOTH bottom of Page N and top of Page N+1
+                                const endY = Math.min(totalH, Math.round(blk.top) + 1);
+                                const nextStart = Math.max(curStart + 24, Math.round(blk.top) - 1);
+                                pageSlices.push({ startY: curStart, endY });
+                                curStart = nextStart;
+                            } else {
+                                const cutY = Math.max(curStart + 24, Math.floor(blk.top) - 3);
+                                pageSlices.push({ startY: curStart, endY: cutY });
+                                curStart = cutY;
+                            }
+                        }
+                    }
+                    // Handle any remaining height (or oversized single block > 1 page)
+                    while (totalH - curStart > PAGE_H_PX + 6) {
+                        pageSlices.push({ startY: curStart, endY: curStart + PAGE_H_PX });
+                        curStart += PAGE_H_PX;
+                    }
+                    if (totalH - curStart > 6) {
+                        pageSlices.push({ startY: curStart, endY: totalH });
+                    }
+                }
+
+                // Capture full high-DPI canvas with html2pdf container locked to exact [actualW, totalH] (zero shift/clip!)
+                const SCALE = 2.2;
+                const fullCanvas = await html2pdf().set({
+                    margin: 0,
+                    jsPDF: { unit: 'px', format: [actualW, totalH], hotfixes: ['px_scaling'] },
+                    html2canvas: {
+                        scale: SCALE,
+                        useCORS: true,
+                        allowTaint: false,
+                        logging: false,
+                        backgroundColor: '#ffffff',
+                        x: 0, y: 0,
+                        width: actualW,
+                        height: totalH,
+                        windowWidth: actualW,
+                        windowHeight: totalH,
+                        scrollX: 0, scrollY: 0
+                    }
+                }).from(clone).toCanvas().get('canvas');
+
+                const canvasScale = fullCanvas.width / actualW;
+
+                // Assemble crisp centered A4 PDF pages
+                const worker = html2pdf().set({ jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait', compress: true } });
+                const pdf = await worker.from(document.createElement('div')).toPdf().get('pdf');
+                const totalPages = pageSlices.length;
+
+                for (let p = 0; p < totalPages; p++) {
+                    if (p > 0) pdf.addPage('a4', 'portrait');
+                    const { startY, endY } = pageSlices[p];
+                    const sy = Math.max(0, Math.round(startY * canvasScale));
+                    const ey = Math.min(fullCanvas.height, Math.round(endY * canvasScale));
+                    const sh = ey - sy;
+                    if (sh <= 4) continue;
+
+                    const sliceCanvas = document.createElement('canvas');
+                    sliceCanvas.width = fullCanvas.width;
+                    sliceCanvas.height = sh;
+                    const ctx = sliceCanvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, sliceCanvas.width, sliceCanvas.height);
+                    ctx.drawImage(fullCanvas, 0, sy, fullCanvas.width, sh, 0, 0, fullCanvas.width, sh);
+
+                    // Auto-adapt dimensions to stay centered inside 5mm L/R and 6mm T/B margins
+                    let renderW = CONTENT_W_MM;
+                    let renderH = (sh / fullCanvas.width) * renderW;
+                    if (renderH > CONTENT_H_MM) {
+                        const shrink = CONTENT_H_MM / renderH;
+                        renderH = CONTENT_H_MM;
+                        renderW = renderW * shrink;
+                    }
+                    const offsetX = (A4_W_MM - renderW) / 2;
+                    const offsetY = MARGIN_Y;
+
+                    pdf.addImage(sliceCanvas.toDataURL('image/png'), 'PNG', offsetX, offsetY, renderW, renderH, undefined, 'FAST');
+
+                    if (totalPages > 1) {
+                        pdf.setFontSize(7.5);
+                        pdf.setTextColor(120, 130, 145);
+                        pdf.text(`Page ${p + 1} of ${totalPages}`, A4_W_MM - MARGIN_X, A4_H_MM - 2.2, { align: 'right' });
+                    }
+                }
+                return pdf.output('blob');
+            } finally {
+                host.remove();
+            }
         }
+
+        window.saveNamedVectorPDF = function() {
+            const origTitle = document.title;
+            document.title = getQuoteBaseFilename();
+            closeWhatsAppModal();
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => { document.title = origTitle; }, 1500);
+            }, 150);
+        };
 
         window.saveSelfWhatsAppNumber = () => safeSetLS('mg_quote_self_whatsapp', document.getElementById('wa-self-number')?.value.trim() || '');
 
+        window._preparedQuotePdf = null;
+
         window.openWhatsAppModal = function() {
-            const imgName = getQuotePngFilename();
-            document.getElementById('wa-pdf-filename-preview').textContent = 'HD Image: ' + imgName;
-            document.getElementById('wa-pdf-chip').textContent = imgName;
+            const pdfName = getQuotePdfFilename();
+            document.getElementById('wa-pdf-filename-preview').textContent = 'Preparing Smart PDF: ' + pdfName + '...';
+            document.getElementById('wa-pdf-chip').textContent = pdfName;
             document.getElementById('wa-message-preview').value = buildWhatsAppQuoteText();
             document.getElementById('wa-self-number').value = safeGetLS('mg_quote_self_whatsapp') || safeGetLS('mg_dc_self_whatsapp') || '918898517528';
             document.getElementById('wa-custom-number').value = '';
@@ -2566,29 +2761,28 @@
             const phones = extractPhoneNumbers((document.getElementById('bill-contact-phone')?.innerText || '').trim());
             const box = document.getElementById('wa-client-targets');
             if (phones.length) {
-                box.innerHTML = phones.map(p => `<button onclick="launchWhatsAppShare('client', '${escapeHTML(p.wa)}')" class="w-full bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 rounded-lg px-3 py-2 flex items-center justify-between transition text-left"><div><div class="text-xs font-black text-emerald-900"><i class="fa-solid fa-user-check mr-1 text-emerald-600"></i>Send Directly to Client${cName ? ' — ' + escapeHTML(cName) : ''}</div><div class="text-[11px] font-mono font-bold text-emerald-700">+${escapeHTML(p.wa)}</div></div><span class="bg-emerald-600 text-white px-2.5 py-1 rounded text-[10px] font-black uppercase flex items-center gap-1"><i class="fa-brands fa-whatsapp"></i> Copy PNG &amp; Chat</span></button>`).join('');
+                box.innerHTML = phones.map(p => `<button onclick="launchWhatsAppShare('client', '${escapeHTML(p.wa)}')" class="w-full bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 rounded-lg px-3 py-2 flex items-center justify-between transition text-left"><div><div class="text-xs font-black text-emerald-900"><i class="fa-solid fa-user-check mr-1 text-emerald-600"></i>Send Directly to Client${cName ? ' — ' + escapeHTML(cName) : ''}</div><div class="text-[11px] font-mono font-bold text-emerald-700">+${escapeHTML(p.wa)}</div></div><span class="bg-emerald-600 text-white px-2.5 py-1 rounded text-[10px] font-black uppercase flex items-center gap-1"><i class="fa-brands fa-whatsapp"></i> PDF &amp; Chat</span></button>`).join('');
             } else {
                 box.innerHTML = `<div class="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-[11px] text-amber-800 font-bold"><i class="fa-solid fa-circle-info mr-1"></i>No client number in <b>CONTACT NO.</b> yet. Add one on the quotation or use the buttons below.</div>`;
             }
-
-            window.__READY_QUOTE_PNG_BLOB__ = null;
-            if (window.__READY_QUOTE_PNG_URL__) { URL.revokeObjectURL(window.__READY_QUOTE_PNG_URL__); window.__READY_QUOTE_PNG_URL__ = null; }
-            const tw = document.getElementById('wa-png-thumb-wrap'), stT = document.getElementById('wa-png-status-title'), stS = document.getElementById('wa-png-status-sub');
-            if (tw) tw.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-emerald-600 text-sm"></i>';
-            if (stT) stT.textContent = 'Preparing HD PNG Photo...';
 
             const m = document.getElementById('whatsapp-modal');
             m.classList.remove('hidden');
             setTimeout(() => { m.classList.remove('opacity-0'); document.getElementById('whatsapp-modal-card').classList.remove('scale-95'); }, 10);
 
-            window.__READY_QUOTE_PNG_PROMISE__ = generateQuotePngBlob().then(blob => {
-                window.__READY_QUOTE_PNG_BLOB__ = blob;
-                window.__READY_QUOTE_PNG_URL__ = URL.createObjectURL(blob);
-                if (tw) tw.innerHTML = `<img src="${window.__READY_QUOTE_PNG_URL__}" alt="Preview" class="w-full h-full object-cover">`;
-                if (stT) stT.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>HD PNG Ready — Auto-Copies on Send!';
-                if (stS) stS.innerHTML = `Click Send below: <span class="font-mono font-bold">${escapeHTML(imgName)}</span> copies to clipboard &amp; WhatsApp opens — just press <b>Ctrl+V</b>!`;
+            // Pre-render Smart Multi-Page PDF silently so clicking Share / PDF downloads instantly!
+            window._preparedQuotePdf = null;
+            const prepPromise = generateMultiPageQuotePdfBlob().then(blob => {
+                window._preparedQuotePdf = { blob, name: pdfName };
+                const lbl = document.getElementById('wa-pdf-filename-preview');
+                if (lbl) lbl.textContent = 'Ready: ' + pdfName + ' (drag from Downloads or use Mobile Share)';
                 return blob;
-            }).catch(() => null);
+            }).catch(() => {
+                const lbl = document.getElementById('wa-pdf-filename-preview');
+                if (lbl) lbl.textContent = 'Smart Multi-Page PDF: ' + pdfName;
+                return null;
+            });
+            window._preparedQuotePdfPromise = prepPromise;
         };
 
         window.closeWhatsAppModal = () => {
@@ -2602,17 +2796,29 @@
             a.href = u; a.download = fn; document.body.appendChild(a); a.click(); a.remove();
             setTimeout(() => URL.revokeObjectURL(u), 3000);
         }
-        async function copyPngToClip(bOrP) {
-            if (!navigator.clipboard || typeof ClipboardItem === 'undefined') return false;
-            try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': bOrP })]); return true; } catch (e) { return false; }
+
+        async function getOrBuildQuotePdfBlob(pdfName) {
+            if (window._preparedQuotePdf && window._preparedQuotePdf.name === pdfName && window._preparedQuotePdf.blob) {
+                return window._preparedQuotePdf.blob;
+            }
+            if (window._preparedQuotePdfPromise) {
+                const b = await window._preparedQuotePdfPromise;
+                if (b) return b;
+            }
+            return await generateMultiPageQuotePdfBlob();
         }
-        window.copyQuotePngToClipboardOnly = async () => {
-            const blob = window.__READY_QUOTE_PNG_BLOB__ || await (window.__READY_QUOTE_PNG_PROMISE__ || generateQuotePngBlob());
-            if (!blob) return showToast('Image not ready.', 'error');
-            const ok = await copyPngToClip(blob);
-            if (ok) showToast('HD PNG copied! Press Ctrl+V inside WhatsApp.');
-            else { downloadBlobFile(blob, getQuotePngFilename()); showToast('Saved HD PNG to Downloads!', 'info'); }
+
+        window.downloadSmartQuotePdfOnly = async function() {
+            const pdfName = getQuotePdfFilename();
+            try {
+                const blob = await getOrBuildQuotePdfBlob(pdfName);
+                downloadBlobFile(blob, pdfName);
+                showToast('Saved clean multi-page PDF: ' + pdfName);
+            } catch (err) {
+                showToast('PDF error: ' + err.message, 'error');
+            }
         };
+
         window.launchWhatsAppShare = async function(targetType, explicitWa = '') {
             const msg = document.getElementById('wa-message-preview').value.trim();
             const alsoDl = document.getElementById('wa-include-pdf').checked;
@@ -2622,26 +2828,59 @@
             else if (targetType === 'custom') { waNum = normalizeWhatsAppPhone(document.getElementById('wa-custom-number').value); if (!waNum) return showToast('Enter a valid 10-digit number.', 'error'); }
 
             const waUrl = waNum ? `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
-            const imgName = getQuotePngFilename();
-            const ready = window.__READY_QUOTE_PNG_BLOB__;
-            const src = ready || window.__READY_QUOTE_PNG_PROMISE__ || generateQuotePngBlob();
-            const copied = await copyPngToClip(ready || src);
-            if (alsoDl || !copied) { const rb = ready || await src; if (rb) downloadBlobFile(rb, imgName); }
+            const pdfName = getQuotePdfFilename();
 
+            // Copy message caption to clipboard while tab is still focused (note: browsers block copying .pdf files to clipboard)
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(msg).catch(() => {});
+            }
+
+            // Trigger instant PDF download BEFORE opening WhatsApp if already pre-rendered!
+            let downloadedNow = false;
+            if (alsoDl && window._preparedQuotePdf && window._preparedQuotePdf.name === pdfName && window._preparedQuotePdf.blob) {
+                downloadBlobFile(window._preparedQuotePdf.blob, pdfName);
+                downloadedNow = true;
+            }
+
+            // Open WhatsApp synchronously on click so Chrome never blocks it
             const win = window.open(waUrl, '_blank', 'noopener,noreferrer');
             if (!win) { const l = document.createElement('a'); l.href = waUrl; l.target = '_blank'; l.rel = 'noopener noreferrer'; document.body.appendChild(l); l.click(); l.remove(); }
             closeWhatsAppModal();
-            showToast(copied ? 'HD PNG copied & WhatsApp opened — press Ctrl+V!' : 'WhatsApp opened & HD PNG saved to Downloads!', copied ? 'success' : 'info');
+
+            if (alsoDl && !downloadedNow) {
+                showToast('WhatsApp opened! Finishing PDF download...', 'info');
+                try {
+                    const pdfBlob = await getOrBuildQuotePdfBlob(pdfName);
+                    downloadBlobFile(pdfBlob, pdfName);
+                    showToast('PDF downloaded (' + pdfName + ') — drag from Downloads into WhatsApp!');
+                } catch (err) {
+                    showToast('PDF failed — use Chrome Print PDF button.', 'error');
+                }
+            } else if (alsoDl && downloadedNow) {
+                showToast('PDF downloaded (' + pdfName + ') & WhatsApp opened — drag from Downloads to attach!');
+            } else {
+                showToast('WhatsApp opened with quotation alert!');
+            }
         };
-        window.nativeShareQuotePNG = async () => {
-            const msg = document.getElementById('wa-message-preview').value.trim(), fn = getQuotePngFilename();
+
+        window.nativeShareQuotePDF = async () => {
+            const msg = document.getElementById('wa-message-preview').value.trim(), fn = getQuotePdfFilename();
             try {
-                const blob = window.__READY_QUOTE_PNG_BLOB__ || await (window.__READY_QUOTE_PNG_PROMISE__ || generateQuotePngBlob());
-                const file = new File([blob], fn, { type: 'image/png' });
-                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ title: fn, text: msg, files: [file] }); closeWhatsAppModal(); }
-                else { downloadBlobFile(blob, fn); window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer'); closeWhatsAppModal(); }
+                const blob = await getOrBuildQuotePdfBlob(fn);
+                const file = new File([blob], fn, { type: 'application/pdf' });
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ title: fn, text: msg, files: [file] });
+                    closeWhatsAppModal();
+                    showToast('Shared PDF successfully!');
+                } else {
+                    downloadBlobFile(blob, fn);
+                    window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer');
+                    closeWhatsAppModal();
+                    showToast('Smart PDF saved & WhatsApp opened!', 'info');
+                }
             } catch (e) { if (e.name !== 'AbortError') showToast('Share failed: ' + e.message, 'error'); }
         };
+
         window.copyWhatsAppMessageOnly = () => {
             const msg = document.getElementById('wa-message-preview').value;
             if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(msg).then(() => showToast('Message copied!'));
@@ -2818,6 +3057,30 @@
             else if (act === 'duplicate') duplicateQuote(id);
             else if (act === 'delete') deleteQuote(id);
             else if (act === 'whatsapp') { loadQuoteForEdit(id); setTimeout(() => openWhatsAppModal(), 150); }
+        };
+
+        // Native Android Phone Contact Picker API (HTTPS Chrome / Edge Mobile)
+        window.pickPhoneContact = async function() {
+            if (!('contacts' in navigator) || typeof navigator.contacts.select !== 'function') {
+                showToast('Phone Contact Picker works on Android Chrome (HTTPS). Enter manually on desktop.', 'info');
+                return;
+            }
+            try {
+                const picked = await navigator.contacts.select(['name', 'tel'], { multiple: false });
+                if (!picked || !picked.length) return;
+                const c = picked[0];
+                const name = Array.isArray(c.name) ? (c.name[0] || '').trim() : '';
+                const tels = Array.isArray(c.tel) ? Array.from(new Set(c.tel.map(t => String(t || '').trim()).filter(Boolean))) : [];
+                const phoneStr = tels.join(' / ');
+                if (name) document.getElementById('bill-contact-name').innerText = name;
+                if (phoneStr) document.getElementById('bill-contact-phone').innerText = phoneStr;
+                if (typeof syncMobileFormFromDOM === 'function') syncMobileFormFromDOM();
+                recordQuoteHistory();
+                triggerDraftAutoSave();
+                showToast(name ? `Added contact: ${name}` : 'Phone contact added!');
+            } catch (err) {
+                if (err.name !== 'AbortError') showToast('Could not open contacts: ' + err.message, 'error');
+            }
         };
 
         window.onload = function() {
