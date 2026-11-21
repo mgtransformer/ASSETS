@@ -169,33 +169,50 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
-        /* Mobile 9:16 Native App Mode (< 768px) */
-        @media (max-width: 767px) {
-            body { background-color: #f1f5f9; }
-            .mobile-tab-active { color: #ea580c !important; border-bottom: 2.5px solid #ea580c !important; font-weight: 800 !important; }
-            .mobile-input {
-                width: 100%;
-                border: 1.5px solid #cbd5e1;
-                border-radius: 10px;
-                padding: 10px 12px;
-                font-size: 14px;
-                font-weight: 600;
-                color: #0f172a;
-                background: #ffffff;
-                outline: none;
-            }
-            .mobile-input:focus { border-color: #ea580c; box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12); }
-            .mobile-label { display: block; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #64748b; margin-bottom: 4px; }
-            #editor-view.mobile-form-active #document-area { display: none !important; }
-            #editor-view.mobile-preview-active #mobile-editor-form { display: none !important; }
-            #editor-view.mobile-preview-active #document-area {
-                display: flex !important;
-                width: 794px !important;
-                max-width: 794px !important;
-                transform-origin: top left;
-                margin: 0 !important;
-            }
+        /* Adaptive Layout Engine: driven by body.layout-mobile vs body.layout-desktop (supports Phone, Tablet Portrait/Landscape, Laptop + Manual Toggle) */
+        .mobile-only-block { display: none !important; }
+        .mobile-only-flex { display: none !important; }
+        .desktop-only-block { display: block; }
+        .desktop-only-flex { display: flex; }
+        .desktop-only-grid { display: grid; }
+
+        body.layout-mobile { background-color: #f1f5f9; }
+        body.layout-mobile .mobile-only-block { display: block !important; }
+        body.layout-mobile .mobile-only-flex { display: flex !important; }
+        body.layout-mobile .desktop-only-block,
+        body.layout-mobile .desktop-only-flex,
+        body.layout-mobile .desktop-only-grid { display: none !important; }
+        body.layout-mobile #dashboard-view { padding: 0 !important; gap: 0 !important; }
+        body.layout-mobile #editor-view { padding: 10px 10px 92px 10px !important; }
+
+        body.layout-desktop .mobile-only-block,
+        body.layout-desktop .mobile-only-flex { display: none !important; }
+
+        .mobile-tab-active { color: #ea580c !important; border-bottom: 2.5px solid #ea580c !important; font-weight: 800 !important; }
+        .mobile-input {
+            width: 100%;
+            border: 1.5px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 10px 12px;
+            font-size: 14px;
+            font-weight: 600;
+            color: #0f172a;
+            background: #ffffff;
+            outline: none;
         }
+        .mobile-input:focus { border-color: #ea580c; box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12); }
+        .mobile-label { display: block; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #64748b; margin-bottom: 4px; }
+
+        body.layout-mobile #editor-view.mobile-form-active #document-area { display: none !important; }
+        body.layout-mobile #editor-view.mobile-preview-active #mobile-editor-form { display: none !important; }
+        body.layout-mobile #editor-view.mobile-preview-active #document-area {
+            display: flex !important;
+            width: 794px !important;
+            max-width: 794px !important;
+            transform-origin: top left;
+            margin: 0 !important;
+        }
+        body.layout-desktop #document-area { display: flex !important; transform: none !important; margin: 0 auto !important; }
 
         /* A4 Print Engine */
         @page { size: A4 portrait; margin: 0; }
@@ -286,6 +303,9 @@
                 <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">New Challan</span>
             </button>
             <div class="w-px h-6 bg-slate-700 mx-0.5 hidden sm:block"></div>
+            <button onclick="cycleLayoutMode()" id="btn-layout-toggle" class="bg-slate-800 text-amber-300 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700 whitespace-nowrap" title="Switch View: Auto / Mobile / Desktop">
+                <i id="layout-toggle-icon" class="fa-solid fa-mobile-screen-button"></i> <span id="layout-toggle-text" class="text-[10px] sm:text-xs font-black uppercase">Auto</span>
+            </button>
             <button onclick="openSettings()" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700 whitespace-nowrap" title="Settings">
                 <i class="fa-solid fa-shield-halved text-emerald-400"></i> <span class="hidden sm:inline">Settings</span>
             </button>
@@ -298,7 +318,7 @@
         <div id="dashboard-view" class="flex-1 flex flex-col p-0 md:p-4 max-w-[1600px] mx-auto w-full md:gap-4 overflow-y-auto hidden">
 
             <!-- MOBILE 9:16 ZOHO-STYLE DIRECTORY HEADER & TABS -->
-            <div class="md:hidden bg-white border-b border-slate-200 sticky top-0 z-20">
+            <div class="mobile-only-block bg-white border-b border-slate-200 sticky top-0 z-20">
                 <div class="flex items-center justify-between px-3.5 pt-3 pb-2 gap-2">
                     <h2 class="text-base font-black text-slate-900">Delivery Challans</h2>
                     <div class="flex items-center gap-1.5">
@@ -321,15 +341,15 @@
             </div>
 
             <!-- MOBILE 9:16 CARD LIST -->
-            <div id="mobile_dash_list" class="md:hidden divide-y divide-slate-200 bg-white pb-24 flex-1"></div>
+            <div id="mobile_dash_list" class="mobile-only-block divide-y divide-slate-200 bg-white pb-24 flex-1"></div>
 
             <!-- MOBILE FLOATING '+' ACTION BUTTON -->
-            <button onclick="switchView('editor'); createNewDC();" class="md:hidden fixed bottom-5 right-5 z-30 w-14 h-14 rounded-full bg-slate-900 hover:bg-orange-600 text-white shadow-2xl flex items-center justify-center text-2xl transition active:scale-95 border-2 border-orange-500" title="New Delivery Challan">
+            <button onclick="switchView('editor'); createNewDC();" class="mobile-only-flex fixed bottom-5 right-5 z-30 w-14 h-14 rounded-full bg-slate-900 hover:bg-orange-600 text-white shadow-2xl items-center justify-center text-2xl transition active:scale-95 border-2 border-orange-500" title="New Delivery Challan">
                 <i class="fa-solid fa-plus"></i>
             </button>
 
             <!-- DESKTOP / TABLET Status KPI Filter Cards -->
-            <div class="hidden md:grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 shrink-0">
+            <div class="desktop-only-grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 shrink-0">
                 <div onclick="setDashboardFilter('All')" class="cursor-pointer bg-white p-3 rounded-xl border-2 border-slate-200 hover:border-slate-400 shadow-sm flex flex-col items-center transition-all" id="filter-All">
                     <span class="text-[10px] font-black uppercase text-slate-500">All Challans</span>
                     <span class="text-lg font-black text-slate-800" id="count-All">0</span>
@@ -357,7 +377,7 @@
             </div>
 
             <!-- Filter & Action Bar -->
-            <div class="hidden md:flex flex-wrap justify-between items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <div class="desktop-only-flex flex-wrap justify-between items-center gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
                 <div class="flex flex-wrap items-center gap-2">
                     <div class="relative">
                         <i class="fa-solid fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
@@ -396,7 +416,7 @@
             </div>
 
             <!-- Directory Table -->
-            <div class="hidden md:flex bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex-col relative min-h-[340px]">
+            <div class="desktop-only-flex bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex-col relative min-h-[340px]">
                 <div id="ai_loading_indicator" class="absolute inset-0 bg-white/90 z-30 hidden flex-col items-center justify-center backdrop-blur-sm">
                     <i class="fa-solid fa-microchip fa-bounce text-4xl text-indigo-500 mb-3"></i>
                     <h3 class="text-lg font-black text-slate-800" id="ai_loading_title">Processing...</h3>
@@ -440,7 +460,7 @@
         <div id="editor-view" class="mobile-form-active flex-1 overflow-y-auto bg-slate-100 p-2.5 md:p-4 pb-24 md:pb-20 flex flex-col relative">
 
             <!-- MOBILE 9:16 TOP MODE BAR (Form vs A4 Preview) -->
-            <div class="no-print md:hidden sticky top-0 z-30 bg-white border border-slate-200 rounded-xl shadow-sm p-2 mb-2.5 flex items-center justify-between gap-2">
+            <div class="no-print mobile-only-flex sticky top-0 z-30 bg-white border border-slate-200 rounded-xl shadow-sm p-2 mb-2.5 items-center justify-between gap-2">
                 <button onclick="switchView('dashboard')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-arrow-left"></i> List</button>
                 <div class="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
                     <button id="mob-tab-form" onclick="setMobileEditorMode('form')" class="px-3 py-1 rounded-md text-xs font-black bg-white text-orange-600 shadow-sm">Edit Form</button>
@@ -450,7 +470,7 @@
             </div>
 
             <!-- DESKTOP / TABLET Sticky Action Toolbar -->
-            <div class="no-print hidden md:flex sticky top-0 z-30 max-w-[210mm] mx-auto bg-white/95 backdrop-blur border border-slate-200 p-2.5 rounded-xl shadow-md mb-3 flex-wrap justify-between items-center gap-2 w-full">
+            <div class="no-print desktop-only-flex sticky top-0 z-30 max-w-[210mm] mx-auto bg-white/95 backdrop-blur border border-slate-200 p-2.5 rounded-xl shadow-md mb-3 flex-wrap justify-between items-center gap-2 w-full">
                 <div class="flex items-center gap-2">
                     <button onclick="switchView('dashboard')" class="text-slate-500 hover:text-orange-600 transition p-1.5" title="Back to Directory"><i class="fa-solid fa-arrow-left"></i></button>
                     <span class="text-xs font-black text-slate-700 uppercase tracking-wider" id="editor_mode_text">New Draft</span>
@@ -539,7 +559,7 @@
             </div>
 
             <!-- ==================== NATIVE MOBILE 9:16 FORM EDITOR ==================== -->
-            <div id="mobile-editor-form" class="no-print md:hidden space-y-3 pb-4">
+            <div id="mobile-editor-form" class="no-print mobile-only-block space-y-3 pb-4">
                 <!-- Card 1: Challan Header & References -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
                     <div class="flex items-center justify-between border-b border-slate-100 pb-2">
@@ -667,7 +687,7 @@
             </div>
 
             <!-- MOBILE STICKY BOTTOM ACTION BAR -->
-            <div class="no-print md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 px-2.5 py-2 flex items-center gap-2 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+            <div class="no-print mobile-only-flex fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 px-2.5 py-2 items-center gap-2 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
                 <button onclick="openWhatsAppModal()" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition">
                     <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
                 </button>
@@ -1249,6 +1269,33 @@
         </div>
     </div>
 
+    <!-- ==================== MOBILE LONG-PRESS ACTION SHEET ==================== -->
+    <div id="mobile-dc-action-sheet" onclick="if(event.target===this) closeMobileActionSheet()" class="fixed inset-0 bg-slate-900/70 hidden z-[165] flex items-end sm:items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div id="mobile-dc-action-card" class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden transform translate-y-6 transition-transform duration-200">
+            <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between border-b-2 border-orange-500">
+                <div class="min-w-0">
+                    <div id="mas-dc-no" class="font-mono text-xs font-black text-orange-400">DC-2627-11/001</div>
+                    <div id="mas-consignee" class="text-sm font-black truncate">Consignee Name</div>
+                </div>
+                <button onclick="closeMobileActionSheet()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 space-y-4 max-h-[80vh] overflow-y-auto">
+                <div>
+                    <div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">Change Status</div>
+                    <div id="mas-status-grid" class="grid grid-cols-3 gap-1.5"></div>
+                </div>
+                <div class="space-y-1.5 border-t border-slate-100 pt-3">
+                    <div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Challan Actions</div>
+                    <button onclick="runMobileSheetAction('edit')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-black transition"><i class="fa-solid fa-pen w-4 text-center"></i> Edit Delivery Challan</button>
+                    <button onclick="runMobileSheetAction('preview')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 text-xs font-black transition"><i class="fa-solid fa-eye w-4 text-center"></i> Preview &amp; Print (3-Copy)</button>
+                    <button onclick="runMobileSheetAction('whatsapp')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-black transition"><i class="fa-brands fa-whatsapp w-4 text-center text-sm"></i> Share on WhatsApp (HD PNG)</button>
+                    <button onclick="runMobileSheetAction('duplicate')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 text-xs font-black transition"><i class="fa-solid fa-copy w-4 text-center"></i> Duplicate as New Challan</button>
+                    <button onclick="runMobileSheetAction('delete')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-black transition"><i class="fa-solid fa-trash w-4 text-center"></i> Delete Delivery Challan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Container -->
     <div id="toast-container" class="no-print fixed top-4 left-1/2 -translate-x-1/2 z-[180] flex flex-col gap-2 pointer-events-none"></div>
 
@@ -1421,9 +1468,10 @@
             const state = forcedState || window.serializeState();
             const docId = customId || document.getElementById('internal_dc_id').value || ('dc_' + Date.now());
 
-            const box = document.createElement('div');
-            box.innerHTML = state.bill_to_address || '';
-            const addrLines = (box.innerText || '').split('\n').map(s => s.trim()).filter(Boolean);
+            const normAddr = String(state.bill_to_address || '').replace(/<br\s*\/?>/gi, '\n').replace(/<\/(div|p|li)>/gi, '\n').replace(/<[^>]+>/g, '');
+            const taAddr = document.createElement('textarea');
+            taAddr.innerHTML = normAddr;
+            const addrLines = taAddr.value.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
             const consigneeName = addrLines[0] || 'Unknown Consignee';
             const consigneeCity = addrLines.length > 1 ? (addrLines[addrLines.length - 1].split(',')[0] || '').trim() : '';
 
@@ -2989,20 +3037,25 @@
                         const statusText = isOverdue ? `OVERDUE (DUE ${dc.expectedReturnDate})` : (dc.status || 'Dispatched').toUpperCase();
                         const stColor = isOverdue ? 'text-red-600' : (dc.status === 'Delivered' || dc.status === 'Returned' ? 'text-emerald-600' : (dc.status === 'Pending Return' ? 'text-purple-700' : (dc.status === 'Dispatched' ? 'text-orange-600' : 'text-slate-500')));
                         const idArg = escapeHTML(JSON.stringify(String(dc.id)));
+                        const cleanConsignee = (dc.stateData && dc.stateData.bill_to_address)
+                            ? (htmlToCleanLines(dc.stateData.bill_to_address)[0] || dc.consigneeName || 'Unknown Consignee')
+                            : (dc.consigneeName || 'Unknown Consignee');
                         return `
-                            <div onclick="loadDCForEdit(${idArg})" class="px-4 py-3.5 active:bg-orange-50/60 transition cursor-pointer flex justify-between items-start gap-3">
+                            <div onmousedown="startCardLongPress(event, ${idArg})" onmouseup="cancelCardLongPress()" onmouseleave="cancelCardLongPress()" ontouchstart="startCardLongPress(event, ${idArg})" ontouchend="cancelCardLongPress()" ontouchmove="cancelCardLongPress()" oncontextmenu="event.preventDefault(); openMobileActionSheet(${idArg});" onclick="handleMobileCardTap(${idArg})" class="px-4 py-3.5 active:bg-orange-50/70 transition cursor-pointer flex justify-between items-start gap-3 select-none">
                                 <div class="min-w-0 flex-1 space-y-0.5">
-                                    <div class="text-[13.5px] font-black text-slate-900 leading-snug break-words">${escapeHTML(dc.consigneeName || 'Unknown Consignee')}</div>
+                                    <div class="text-[13.5px] font-black text-slate-900 leading-snug break-words">${escapeHTML(cleanConsignee)}</div>
                                     <div class="text-[11.5px] font-semibold text-slate-500">${escapeHTML(dText)} &bull; <span class="font-mono font-bold text-slate-700">${escapeHTML(dc.dcNo || 'N/A')}</span></div>
                                     <div class="text-[11px] font-medium text-slate-500 truncate">${escapeHTML(dc.docRef || dc.purpose || '')}</div>
-                                    <div class="text-[10.5px] font-black tracking-wide pt-0.5 ${stColor}">${escapeHTML(statusText)}</div>
+                                    <div class="flex items-center gap-2 pt-0.5">
+                                        <span class="text-[10.5px] font-black tracking-wide ${stColor}">${escapeHTML(statusText)}</span>
+                                        <span class="text-[9px] text-slate-400 font-semibold">&bull; Hold for options</span>
+                                    </div>
                                 </div>
                                 <div class="text-right shrink-0 flex flex-col items-end gap-1.5">
                                     <div class="text-[13px] font-black text-slate-900">${dc.totalQty || 0} Qty</div>
                                     <div class="text-[10.5px] font-bold text-slate-500 font-mono">${escapeHTML(dc.vehicleNo || dc.purpose?.split(' ')[0] || '')}</div>
                                     <div class="flex items-center gap-1 pt-0.5" onclick="event.stopPropagation()">
-                                        <button onclick="previewDC(${idArg})" class="px-2 py-1 rounded bg-slate-100 text-slate-600 text-[10px] font-bold" title="Preview"><i class="fa-solid fa-eye"></i></button>
-                                        <button onclick="duplicateDC(${idArg})" class="px-2 py-1 rounded bg-orange-50 text-orange-600 text-[10px] font-bold" title="Duplicate"><i class="fa-solid fa-copy"></i></button>
+                                        <button onclick="openMobileActionSheet(${idArg})" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-orange-100 text-slate-700 text-xs font-black border border-slate-200" title="Actions &amp; Status"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                                     </div>
                                 </div>
                             </div>`;
@@ -3795,8 +3848,143 @@ CURRENT DRAFT STATE: ${JSON.stringify(serializeState())}`
             renderMobileItemsList();
         };
 
+        // ==================== SMART ORIENTATION & LAYOUT MODE ENGINE ====================
+        window.applyResponsiveLayout = function() {
+            const pref = safeGetLS('mg_dc_layout_pref') || 'auto'; // 'auto' | 'mobile' | 'desktop'
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            let useMobile = false;
+
+            if (pref === 'mobile') {
+                useMobile = true;
+            } else if (pref === 'desktop') {
+                useMobile = false;
+            } else {
+                // Auto: Phones (<768px) AND Portrait Tablets like OnePlus Pad Go 2 (height > width and width < 1024) use Mobile Portrait UI;
+                // Landscape Tablets (>=900px landscape) & Laptops/Desktops use Full Desktop A4 UI.
+                const isPortrait = h > w;
+                useMobile = (w < 768) || (isPortrait && w < 1024);
+            }
+
+            document.body.classList.toggle('layout-mobile', useMobile);
+            document.body.classList.toggle('layout-desktop', !useMobile);
+
+            const txt = document.getElementById('layout-toggle-text');
+            const ico = document.getElementById('layout-toggle-icon');
+            if (txt && ico) {
+                if (pref === 'auto') {
+                    txt.textContent = 'Auto';
+                    ico.className = useMobile ? 'fa-solid fa-mobile-screen-button' : 'fa-solid fa-desktop';
+                } else if (pref === 'mobile') {
+                    txt.textContent = 'Phone';
+                    ico.className = 'fa-solid fa-mobile-screen-button';
+                } else {
+                    txt.textContent = 'Desktop';
+                    ico.className = 'fa-solid fa-desktop';
+                }
+            }
+
+            // Re-scale A4 preview if currently viewing A4 preview in mobile mode
+            const ev = document.getElementById('editor-view');
+            if (useMobile && ev && ev.classList.contains('mobile-preview-active')) {
+                setMobileEditorMode('preview');
+            } else if (!useMobile) {
+                const docEl = document.getElementById('document-area');
+                if (docEl) { docEl.style.transform = ''; docEl.style.marginBottom = ''; }
+            }
+        };
+
+        window.cycleLayoutMode = function() {
+            const cur = safeGetLS('mg_dc_layout_pref') || 'auto';
+            const next = cur === 'auto' ? 'mobile' : (cur === 'mobile' ? 'desktop' : 'auto');
+            safeSetLS('mg_dc_layout_pref', next);
+            applyResponsiveLayout();
+            const labels = { auto: 'Auto (Follows Screen / Orientation)', mobile: 'Mobile Portrait Mode Locked', desktop: 'Desktop A4 Mode Locked' };
+            showToast('View: ' + labels[next], 'info');
+        };
+
+        window.addEventListener('resize', () => applyResponsiveLayout());
+        window.addEventListener('orientationchange', () => setTimeout(applyResponsiveLayout, 120));
+
+        // ==================== MOBILE LONG-PRESS ACTION SHEET ====================
+        let cardLongPressTimer = null;
+        let cardLongPressTriggered = false;
+        let activeSheetDCId = null;
+
+        window.startCardLongPress = function(e, id) {
+            cardLongPressTriggered = false;
+            clearTimeout(cardLongPressTimer);
+            cardLongPressTimer = setTimeout(() => {
+                cardLongPressTriggered = true;
+                if (navigator.vibrate) { try { navigator.vibrate(25); } catch (err) {} }
+                openMobileActionSheet(id);
+            }, 450);
+        };
+        window.cancelCardLongPress = function() {
+            clearTimeout(cardLongPressTimer);
+        };
+        window.handleMobileCardTap = function(id) {
+            if (cardLongPressTriggered) { cardLongPressTriggered = false; return; }
+            loadDCForEdit(id);
+        };
+
+        window.openMobileActionSheet = function(id) {
+            const dc = (window.dcsData || []).find(d => String(d.id) === String(id));
+            if (!dc) return;
+            activeSheetDCId = dc.id;
+            const cleanConsignee = (dc.stateData && dc.stateData.bill_to_address)
+                ? (htmlToCleanLines(dc.stateData.bill_to_address)[0] || dc.consigneeName || 'Consignee')
+                : (dc.consigneeName || 'Consignee');
+            document.getElementById('mas-dc-no').textContent = dc.dcNo || 'Delivery Challan';
+            document.getElementById('mas-consignee').textContent = cleanConsignee;
+
+            const statuses = ['Draft', 'Dispatched', 'Delivered', 'Pending Return', 'Returned', 'Cancelled'];
+            const grid = document.getElementById('mas-status-grid');
+            grid.innerHTML = statuses.map(st => {
+                const isCur = (dc.status || 'Dispatched') === st;
+                const activeCls = isCur ? 'bg-orange-600 text-white border-orange-600 shadow-sm' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100';
+                return `<button onclick="changeDCStatusFromSheet('${escapeHTML(st)}')" class="px-2 py-2 rounded-lg border text-[10.5px] font-black transition ${activeCls}">${escapeHTML(st)}</button>`;
+            }).join('');
+
+            const sheet = document.getElementById('mobile-dc-action-sheet');
+            sheet.classList.remove('hidden');
+            setTimeout(() => {
+                sheet.classList.remove('opacity-0');
+                document.getElementById('mobile-dc-action-card').classList.remove('translate-y-6');
+            }, 10);
+        };
+
+        window.closeMobileActionSheet = function() {
+            const sheet = document.getElementById('mobile-dc-action-sheet');
+            sheet.classList.add('opacity-0');
+            document.getElementById('mobile-dc-action-card').classList.add('translate-y-6');
+            setTimeout(() => sheet.classList.add('hidden'), 200);
+        };
+
+        window.changeDCStatusFromSheet = async function(newStatus) {
+            if (!activeSheetDCId) return;
+            await changeDCStatus(activeSheetDCId, newStatus);
+            closeMobileActionSheet();
+            showToast('Status updated to ' + newStatus);
+        };
+
+        window.runMobileSheetAction = function(action) {
+            const id = activeSheetDCId;
+            closeMobileActionSheet();
+            if (!id) return;
+            if (action === 'edit') loadDCForEdit(id);
+            else if (action === 'preview') previewDC(id);
+            else if (action === 'duplicate') duplicateDC(id);
+            else if (action === 'delete') deleteDC(id);
+            else if (action === 'whatsapp') {
+                loadDCForEdit(id);
+                setTimeout(() => openWhatsAppModal(), 150);
+            }
+        };
+
         // Initialization
         window.onload = function() {
+            applyResponsiveLayout();
             if (window.__IS_FROZEN_DC__) {
                 switchView('editor');
                 resetDCHistory();
