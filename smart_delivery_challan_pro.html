@@ -2676,6 +2676,9 @@
             const extraCopies = Math.max(0, Math.min(3, activePrintCopies - 1));
 
             if (extraCopies > 0) {
+                const origQrCanvas = original.querySelector('#qrcode canvas');
+                const origQrImg = original.querySelector('#qrcode img');
+                const qrDataUrl = origQrCanvas ? origQrCanvas.toDataURL('image/png') : (origQrImg ? origQrImg.src : '');
                 original.classList.add('print-break');
                 let prev = original;
                 for (let i = 0; i < extraCopies; i++) {
@@ -2684,6 +2687,17 @@
                     if (i === extraCopies - 1) clone.classList.remove('print-break');
                     const cLabel = clone.querySelector('#copy-label');
                     if (cLabel) cLabel.innerText = copyLabels[i];
+                    if (qrDataUrl) {
+                        const cloneQrBox = clone.querySelector('#qrcode');
+                        if (cloneQrBox) {
+                            const im = document.createElement('img');
+                            im.src = qrDataUrl;
+                            im.alt = 'Challan QR';
+                            im.style.cssText = 'width:72px;height:72px;display:block;';
+                            cloneQrBox.innerHTML = '';
+                            cloneQrBox.appendChild(im);
+                        }
+                    }
                     clone.querySelectorAll('input[type="radio"]').forEach(r => { r.name += '_copy' + (i + 2); });
                     const origSelects = original.querySelectorAll('select');
                     const cloneSelects = clone.querySelectorAll('select');
