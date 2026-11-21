@@ -594,7 +594,10 @@
 
                 <!-- Card 2: Consignee Details -->
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
-                    <div class="border-b border-slate-100 pb-2 text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-building text-orange-500 mr-1.5"></i>Consignee (Ship To)</div>
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2 gap-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-building text-orange-500 mr-1.5"></i>Consignee (Ship To)</span>
+                        <button type="button" onclick="pickPhoneContact()" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 px-2.5 py-1 rounded-lg text-[11px] font-black flex items-center gap-1 shadow-sm active:scale-95 transition"><i class="fa-solid fa-address-book"></i> Phone Contacts</button>
+                    </div>
                     <div>
                         <label class="mobile-label">Client Name &amp; Full Address</label>
                         <textarea id="mob-bill-to" rows="3" class="mobile-input leading-snug" placeholder="Company Name&#10;Address Line 1&#10;City, State, PIN" oninput="syncMobileAddress(this.value)"></textarea>
@@ -816,6 +819,7 @@
                                         <div class="flex items-start gap-1.5">
                                             <span class="field-label-inline whitespace-nowrap navy-label pt-0.5">CONTACT PERSON:</span>
                                             <div id="consignee-contact-name" contenteditable="true" class="auto-wrap-field border-b border-slate-300 font-semibold text-[10.5px] pb-0.5 bg-transparent outline-none normal-case leading-snug" data-placeholder="Contact person name..." oninput="triggerDraftAutoSave()"></div>
+                                            <button type="button" onclick="pickPhoneContact()" class="no-print text-blue-600 hover:text-blue-800 bg-blue-50 border border-blue-200 rounded px-1.5 py-0.5 text-[9px] font-bold shrink-0" title="Pick from Phone Contacts (Android Chrome)"><i class="fa-solid fa-address-book"></i></button>
                                         </div>
                                         <div class="flex items-start gap-1.5">
                                             <span class="field-label-inline whitespace-nowrap navy-label pt-0.5">CONTACT NO.:</span>
@@ -3983,6 +3987,30 @@ CURRENT DRAFT STATE: ${JSON.stringify(serializeState())}`
         };
 
         // Initialization
+        // Native Android Phone Contact Picker API (HTTPS Chrome / Edge Mobile)
+        window.pickPhoneContact = async function() {
+            if (!('contacts' in navigator) || typeof navigator.contacts.select !== 'function') {
+                showToast('Phone Contact Picker works on Android Chrome (HTTPS). Enter manually on desktop.', 'info');
+                return;
+            }
+            try {
+                const picked = await navigator.contacts.select(['name', 'tel'], { multiple: false });
+                if (!picked || !picked.length) return;
+                const c = picked[0];
+                const name = Array.isArray(c.name) ? (c.name[0] || '').trim() : '';
+                const tels = Array.isArray(c.tel) ? Array.from(new Set(c.tel.map(t => String(t || '').trim()).filter(Boolean))) : [];
+                const phoneStr = tels.join(' / ');
+                if (name) document.getElementById('consignee-contact-name').innerText = name;
+                if (phoneStr) document.getElementById('consignee-contact-phone').innerText = phoneStr;
+                if (typeof syncMobileFormFromDOM === 'function') syncMobileFormFromDOM();
+                recordDCHistory();
+                triggerDraftAutoSave();
+                showToast(name ? `Added contact: ${name}` : 'Phone contact added!');
+            } catch (err) {
+                if (err.name !== 'AbortError') showToast('Could not open contacts: ' + err.message, 'error');
+            }
+        };
+
         window.onload = function() {
             applyResponsiveLayout();
             if (window.__IS_FROZEN_DC__) {
