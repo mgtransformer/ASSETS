@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -123,7 +122,7 @@
         /* A4 print layout */
         @page { size: A4 portrait; margin: 6mm 5mm; }
         @media print {
-            html, body { width: auto !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; }
+            html, body { width: 200mm !important; min-width: 200mm !important; height: auto !important; min-height: 0 !important; margin: 0 !important; padding: 0 !important; overflow: visible !important; background: #fff !important; -webkit-text-size-adjust: 100% !important; text-size-adjust: 100% !important; }
             body { display: block !important; }
             #app-header, #dashboard-view, .no-print, .modal-backdrop, #toast-container { display: none !important; }
             body.layout-mobile .no-print, body.layout-mobile .mobile-only-block, body.layout-mobile .mobile-only-flex, body.layout-mobile #mobile-editor-form { display: none !important; }
@@ -131,14 +130,19 @@
             body.layout-mobile #editor-view.mobile-form-active #document-area,
             body.layout-mobile #editor-view.mobile-preview-active #document-area {
                 display: block !important;
-                width: 100% !important;
-                max-width: none !important;
+                width: 200mm !important;
+                min-width: 200mm !important;
+                max-width: 200mm !important;
                 transform: none !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                font-size: 11px !important;
+                line-height: 1.4 !important;
+                -webkit-text-size-adjust: 100% !important;
+                text-size-adjust: 100% !important;
             }
-            #editor-view { display: block !important; position: static !important; width: auto !important; height: auto !important; min-height: 0 !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: transparent !important; }
-            .document-container { width: 100% !important; max-width: none !important; min-height: 0 !important; box-sizing: border-box !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; -webkit-box-decoration-break: clone; box-decoration-break: clone; border: none !important; overflow: visible !important; }
+            #editor-view { display: block !important; position: static !important; width: 200mm !important; min-width: 200mm !important; height: auto !important; min-height: 0 !important; overflow: visible !important; padding: 0 !important; margin: 0 !important; background: transparent !important; }
+            .document-container { width: 200mm !important; min-width: 200mm !important; max-width: 200mm !important; min-height: 0 !important; box-sizing: border-box !important; box-shadow: none !important; margin: 0 !important; padding: 0 !important; font-size: 11px !important; line-height: 1.4 !important; -webkit-box-decoration-break: clone; box-decoration-break: clone; border: none !important; overflow: visible !important; }
             #document-area > #sow-section, #document-area > #scope-pair, #document-area > #address-pair, #terms-table, #quote-footer-table, #quote-disclaimer { page-break-inside: avoid !important; break-inside: avoid-page !important; }
             #scope-pair { display: grid !important; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important; align-items: stretch !important; gap: 2mm !important; }
             #scope-pair > div, #scope-pair table, #sow-section table, #terms-table, #quote-footer-table { page-break-inside: avoid !important; break-inside: avoid-page !important; }
@@ -3123,4 +3127,3 @@
     </script>
 </body>
 </html>
-```
