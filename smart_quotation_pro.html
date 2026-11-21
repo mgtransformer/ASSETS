@@ -2,14 +2,17 @@
 <html lang="en">
 <head>
     <link rel="manifest" href="./smart_quotation_manifest.json">
+    <link rel="apple-touch-icon" href="./icons/icon_q_512.png">
+    <link rel="icon" type="image/png" href="./icons/icon_q_192.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Quotation PRO</title>
+    <title>Smart Quotation PRO — MG Transformer</title>
     
     <meta name="theme-color" content="#f97316">
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -27,6 +30,38 @@
         #address-pair .erp-table th, #sow-section .erp-table th, #scope-pair .erp-table th, #terms-table th { background: linear-gradient(90deg, #ea580c 0px, #ea580c 4px, #ffffff 4px, #ffffff 100%) !important; padding-left: 10px !important; }
         #document-area .erp-table thead th { border-bottom: 2px solid var(--erp-orange) !important; }
         .navy-label { color: var(--erp-orange); font-weight: 700; }
+        .field-label-inline { width: auto !important; flex-shrink: 0; display: inline-block; }
+        .auto-wrap-field { width: auto !important; flex: 1 1 0%; min-width: 0; word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Adaptive Multi-Device Layout Engine (Phone, Tablet Portrait/Landscape, Laptop + 1-Tap Switcher) */
+        .mobile-only-block { display: none !important; }
+        .mobile-only-flex { display: none !important; }
+        .desktop-only-block { display: block; }
+        .desktop-only-flex { display: flex; }
+        .desktop-only-grid { display: grid; }
+
+        body.layout-mobile { background-color: #f1f5f9; }
+        body.layout-mobile .mobile-only-block { display: block !important; }
+        body.layout-mobile .mobile-only-flex { display: flex !important; }
+        body.layout-mobile .desktop-only-block,
+        body.layout-mobile .desktop-only-flex,
+        body.layout-mobile .desktop-only-grid { display: none !important; }
+        body.layout-mobile #dashboard-view { padding: 0 !important; gap: 0 !important; }
+        body.layout-mobile #editor-view { padding: 10px 10px 92px 10px !important; }
+        body.layout-desktop .mobile-only-block,
+        body.layout-desktop .mobile-only-flex { display: none !important; }
+
+        .mobile-tab-active { color: #ea580c !important; border-bottom: 2.5px solid #ea580c !important; font-weight: 800 !important; }
+        .mobile-input { width: 100%; border: 1.5px solid #cbd5e1; border-radius: 10px; padding: 10px 12px; font-size: 14px; font-weight: 600; color: #0f172a; background: #ffffff; outline: none; }
+        .mobile-input:focus { border-color: #ea580c; box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12); }
+        .mobile-label { display: block; font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.04em; color: #64748b; margin-bottom: 4px; }
+
+        body.layout-mobile #editor-view.mobile-form-active #document-area { display: none !important; }
+        body.layout-mobile #editor-view.mobile-preview-active #mobile-editor-form { display: none !important; }
+        body.layout-mobile #editor-view.mobile-preview-active #document-area { display: block !important; width: 794px !important; max-width: 794px !important; transform-origin: top left; margin: 0 !important; }
+        body.layout-desktop #document-area { display: block !important; transform: none !important; margin: 0 auto !important; }
         #document-area input::placeholder, #document-area textarea::placeholder { color: transparent !important; opacity: 0 !important; }
         #sow-text, #mg-scope-text, #client-scope-text, #notes-terms { font-weight: 400; color: #1e293b; line-height: 1.5; }
         #sow-text li, #mg-scope-text li, #client-scope-text li, #notes-terms li { margin-bottom: 3px; line-height: 1.5; }
@@ -117,32 +152,35 @@
         var __IS_FROZEN_QUOTE__ = false; 
     </script>
 
-    <header id="app-header" class="bg-slate-900 border-b-4 border-orange-500 shadow-sm z-40 h-[60px] flex items-center justify-between px-4 shrink-0">
-        <div class="flex items-center gap-4">
-            <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG" class="h-10 w-auto object-contain bg-white rounded p-1">
-            <div>
-                <h1 class="text-lg font-black text-white leading-tight">Quote <span class="text-orange-500 px-1.5 py-0.5 bg-orange-500/10 rounded border border-orange-500/30 text-xs">PRO</span></h1>
+    <header id="app-header" class="bg-slate-900 border-b-4 border-orange-500 shadow-sm z-40 min-h-[60px] py-1.5 flex items-center justify-between px-3 sm:px-4 shrink-0">
+        <div class="flex items-center gap-3 min-w-0">
+            <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG" class="h-10 w-auto object-contain bg-white rounded p-1 shrink-0" onerror="this.style.display='none'">
+            <div class="min-w-0">
+                <h1 class="text-base sm:text-lg font-black text-white leading-tight truncate">Quote <span class="text-orange-500 px-1.5 py-0.5 bg-orange-500/10 rounded border border-orange-500/30 text-xs">PRO</span></h1>
                 <p class="text-[10px] text-slate-400 font-bold tracking-wide flex items-center gap-2 mt-0.5">
-                    Cloud Sync 
+                    Cloud Sync
                     <span id="cloud-status" class="bg-slate-800 text-slate-400 px-1.5 py-0.5 rounded border border-slate-700 text-[9px] uppercase"><i class="fa-solid fa-spinner fa-spin"></i> Checking...</span>
                 </p>
             </div>
         </div>
         
-        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0" id="nav-buttons">
-            <button onclick="openGlobalAI()" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-indigo-200">
-                <i class="fa-solid fa-sparkles text-indigo-500"></i> AI Copilot
+        <div class="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar" id="nav-buttons">
+            <button onclick="openGlobalAI()" class="bg-indigo-50 text-indigo-700 hover:bg-indigo-100 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-indigo-200 whitespace-nowrap" title="AI Copilot">
+                <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i> <span class="hidden sm:inline">AI Copilot</span>
             </button>
-            <div class="w-px h-6 bg-slate-700 mx-1 hidden sm:block"></div>
-            <button onclick="switchView('dashboard')" id="btn-nav-dash" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm border border-slate-700">
-                <i class="fa-solid fa-folder-open"></i> Directory
+            <div class="w-px h-6 bg-slate-700 mx-0.5 hidden sm:block"></div>
+            <button onclick="switchView('dashboard')" id="btn-nav-dash" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700 whitespace-nowrap" title="Directory">
+                <i class="fa-solid fa-folder-open"></i> <span class="hidden sm:inline">Directory</span>
             </button>
-            <button onclick="switchView('editor'); createNewQuote();" id="btn-nav-new" class="bg-orange-600 text-white hover:bg-orange-700 px-4 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm border border-orange-700">
-                <i class="fa-solid fa-plus"></i> New Quote
+            <button onclick="switchView('editor'); createNewQuote();" id="btn-nav-new" class="bg-orange-600 text-white hover:bg-orange-700 px-2.5 sm:px-3.5 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-orange-700 whitespace-nowrap" title="New Quote">
+                <i class="fa-solid fa-plus"></i> <span class="hidden sm:inline">New Quote</span>
             </button>
-            <div class="w-px h-6 bg-slate-700 mx-1"></div>
-            <button onclick="openSettings()" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-2 shadow-sm border border-slate-700">
-                <i class="fa-solid fa-shield-halved text-emerald-400"></i> Settings
+            <div class="w-px h-6 bg-slate-700 mx-0.5 hidden sm:block"></div>
+            <button onclick="cycleLayoutMode()" id="btn-layout-toggle" class="bg-slate-800 text-amber-300 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700 whitespace-nowrap" title="Switch View: Auto / Phone / Desktop">
+                <i id="layout-toggle-icon" class="fa-solid fa-mobile-screen-button"></i> <span id="layout-toggle-text" class="text-[10px] sm:text-xs font-black uppercase">Auto</span>
+            </button>
+            <button onclick="openSettings()" class="bg-slate-800 text-slate-300 hover:bg-slate-700 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 shadow-sm border border-slate-700 whitespace-nowrap" title="Settings">
+                <i class="fa-solid fa-shield-halved text-emerald-400"></i> <span class="hidden sm:inline">Settings</span>
             </button>
         </div>
     </header>
@@ -151,8 +189,35 @@
         
         <!-- DASHBOARD VIEW -->
         <div id="dashboard-view" class="flex-1 flex flex-col p-4 max-w-[1600px] mx-auto w-full gap-4 overflow-y-auto hidden">
-            
-            <div class="grid grid-cols-2 md:grid-cols-6 gap-2 shrink-0">
+
+            <!-- MOBILE ZOHO-STYLE DIRECTORY HEADER & TABS -->
+            <div class="mobile-only-block bg-white border-b border-slate-200 sticky top-0 z-20">
+                <div class="flex items-center justify-between px-3.5 pt-3 pb-2 gap-2">
+                    <h2 class="text-base font-black text-slate-900">Quotations</h2>
+                    <div class="flex items-center gap-1.5">
+                        <button onclick="document.getElementById('mobile-search-wrap').classList.toggle('hidden'); document.getElementById('mobile_dash_search').focus();" class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-search text-xs"></i></button>
+                        <button onclick="exportLocalBackup()" class="w-8 h-8 rounded-full bg-emerald-50 text-emerald-700 flex items-center justify-center" title="Backup JSON"><i class="fa-solid fa-box-archive text-xs"></i></button>
+                        <button onclick="document.getElementById('import_legacy_input').click()" class="w-8 h-8 rounded-full bg-indigo-50 text-indigo-700 flex items-center justify-center" title="Import Old Quotes"><i class="fa-solid fa-file-import text-xs"></i></button>
+                    </div>
+                </div>
+                <div id="mobile-search-wrap" class="hidden px-3.5 pb-2">
+                    <input type="text" id="mobile_dash_search" oninput="document.getElementById('dash_search').value=this.value; renderDashboard();" placeholder="Search quote no, client, city..." class="w-full border border-slate-300 rounded-lg px-3 py-2 text-xs font-bold outline-none focus:border-orange-500">
+                </div>
+                <div class="flex items-center overflow-x-auto no-scrollbar px-2 border-t border-slate-100 gap-1" id="mobile-status-tabs">
+                    <button onclick="setDashboardFilter('All')" id="m-tab-All" class="mobile-tab-active px-3 py-2.5 text-xs font-bold text-slate-600 whitespace-nowrap">All (<span id="m-count-All">0</span>)</button>
+                    <button onclick="setDashboardFilter('Draft')" id="m-tab-Draft" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Draft (<span id="m-count-Draft">0</span>)</button>
+                    <button onclick="setDashboardFilter('Approved')" id="m-tab-Approved" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Approved (<span id="m-count-Approved">0</span>)</button>
+                    <button onclick="setDashboardFilter('Sent')" id="m-tab-Sent" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Sent (<span id="m-count-Sent">0</span>)</button>
+                    <button onclick="setDashboardFilter('Accepted')" id="m-tab-Accepted" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Accepted (<span id="m-count-Accepted">0</span>)</button>
+                    <button onclick="setDashboardFilter('Rejected')" id="m-tab-Rejected" class="px-3 py-2.5 text-xs font-bold text-slate-500 whitespace-nowrap">Rejected (<span id="m-count-Rejected">0</span>)</button>
+                </div>
+            </div>
+            <div id="mobile_dash_list" class="mobile-only-block divide-y divide-slate-200 bg-white pb-24 flex-1"></div>
+            <button onclick="switchView('editor'); createNewQuote();" class="mobile-only-flex fixed bottom-5 right-5 z-30 w-14 h-14 rounded-full bg-slate-900 hover:bg-orange-600 text-white shadow-2xl items-center justify-center text-2xl transition active:scale-95 border-2 border-orange-500" title="New Quotation">
+                <i class="fa-solid fa-plus"></i>
+            </button>
+
+            <div class="desktop-only-grid grid-cols-2 md:grid-cols-6 gap-2 shrink-0">
                 <div onclick="setDashboardFilter('All')" class="cursor-pointer bg-white p-3 rounded-xl border-2 border-slate-200 hover:border-slate-400 shadow-sm flex flex-col items-center transition-all" id="filter-All">
                     <span class="text-[10px] font-black uppercase text-slate-500">All Quotes</span>
                     <span class="text-lg font-black text-slate-800" id="count-All">0</span>
@@ -179,7 +244,7 @@
                 </div>
             </div>
 
-            <div class="flex justify-between items-center bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
+            <div class="desktop-only-flex flex-wrap justify-between items-center gap-2 bg-white p-3 rounded-xl border border-slate-200 shadow-sm">
                 <div class="flex items-center gap-3">
                     <div class="relative">
                         <i class="fa-solid fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
@@ -195,8 +260,12 @@
                     <button onclick="exportSelectedQuotes('csv')" class="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition" title="Export selected quotations as a spreadsheet-friendly CSV">Export CSV</button>
                     <button onclick="exportSelectedQuotes('json')" class="bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition" title="Export selected quotations with their full editable data">Export JSON</button>
                     <input type="file" id="import_legacy_input" accept=".pdf,image/*,.xlsx,.xls,.csv" class="hidden" onchange="handleLegacyImport(event)">
-                    <button onclick="exportLocalBackup()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition flex items-center gap-2 shadow-sm" title="Download a backup of quotes and the current draft">
+                    <button onclick="exportLocalBackup()" class="bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition flex items-center gap-1.5 shadow-sm" title="Download a backup of quotes and the current draft">
                         <i class="fa-solid fa-box-archive"></i> Backup
+                    </button>
+                    <input type="file" id="restore_backup_input" accept=".json" class="hidden" onchange="handleRestoreBackup(event)">
+                    <button onclick="document.getElementById('restore_backup_input').click()" class="bg-slate-100 text-slate-700 border border-slate-300 hover:bg-slate-200 px-3 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition flex items-center gap-1.5" title="Restore from JSON backup">
+                        <i class="fa-solid fa-rotate-left"></i> Restore
                     </button>
                     <button onclick="document.getElementById('import_legacy_input').click()" class="bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 px-4 py-1.5 rounded-lg text-xs font-black uppercase tracking-wider transition flex items-center gap-2 shadow-sm">
                         <i class="fa-solid fa-file-import"></i> Import Old Quotes
@@ -204,7 +273,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex flex-col relative">
+            <div class="desktop-only-flex bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex-1 flex-col relative">
                 <div id="ai_loading_indicator" class="absolute inset-0 bg-white/90 z-30 hidden flex-col items-center justify-center backdrop-blur-sm">
                     <i class="fa-solid fa-microchip fa-bounce text-4xl text-indigo-500 mb-3"></i>
                     <h3 class="text-lg font-black text-slate-800" id="ai_loading_title">Processing...</h3>
@@ -245,9 +314,19 @@
         </div>
 
         <!-- EDITOR VIEW -->
-        <div id="editor-view" class="flex-1 overflow-y-auto bg-slate-100 p-4 pb-20 flex flex-col relative">
+        <div id="editor-view" class="mobile-form-active flex-1 overflow-y-auto bg-slate-100 p-4 pb-20 flex flex-col relative">
+
+            <!-- MOBILE TOP MODE BAR -->
+            <div class="no-print mobile-only-flex sticky top-0 z-30 bg-white border border-slate-200 rounded-xl shadow-sm p-2 mb-2.5 items-center justify-between gap-2">
+                <button onclick="switchView('dashboard')" class="px-2.5 py-1.5 rounded-lg bg-slate-100 text-slate-700 text-xs font-bold flex items-center gap-1"><i class="fa-solid fa-arrow-left"></i> List</button>
+                <div class="flex bg-slate-100 p-0.5 rounded-lg border border-slate-200">
+                    <button id="mob-tab-form" onclick="setMobileEditorMode('form')" class="px-3 py-1 rounded-md text-xs font-black bg-white text-orange-600 shadow-sm">Edit Form</button>
+                    <button id="mob-tab-preview" onclick="setMobileEditorMode('preview')" class="px-3 py-1 rounded-md text-xs font-bold text-slate-600">A4 Preview</button>
+                </div>
+                <button onclick="openTermsModal()" class="px-2.5 py-1.5 rounded-lg bg-orange-50 text-orange-700 border border-orange-200 text-xs font-bold" title="ERP Terms"><i class="fa-solid fa-list-check"></i></button>
+            </div>
             
-            <div class="no-print sticky top-0 z-30 max-w-[210mm] mx-auto bg-white/95 backdrop-blur border border-slate-200 p-3 rounded-xl shadow-md mb-4 flex flex-wrap justify-between items-center gap-2 w-full">
+            <div class="no-print desktop-only-flex sticky top-0 z-30 max-w-[210mm] mx-auto bg-white/95 backdrop-blur border border-slate-200 p-3 rounded-xl shadow-md mb-4 flex-wrap justify-between items-center gap-2 w-full">
                 <div class="flex items-center gap-2">
                     <button onclick="switchView('dashboard')" class="text-slate-500 hover:text-orange-600 transition p-1.5" title="Back to Directory"><i class="fa-solid fa-arrow-left"></i></button>
                     <span class="text-xs font-black text-slate-700 uppercase tracking-wider" id="editor_mode_text">Editing Draft</span>
@@ -270,6 +349,9 @@
                         </div>
                     </div>
 
+                    <button onclick="openWhatsAppModal()" class="bg-emerald-600 text-white border border-emerald-700 px-3 py-1.5 rounded-md text-xs font-bold hover:bg-emerald-700 transition flex items-center gap-1.5 shadow-sm" title="Share Quote via WhatsApp (Client / Self + HD PNG)">
+                        <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
+                    </button>
                     <button onclick="window.print()" class="bg-blue-50 text-blue-700 border border-blue-200 px-3 py-1.5 rounded-md text-xs font-black uppercase tracking-wider hover:bg-blue-100 transition flex items-center gap-1.5 shadow-sm" title="Print quotation on A4 paper">
                         <i class="fa-solid fa-print"></i> Print / PDF
                     </button>
@@ -282,23 +364,109 @@
                 </div>
             </div>
 
-            <div id="drop-zone" class="no-print max-w-[210mm] mx-auto bg-white p-3 mb-4 rounded-xl shadow-sm border-2 border-dashed border-indigo-200 flex flex-col gap-2 transition-colors duration-200 w-full">
-                <div class="flex items-start gap-2 w-full">
-                    <span class="text-xs font-bold text-indigo-700 flex items-center gap-1 whitespace-nowrap mt-1.5"><i class="fa-solid fa-robot"></i> AI Builder:</span>
-                    
-                    <div class="flex-grow flex flex-col gap-1 w-full">
-                        <textarea id="ai_text_input" rows="1" placeholder="Add or revise the quote: e.g. change validity to 30 days, add an item, or update the scope..." class="border border-slate-300 px-2 py-1.5 text-xs font-medium rounded w-full focus:border-indigo-500 outline-none placeholder-slate-400 overflow-hidden resize-none" oninput="this.style.height = 'auto'; this.style.height = this.scrollHeight + 'px'"></textarea>
-                        <div id="file-queue-display" class="text-[10px] text-indigo-600 font-bold flex gap-2 flex-wrap empty:hidden"></div>
-                    <div class="text-[9px] text-slate-400">AI edits are shown for your review before they change this draft.</div>
-                    </div>
-
-                    <div class="flex items-center gap-1 shrink-0 mt-0.5">
-                        <button id="ai_text_btn" onclick="handleAITextExtraction()" class="bg-indigo-600 text-white px-3 py-1.5 rounded text-xs font-bold hover:bg-indigo-700 transition shadow-sm whitespace-nowrap">Process</button>
-                        <span class="text-[10px] font-bold text-slate-400 mx-1">OR</span>
+            <div id="drop-zone" class="no-print max-w-[210mm] mx-auto bg-white p-3 mb-4 rounded-xl shadow-sm border-2 border-dashed border-indigo-200 flex flex-col gap-2.5 transition-colors duration-200 w-full">
+                <div class="flex items-center justify-between gap-2">
+                    <span class="text-xs font-black text-indigo-700 flex items-center gap-1.5"><i class="fa-solid fa-robot"></i> AI Quotation Builder &amp; Extractor</span>
+                    <span class="text-[10px] text-slate-400 font-semibold hidden sm:inline">Paste RFQ / WhatsApp / Email or drop files</span>
+                </div>
+                <div class="w-full flex flex-col gap-1.5">
+                    <textarea id="ai_text_input" rows="3" placeholder="Click here and paste full RFQ, email, WhatsApp inquiry, or type any command (e.g. change validity to 30 days, add 5% discount, audit scopes)..." class="w-full min-h-[82px] border-2 border-slate-200 bg-slate-50/50 focus:bg-white px-3 py-2 text-xs sm:text-sm font-medium rounded-lg focus:border-indigo-500 outline-none placeholder-slate-400 resize-y leading-relaxed shadow-inner transition" oninput="this.style.height='auto'; this.style.height=Math.min(240, Math.max(82, this.scrollHeight))+'px'"></textarea>
+                    <div id="file-queue-display" class="text-[10px] text-indigo-600 font-bold flex gap-2 flex-wrap empty:hidden"></div>
+                </div>
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div>
                         <input type="file" id="ai_file_input" accept="image/*,application/pdf,text/plain,.csv,.xls,.xlsx" multiple class="hidden" onchange="handleAIExtraction(event)">
-                        <button id="ai_file_btn" onclick="document.getElementById('ai_file_input').click()" class="bg-slate-100 text-slate-700 border border-slate-300 px-3 py-1.5 rounded text-xs font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap flex items-center gap-1"><i class="fa-solid fa-paperclip"></i> Upload</button>
+                        <button id="ai_file_btn" onclick="document.getElementById('ai_file_input').click()" class="bg-slate-100 text-slate-700 border border-slate-300 px-3 py-2 rounded-lg text-xs font-bold hover:bg-slate-200 transition shadow-sm whitespace-nowrap flex items-center gap-1.5"><i class="fa-solid fa-paperclip text-indigo-600"></i> Upload RFQ / File</button>
+                    </div>
+                    <button id="ai_text_btn" onclick="handleAITextExtraction()" class="bg-indigo-600 text-white px-5 py-2 rounded-lg text-xs font-black uppercase tracking-wider hover:bg-indigo-700 transition shadow-sm whitespace-nowrap flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles"></i> Process with AI</button>
+                </div>
+                <div class="flex flex-wrap items-center gap-1.5 pt-1 border-t border-slate-100">
+                    <span class="text-[9px] font-black uppercase text-slate-400 mr-1">1-Click AI:</span>
+                    <button type="button" onclick="runQuickAIBuilder('Audit SOW, MG Scope, Client Scope, and Terms to eliminate any duplications or MG-vs-Client overlaps, and suggest pro additions.')" class="text-[10px] font-bold bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-2 py-0.5 rounded-full transition"><i class="fa-solid fa-shield-halved mr-1"></i>Audit &amp; Fix Scopes</button>
+                    <button type="button" onclick="runQuickAIBuilder('Auto-fill accurate Indian GST 8-digit HSN/SAC codes and polish line items into crisp bulleted technical English without changing rates or quantities.')" class="text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full transition"><i class="fa-solid fa-barcode mr-1"></i>Fill HSN &amp; Polish</button>
+                    <button type="button" onclick="runQuickAIBuilder('Apply a 5% overall discount on the quotation basic value.')" class="text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2 py-0.5 rounded-full transition"><i class="fa-solid fa-percent mr-1"></i>5% Overall Discount</button>
+                </div>
+            </div>
+
+            <!-- NATIVE MOBILE 9:16 QUOTATION FORM EDITOR -->
+            <div id="mobile-editor-form" class="no-print mobile-only-block space-y-3 pb-4">
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-file-invoice-dollar text-orange-500 mr-1.5"></i>Quote Details</span>
+                        <span id="mob-quote-badge" class="font-mono text-xs font-black text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-200">Quote-001</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div><label class="mobile-label">Quote Date</label><input type="date" id="mob-doc-date" class="mobile-input" onchange="syncFromMobileField('doc-date', this.value, true)"></div>
+                        <div><label class="mobile-label">Valid Upto</label><input type="date" id="mob-valid-date" class="mobile-input" onchange="syncFromMobileField('valid-date', this.value)"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div><label class="mobile-label">Your Ref.</label><input type="text" id="mob-doc-ref" class="mobile-input" placeholder="RFQ / Email / Verbal" oninput="syncFromMobileField('doc-ref', this.value)"></div>
+                        <div><label class="mobile-label">Place of Supply</label><input type="text" id="mob-doc-place" class="mobile-input" oninput="syncFromMobileField('doc-place', this.value)"></div>
                     </div>
                 </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
+                    <div class="border-b border-slate-100 pb-2 text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-building text-orange-500 mr-1.5"></i>Bill To / Client Details</div>
+                    <div><label class="mobile-label">Client Name &amp; Full Address</label><textarea id="mob-bill-to" rows="3" class="mobile-input leading-snug" placeholder="Company Name&#10;Address&#10;City, State, PIN" oninput="syncMobileBillTo(this.value)"></textarea></div>
+                    <div><label class="mobile-label">GSTIN</label><input type="text" id="mob-bill-gstin" class="mobile-input uppercase font-mono" placeholder="15-digit GSTIN" oninput="syncFromMobileField('bill-to-gstin', this.value); syncBillToShip();"></div>
+                    <div class="grid grid-cols-1 gap-2.5">
+                        <div><label class="mobile-label">Contact Person Name</label><input type="text" id="mob-contact-name" class="mobile-input" placeholder="Contact person name" oninput="syncMobileCE('bill-contact-name', this.value)"></div>
+                        <div><label class="mobile-label">Contact Mobile Number(s)</label><input type="tel" id="mob-contact-phone" class="mobile-input font-mono" placeholder="e.g. 9764438934" oninput="syncMobileCE('bill-contact-phone', this.value)"></div>
+                    </div>
+                    <label class="flex items-center gap-2 text-xs font-bold text-slate-700 pt-1">
+                        <input type="checkbox" id="mob-same-ship" class="w-4 h-4 accent-orange-600" onchange="document.getElementById('same-as-bill').checked=this.checked; syncBillToShip();"> Ship To same as Bill To
+                    </label>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
+                    <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+                        <span class="text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-boxes-stacked text-orange-500 mr-1.5"></i>Line Items (<span id="mob-items-count">0</span>)</span>
+                        <button type="button" onclick="addRow(); renderMobileQuoteItems();" class="bg-orange-600 text-white px-3 py-1 rounded-lg text-xs font-black shadow-sm">+ Add Item</button>
+                    </div>
+                    <div id="mob-items-container" class="space-y-3"></div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3.5 space-y-3">
+                    <div class="border-b border-slate-100 pb-2 text-xs font-black uppercase tracking-wider text-blue-800"><i class="fa-solid fa-calculator text-orange-500 mr-1.5"></i>Discount, GST &amp; Total</div>
+                    <div class="grid grid-cols-2 gap-2.5">
+                        <div>
+                            <label class="mobile-label">Tax Type</label>
+                            <select id="mob-tax-type" class="mobile-input" onchange="document.getElementById('tax-type').value=this.value; calculate(); syncMobileTotals();">
+                                <option value="intra">CGST/SGST (18%)</option>
+                                <option value="inter">IGST (18%)</option>
+                                <option value="none">No Tax (0%)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="mobile-label">Overall Discount</label>
+                            <div class="flex gap-1">
+                                <select id="mob-disc-mode" class="mobile-input w-16 px-2" onchange="document.getElementById('discount-apply-to').value='total'; document.getElementById('discount-mode').value=this.value; calculate(); syncMobileTotals();"><option value="percent">%</option><option value="amount">₹</option></select>
+                                <input type="number" id="mob-disc-val" min="0" step="0.01" class="mobile-input" oninput="document.getElementById('discount-apply-to').value='total'; document.getElementById('discount-value').value=this.value; calculate(); syncMobileTotals();">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-900 text-white rounded-xl p-3 flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold text-slate-400 uppercase">Grand Total (Incl. GST)</div>
+                            <div id="mob-basic-sub" class="text-[11px] font-bold text-slate-300">Basic: ₹0.00</div>
+                        </div>
+                        <div id="mob-grand-total" class="text-lg font-black text-orange-400">₹ 0.00</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-2">
+                    <button type="button" onclick="openSectionEditor('sow')" class="bg-white border border-slate-200 rounded-xl p-2.5 text-xs font-black text-slate-700 shadow-sm"><i class="fa-solid fa-list text-orange-500 mr-1"></i>Edit SOW</button>
+                    <button type="button" onclick="openSectionEditor('mg')" class="bg-white border border-slate-200 rounded-xl p-2.5 text-xs font-black text-slate-700 shadow-sm"><i class="fa-solid fa-screwdriver-wrench text-orange-500 mr-1"></i>MG Scope</button>
+                    <button type="button" onclick="openSectionEditor('client')" class="bg-white border border-slate-200 rounded-xl p-2.5 text-xs font-black text-slate-700 shadow-sm"><i class="fa-solid fa-user-tie text-orange-500 mr-1"></i>Client Scope</button>
+                    <button type="button" onclick="openTermsModal()" class="bg-white border border-slate-200 rounded-xl p-2.5 text-xs font-black text-orange-700 shadow-sm"><i class="fa-solid fa-wand-magic-sparkles mr-1"></i>ERP Terms</button>
+                </div>
+            </div>
+
+            <!-- MOBILE STICKY BOTTOM ACTION BAR -->
+            <div class="no-print mobile-only-flex fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-slate-200 px-2.5 py-2 items-center gap-2 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+                <button onclick="openWhatsAppModal()" class="flex-1 bg-emerald-600 text-white py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition"><i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp</button>
+                <button onclick="window.print()" class="px-3.5 bg-blue-600 text-white py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1 shadow-sm active:scale-95 transition"><i class="fa-solid fa-print"></i> Print</button>
+                <button onclick="saveQuoteToCloud()" class="flex-1 bg-orange-600 text-white py-2.5 rounded-xl text-xs font-black flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition"><i class="fa-solid fa-cloud-arrow-up"></i> Save</button>
             </div>
 
             <!-- The Template -->
@@ -310,7 +478,7 @@
                 
                 <div class="flex items-start border border-black p-4 mb-3 rounded-sm gap-4">
                     <div class="flex-shrink-0 mt-1">
-                        <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG Transformer Logo" class="h-[132px] w-[132px] object-contain drop-shadow-sm" onerror="this.src='https://placehold.co/200x80/ffffff/000000?text=MG+TRANSFORMER'">
+                        <img src="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png" alt="MG Transformer Logo" class="h-[132px] w-[132px] object-contain drop-shadow-sm" onerror="this.style.display='none'">
                     </div>
                     <div class="flex-1 flex flex-col min-w-0">
                         <div contenteditable="true" class="outline-none mb-1 w-full">
@@ -365,10 +533,21 @@
                             <tr><th class="text-left"><div class="outline-none" contenteditable="true">BILL TO DETAILS</div></th></tr>
                             <tr>
                                 <td class="p-3 h-28 relative">
-                                    <div id="bill-to-address" contenteditable="true" class="outline-none leading-relaxed w-full min-h-[50px] whitespace-pre-wrap font-semibold" oninput="syncBillToShip();"></div>
-                                    <div class="mt-2 flex items-start text-xs font-bold gap-2">
-                                        <span class="outline-none whitespace-nowrap pt-0.5 navy-label" contenteditable="true">GSTIN:</span>
-                                        <input type="text" id="bill-to-gstin" class="border-b border-slate-400 w-full max-w-[200px] font-semibold text-xs rounded-none pb-0.5 bg-transparent outline-none uppercase" oninput="syncBillToShip(); generateQRCode();">
+                                    <div id="bill-to-address" contenteditable="true" class="outline-none leading-relaxed w-full min-h-[46px] whitespace-pre-wrap font-semibold" data-placeholder="[Client Name]&#10;[Address]&#10;[City, State, PIN]" oninput="syncBillToShip();"></div>
+                                    <div id="cust-suggest-dropdown" class="suggest-dropdown no-print"></div>
+                                    <div class="mt-2 space-y-1 text-[10.5px]">
+                                        <div class="flex items-start gap-1.5">
+                                            <span class="field-label-inline whitespace-nowrap navy-label pt-0.5">GSTIN:</span>
+                                            <input type="text" id="bill-to-gstin" class="flex-1 min-w-0 border-b border-slate-400 font-bold text-[10.5px] rounded-none pb-0.5 bg-transparent outline-none uppercase" oninput="syncBillToShip(); generateQRCode();">
+                                        </div>
+                                        <div class="flex items-start gap-1.5">
+                                            <span class="field-label-inline whitespace-nowrap navy-label pt-0.5">CONTACT PERSON:</span>
+                                            <div id="bill-contact-name" contenteditable="true" class="auto-wrap-field border-b border-slate-300 font-semibold text-[10.5px] pb-0.5 bg-transparent outline-none normal-case leading-snug" data-placeholder="Contact person name..." oninput="triggerDraftAutoSave()"></div>
+                                        </div>
+                                        <div class="flex items-start gap-1.5">
+                                            <span class="field-label-inline whitespace-nowrap navy-label pt-0.5">CONTACT NO.:</span>
+                                            <div id="bill-contact-phone" contenteditable="true" class="auto-wrap-field border-b border-slate-300 font-semibold text-[10.5px] pb-0.5 bg-transparent outline-none normal-case leading-snug" data-placeholder="Mobile / Phone number(s)..." oninput="triggerDraftAutoSave()"></div>
+                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -536,7 +715,7 @@
         <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl h-[85vh] mx-4 flex flex-col overflow-hidden border border-slate-300">
             <div class="p-3 bg-slate-800 text-white flex justify-between items-center shrink-0 border-b border-slate-700">
                 <div>
-                    <h3 class="font-black text-base flex items-center gap-2"><i class="fa-solid fa-sparkles text-indigo-400"></i> ERP AI Copilot</h3>
+                    <h3 class="font-black text-base flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles text-indigo-400"></i> ERP AI Copilot</h3>
                     <p class="text-[10px] text-slate-300 font-bold tracking-wide mt-0.5">Lead Technical Quotation Generator — drafts full quotes, audits SOW/scopes for overlaps, and suggests pro improvements.</p>
                 </div>
                 <button onclick="closeGlobalAI()" class="text-slate-400 hover:text-red-400 transition bg-slate-700/50 hover:bg-slate-700 rounded-full h-8 w-8 flex items-center justify-center"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -554,11 +733,14 @@
                     <button type="button" onclick="triggerCopilotQuickAction('Review this quotation like a senior transformer engineering manager and suggest pro-level technical additions, exclusions, or risk-protection terms to strengthen it before sending to the client.')" class="text-[10px] font-bold bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 px-2.5 py-1 rounded-full transition"><i class="fa-solid fa-shield-halved mr-1"></i>Suggest Pro Additions</button>
                     <button type="button" onclick="triggerCopilotQuickAction('Upgrade the wording of all line items (using stacked bulleted lists for multi-item inclusions), SOW, MG Scope, and Client Scope to crisp, tender-grade technical English while keeping all prices, quantities, and facts intact.')" class="text-[10px] font-bold bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-2.5 py-1 rounded-full transition"><i class="fa-solid fa-file-signature mr-1"></i>Polish to Pro Technical</button>
                 </div>
-                <div class="flex gap-2">
-                    <input type="text" id="global_ai_input" onkeypress="if(event.key==='Enter') sendGlobalAIMessage()" placeholder="Paste an RFQ/inquiry, request a full quote build, or ask to audit &amp; refine scopes..." class="flex-grow border-2 border-slate-300 rounded-lg p-2.5 text-sm font-bold focus:border-indigo-500 outline-none shadow-inner placeholder-slate-400">
-                    <button onclick="sendGlobalAIMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 rounded-lg font-black uppercase tracking-wider text-xs shadow-md transition flex items-center gap-2">
-                        Send <i class="fa-solid fa-paper-plane"></i>
-                    </button>
+                <div class="flex flex-col gap-2 w-full">
+                    <textarea id="global_ai_input" rows="3" onkeydown="if(event.key==='Enter' && (event.ctrlKey || event.metaKey)){ event.preventDefault(); sendGlobalAIMessage(); }" oninput="this.style.height='auto'; this.style.height=Math.min(180, Math.max(76, this.scrollHeight))+'px'" placeholder="Click here and paste full RFQ / email / WhatsApp inquiry, or ask to build &amp; audit scopes..." class="w-full min-h-[76px] border-2 border-slate-300 rounded-lg p-2.5 text-sm font-medium focus:border-indigo-500 outline-none shadow-inner placeholder-slate-400 resize-y leading-relaxed"></textarea>
+                    <div class="flex items-center justify-between gap-2">
+                        <span class="text-[10px] text-slate-400 font-semibold">Tip: Paste multi-line RFQs freely (Ctrl+Enter or tap Send)</span>
+                        <button onclick="sendGlobalAIMessage()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg font-black uppercase tracking-wider text-xs shadow-md transition flex items-center gap-2">
+                            Send <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -745,6 +927,93 @@
         </div>
     </div>
     
+    <!-- ==================== SMART WHATSAPP SHARE MODAL ==================== -->
+    <div id="whatsapp-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[158] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full mx-4 flex flex-col transform scale-95 transition-transform duration-200 overflow-hidden" id="whatsapp-modal-card">
+            <div class="p-4 bg-emerald-700 text-white flex justify-between items-center">
+                <div>
+                    <h3 class="font-black text-base flex items-center gap-2"><i class="fa-brands fa-whatsapp text-xl"></i> Smart WhatsApp Quotation Share</h3>
+                    <p id="wa-pdf-filename-preview" class="text-[10px] text-emerald-100 font-bold mt-0.5">HD Image: Quote.png</p>
+                </div>
+                <button onclick="closeWhatsAppModal()" class="text-emerald-200 hover:text-white transition"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="p-4 space-y-3.5 max-h-[75vh] overflow-y-auto">
+                <div class="bg-emerald-50 border border-emerald-200 rounded-lg p-2.5 space-y-2">
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div id="wa-png-thumb-wrap" class="w-10 h-14 rounded border border-emerald-300 bg-white flex items-center justify-center overflow-hidden shrink-0 shadow-sm"><i class="fa-solid fa-spinner fa-spin text-emerald-600 text-sm"></i></div>
+                            <div class="min-w-0">
+                                <div id="wa-png-status-title" class="text-xs font-black text-emerald-900">Preparing HD PNG Photo...</div>
+                                <div id="wa-png-status-sub" class="text-[10px] text-emerald-700 font-medium leading-tight">Pre-rendering <span id="wa-pdf-chip" class="font-mono font-bold">Quote.png</span> for instant clipboard paste...</div>
+                            </div>
+                        </div>
+                        <button type="button" onclick="copyQuotePngToClipboardOnly()" class="bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-2.5 py-1.5 rounded-md text-[10px] font-black transition whitespace-nowrap shrink-0 shadow-sm"><i class="fa-regular fa-copy mr-1"></i>Copy PNG</button>
+                    </div>
+                    <label class="flex items-center gap-2 pt-1.5 border-t border-emerald-200/70 cursor-pointer">
+                        <input type="checkbox" id="wa-include-pdf" class="w-3.5 h-3.5 accent-emerald-600">
+                        <span class="text-[10px] font-bold text-emerald-800">Also save <span class="font-mono">.png</span> file to Downloads folder (clipboard auto-copy is always ON)</span>
+                    </label>
+                </div>
+                <div class="space-y-2">
+                    <div class="text-[10px] font-black uppercase tracking-wider text-slate-500">Choose Who to Send To:</div>
+                    <div id="wa-client-targets" class="space-y-1.5"></div>
+                    <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-lg p-2">
+                        <div class="flex-1 min-w-0">
+                            <div class="text-[10px] font-black uppercase text-slate-500">My Own WhatsApp Number (Send to Self)</div>
+                            <input type="text" id="wa-self-number" class="w-full text-xs font-mono font-bold text-slate-800 bg-white border border-slate-300 rounded px-2 py-1 mt-0.5 outline-none focus:border-emerald-500" placeholder="918898517528" oninput="saveSelfWhatsAppNumber()">
+                        </div>
+                        <button onclick="launchWhatsAppShare('self')" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-lg text-xs font-black transition whitespace-nowrap flex items-center gap-1.5 shrink-0"><i class="fa-brands fa-whatsapp text-emerald-400"></i> Send to Me</button>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button onclick="launchWhatsAppShare('picker')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-2.5 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 shadow-sm"><i class="fa-brands fa-whatsapp text-sm"></i> Pick Contact in WhatsApp</button>
+                        <button onclick="nativeShareQuotePNG()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-2.5 rounded-lg text-xs font-black transition flex items-center justify-center gap-1.5 shadow-sm"><i class="fa-solid fa-share-nodes"></i> Direct Share HD Image</button>
+                    </div>
+                    <div class="flex items-center gap-2 pt-1">
+                        <input type="text" id="wa-custom-number" class="flex-1 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-mono font-bold focus:border-emerald-500 outline-none" placeholder="Or type any 10-digit WhatsApp number...">
+                        <button onclick="launchWhatsAppShare('custom')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 px-3 py-1.5 rounded-lg text-xs font-black transition whitespace-nowrap">Send</button>
+                    </div>
+                </div>
+                <div class="space-y-1">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[10px] font-black uppercase tracking-wider text-slate-500">WhatsApp Quotation Alert Preview</label>
+                        <button onclick="copyWhatsAppMessageOnly()" class="text-[10px] font-bold text-indigo-600 hover:underline"><i class="fa-regular fa-copy mr-0.5"></i>Copy Text Only</button>
+                    </div>
+                    <textarea id="wa-message-preview" rows="5" class="w-full border border-slate-300 rounded-lg p-2 text-[11px] font-medium text-slate-700 focus:border-emerald-500 outline-none leading-snug"></textarea>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MOBILE LONG-PRESS ACTION SHEET ==================== -->
+    <div id="mobile-quote-action-sheet" onclick="if(event.target===this) closeMobileActionSheet()" class="fixed inset-0 bg-slate-900/70 hidden z-[165] flex items-end sm:items-center justify-center opacity-0 transition-opacity modal-backdrop">
+        <div id="mobile-quote-action-card" class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl shadow-2xl overflow-hidden transform translate-y-6 transition-transform duration-200">
+            <div class="px-4 py-3 bg-slate-900 text-white flex items-center justify-between border-b-2 border-orange-500">
+                <div class="min-w-0">
+                    <div id="mas-quote-no" class="font-mono text-xs font-black text-orange-400">Quote-001</div>
+                    <div id="mas-client" class="text-sm font-black truncate">Client Name</div>
+                </div>
+                <button onclick="closeMobileActionSheet()" class="w-8 h-8 rounded-full bg-slate-800 text-slate-300 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-4 space-y-4 max-h-[80vh] overflow-y-auto">
+                <div>
+                    <div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-2">Change Status</div>
+                    <div id="mas-status-grid" class="grid grid-cols-3 gap-1.5"></div>
+                </div>
+                <div class="space-y-1.5 border-t border-slate-100 pt-3">
+                    <div class="text-[10px] font-black uppercase tracking-wider text-slate-500 mb-1">Quotation Actions</div>
+                    <button onclick="runMobileSheetAction('edit')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-800 text-xs font-black transition"><i class="fa-solid fa-pen w-4 text-center"></i> Edit Quotation</button>
+                    <button onclick="runMobileSheetAction('preview')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-indigo-50 hover:bg-indigo-100 text-indigo-800 text-xs font-black transition"><i class="fa-solid fa-eye w-4 text-center"></i> Preview &amp; Print / PDF</button>
+                    <button onclick="runMobileSheetAction('whatsapp')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-black transition"><i class="fa-brands fa-whatsapp w-4 text-center text-sm"></i> Share on WhatsApp (HD PNG)</button>
+                    <button onclick="runMobileSheetAction('duplicate')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-orange-50 hover:bg-orange-100 text-orange-800 text-xs font-black transition"><i class="fa-solid fa-copy w-4 text-center"></i> Duplicate as New Quote</button>
+                    <button onclick="runMobileSheetAction('delete')" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 text-xs font-black transition"><i class="fa-solid fa-trash w-4 text-center"></i> Delete Quotation</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="no-print fixed top-4 left-1/2 -translate-x-1/2 z-[180] flex flex-col gap-2 pointer-events-none"></div>
+
     <!-- Alert Modal -->
     <div id="alert-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[160] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
         <div class="bg-white rounded-xl p-6 max-w-sm w-full mx-4 shadow-2xl text-center border-t-4 border-orange-500">
@@ -780,8 +1049,12 @@
 
         async function initFirebase() {
             try {
-                const fbKey = localStorage.getItem('mg_quote_fb_key');
-                const pin = localStorage.getItem('mg_quote_sync_pin');
+                if (window.location.protocol === 'content:') throw new Error("Opened from local Downloads (content://). Open via HTTPS for Cloud Sync.");
+                let fbKey = '', pin = '';
+                try {
+                    fbKey = localStorage.getItem('mg_quote_fb_key') || localStorage.getItem('mg_dc_fb_key') || '';
+                    pin = localStorage.getItem('mg_quote_sync_pin') || localStorage.getItem('mg_dc_sync_pin') || '';
+                } catch(err) {}
                 if(!fbKey || !pin) throw new Error("Credentials missing. Running local only.");
 
                 document.getElementById('cloud-status').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Connecting...';
@@ -791,7 +1064,10 @@
                     db = getFirestore(app); 
                 }
                 
-                await signInAnonymously(auth);
+                await Promise.race([
+                    signInAnonymously(auth),
+                    new Promise((_, rej) => setTimeout(() => rej(new Error("Cloud Sync timed out.")), 7000))
+                ]);
                 
                 onAuthStateChanged(auth, (user) => {
                     if (user) {
@@ -847,8 +1123,8 @@
             if(!db || !userId) {
                 if(!customId&&!forcedState&&!document.getElementById('internal_quote_id').value)window.updateDocNumberDisplay();
                 const state=forcedState||window.serializeState(); const id=customId||document.getElementById('internal_quote_id').value||('quote_'+Date.now());
-                const box=document.createElement('div');box.innerHTML=state.bill_to_address||'';const clientName=(box.innerText||'').split('\n')[0].trim()||'Unknown Client';
-                const addressLines=(box.innerText||'').split('\n');const clientCity=addressLines.length>2?(addressLines[addressLines.length-1].split(',')[0]||'').trim():'';
+                const normA=String(state.bill_to_address||'').replace(/<br\s*\/?>/gi,'\n').replace(/<\/(div|p|li)>/gi,'\n').replace(/<[^>]+>/g,'');const taA=document.createElement('textarea');taA.innerHTML=normA;const addressLines=taA.value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);const clientName=addressLines[0]||'Unknown Client';
+                const clientCity=addressLines.length>1?(addressLines[addressLines.length-1].split(',')[0]||'').trim():'';
                 const existing=(window.quotesData||[]).find(q=>q.id===id);const parseMoney=id=>parseFloat(document.getElementById(id).innerText.replace(/[^\d.-]/g,''))||0;
                 const payload=forcedPayload||{date:state.doc_date||'',quoteNo:document.getElementById('full-doc-num').innerText||'',clientName:clientName,clientCity:clientCity,basicAmount:parseMoney('basic-amount'),amount:parseMoney('grand-total'),status:(existing&&existing.status)||'Draft',timestamp:(existing&&existing.timestamp)||Date.now(),stateData:state};
                 payload.id=id;const rows=(window.quotesData||[]).filter(q=>q.id!==id);rows.push(payload);window.quotesData=rows;localStorage.setItem('mg_quote_local_data',JSON.stringify(rows));
@@ -874,13 +1150,11 @@
                 let docId = customId || document.getElementById('internal_quote_id').value || ('quote_' + Date.now());
                 if(!customId) document.getElementById('internal_quote_id').value = docId;
 
-                let rawClient = (state.bill_to_address || '').split('\n');
-                let clientName = rawClient[0] ? rawClient[0].replace(/<[^>]*>?/gm, '').trim() : 'Unknown Client';
-                let clientCity = '';
-                if (rawClient.length > 2) {
-                    let lastLine = rawClient[rawClient.length - 1].replace(/<[^>]*>?/gm, '').trim();
-                    clientCity = lastLine.split(',')[0] || ''; 
-                }
+                const normC = String(state.bill_to_address || '').replace(/<br\s*\/?>/gi, '\n').replace(/<\/(div|p|li)>/gi, '\n').replace(/<[^>]+>/g, '');
+                const taC = document.createElement('textarea'); taC.innerHTML = normC;
+                const rawClient = taC.value.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+                let clientName = rawClient[0] || 'Unknown Client';
+                let clientCity = rawClient.length > 1 ? (rawClient[rawClient.length - 1].split(',')[0] || '').trim() : '';
 
                 const existingQuote = window.quotesData.find(q => q.id === docId);
                 const currentStatus = forcedPayload ? forcedPayload.status : (existingQuote ? existingQuote.status : 'Draft');
@@ -919,9 +1193,11 @@
                     if(!exists) {
                         const custId = 'cust_' + Date.now() + Math.floor(Math.random()*1000);
                         setDoc(doc(db, custMasterPath, custId), {
-                            name: clientName || '', 
-                            address: state.bill_to_address || '', 
-                            gstin: state.bill_to_gstin || '' 
+                            name: clientName || '',
+                            address: state.bill_to_address || '',
+                            gstin: state.bill_to_gstin || '',
+                            contact_name: state.bill_contact_name || '',
+                            contact_phone: state.bill_contact_phone || ''
                         }).catch(console.warn);
                     }
                 }
@@ -1064,6 +1340,10 @@
             });
             document.getElementById(`filter-${status}`).classList.remove('border-2');
             document.getElementById(`filter-${status}`).classList.add('ring-4', 'ring-opacity-50', `ring-${getStatusColor(status)}`);
+            ['All', 'Draft', 'Approved', 'Sent', 'Accepted', 'Rejected'].forEach(st => {
+                const mt = document.getElementById(`m-tab-${st}`);
+                if (mt) mt.classList.toggle('mobile-tab-active', st === status);
+            });
             renderDashboard();
         }
         window.setDashboardFilter=setDashboardFilter;
@@ -1159,6 +1439,8 @@
             Object.keys(counts).forEach(k => {
                 const el = document.getElementById(`count-${k}`);
                 if(el) el.innerText = counts[k];
+                const mel = document.getElementById(`m-count-${k}`);
+                if(mel) mel.innerText = counts[k];
             });
 
             filteredData.sort((a,b) => {
@@ -1195,7 +1477,7 @@
                             <td class="text-center">${getStatusBadge(q.status || 'Draft', q.id)}</td>
                             <td class="text-center space-x-1 whitespace-nowrap">
                                 <button onclick="previewQuote(${escapeHTML(JSON.stringify(String(q.id)))})" class="text-slate-400 hover:text-indigo-600 bg-slate-50 hover:bg-indigo-50 px-2 py-1.5 rounded border border-slate-200 hover:border-indigo-200 transition" title="Preview this quotation in Chrome"><i class="fa-solid fa-eye"></i></button>
-                                <button onclick="previewQuote(${escapeHTML(JSON.stringify(String(q.id)))})" class="text-slate-400 hover:text-emerald-600 bg-slate-50 hover:bg-emerald-50 px-2 py-1.5 rounded border border-slate-200 hover:border-emerald-200 transition" title="Preview and export this quotation"><i class="fa-solid fa-download"></i></button>
+                                <button onclick="duplicateQuote(${escapeHTML(JSON.stringify(String(q.id)))})" class="text-slate-400 hover:text-orange-600 bg-slate-50 hover:bg-orange-50 px-2 py-1.5 rounded border border-slate-200 hover:border-orange-200 transition" title="Duplicate as New Quote"><i class="fa-solid fa-copy"></i></button>
                                 <button onclick="loadQuoteForEdit(${escapeHTML(JSON.stringify(String(q.id)))})" class="text-slate-400 hover:text-blue-600 bg-slate-50 hover:bg-blue-50 px-2 py-1.5 rounded border border-slate-200 hover:border-blue-200 transition" title="Edit Data"><i class="fa-solid fa-pen"></i></button>
                                 <button onclick="deleteQuote(${escapeHTML(JSON.stringify(String(q.id)))})" class="text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 px-2 py-1.5 rounded border border-slate-200 hover:border-red-200 transition" title="Delete"><i class="fa-solid fa-trash"></i></button>
                             </td>
@@ -1204,6 +1486,7 @@
                 });
             }
             
+            if (typeof renderMobileQuoteDirectory === 'function') renderMobileQuoteDirectory(filteredData);
             document.getElementById('foot_basic').innerText = `₹${totalBasic.toLocaleString('en-IN', {minimumFractionDigits:2})}`;
             document.getElementById('foot_gross').innerText = `₹${totalGross.toLocaleString('en-IN', {minimumFractionDigits:2})}`;
             const visibleIds=filteredData.map(q=>String(q.id));
@@ -1629,6 +1912,8 @@
                 doc_place: document.getElementById('doc-place').value || '',
                 bill_to_address: sanitizeRichHTML(document.getElementById('bill-to-address').innerHTML || ''),
                 bill_to_gstin: document.getElementById('bill-to-gstin').value || '',
+                bill_contact_name: (document.getElementById('bill-contact-name')?.innerText || '').trim(),
+                bill_contact_phone: (document.getElementById('bill-contact-phone')?.innerText || '').trim(),
                 ship_to_address: sanitizeRichHTML(document.getElementById('ship-to-address').innerHTML || ''),
                 ship_to_gstin: document.getElementById('ship-to-gstin').value || '',
                 same_as_bill: document.getElementById('same-as-bill').checked || false,
@@ -1660,6 +1945,8 @@
             
             document.getElementById('bill-to-address').innerHTML = safeAIHTML(state.bill_to_address || '');
             document.getElementById('bill-to-gstin').value = state.bill_to_gstin || '';
+            if(document.getElementById('bill-contact-name')) document.getElementById('bill-contact-name').innerText = state.bill_contact_name || '';
+            if(document.getElementById('bill-contact-phone')) document.getElementById('bill-contact-phone').innerText = state.bill_contact_phone || '';
             document.getElementById('ship-to-address').innerHTML = safeAIHTML(state.ship_to_address || '');
             document.getElementById('ship-to-gstin').value = state.ship_to_gstin || '';
             document.getElementById('same-as-bill').checked = !!state.same_as_bill;
@@ -1685,6 +1972,7 @@
             } else { addRow(); }
             
             updateDocNumberDisplay();
+            if(typeof syncMobileFormFromDOM === 'function') syncMobileFormFromDOM();
         }
 
         window.createNewQuote = function() {
@@ -1707,7 +1995,10 @@
             if (window.pendingFiles) window.pendingFiles = [];
             const fileQueueEl = document.getElementById('file-queue-display'); if (fileQueueEl) fileQueueEl.innerText = '';
             const aiTextEl = document.getElementById('ai_text_input'); if (aiTextEl) { aiTextEl.value = ''; aiTextEl.style.height = 'auto'; }
+            if(document.getElementById('bill-contact-name')) document.getElementById('bill-contact-name').innerText='';
+            if(document.getElementById('bill-contact-phone')) document.getElementById('bill-contact-phone').innerText='';
             document.getElementById('items-body').innerHTML='';addRow();updateDocNumberDisplay();resetQuoteHistory();
+            if(typeof syncMobileFormFromDOM === 'function') syncMobileFormFromDOM();
         };
 
         function escapeHTML(value) {
@@ -1745,7 +2036,7 @@
             let out = Array.isArray(value) ? (value.length && typeof value[0] === 'object' ? value.length + ' item(s): ' + value.map(v => {const d=Number(v&&v.discount_value)||0;return (v&&v.name||'Unnamed item')+(d?' ('+(v.discount_mode==='amount'?'₹'+d:d+'%')+' discount)':'');}).join(', ') : value.join(', ')) : String(value).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
             return out.length > 110 ? out.slice(0,107) + '…' : out;
         }
-        const AI_STATE_LABELS = {discount_apply_to:'Discount application',discount_mode:'Overall discount type',discount_value:'Overall discount value',doc_seq_num:'Quote sequence',doc_date:'Quote date',valid_date:'Validity date',doc_currency:'Currency',doc_ref:'Reference',doc_place:'Place',bill_to_address:'Bill-to details',bill_to_gstin:'Bill-to GSTIN',ship_to_address:'Ship-to details',ship_to_gstin:'Ship-to GSTIN',same_as_bill:'Ship-to same as bill-to',sow_visible:'Scope of Work visibility',mg_visible:'MG Scope visibility',client_visible:'Client Scope visibility',sow_text:'Scope of Work',mg_scope_text:'MG Scope',client_scope_text:'Client Scope',notes_terms:'Notes and terms',tax_type:'Tax selection',items:'Line items'};
+        const AI_STATE_LABELS = {discount_apply_to:'Discount application',discount_mode:'Overall discount type',discount_value:'Overall discount value',doc_seq_num:'Quote sequence',doc_date:'Quote date',valid_date:'Validity date',doc_currency:'Currency',doc_ref:'Reference',doc_place:'Place',bill_to_address:'Bill-to details',bill_to_gstin:'Bill-to GSTIN',bill_contact_name:'Contact Person',bill_contact_phone:'Contact Numbers',ship_to_address:'Ship-to details',ship_to_gstin:'Ship-to GSTIN',same_as_bill:'Ship-to same as bill-to',sow_visible:'Scope of Work visibility',mg_visible:'MG Scope visibility',client_visible:'Client Scope visibility',sow_text:'Scope of Work',mg_scope_text:'MG Scope',client_scope_text:'Client Scope',notes_terms:'Notes and terms',tax_type:'Tax selection',items:'Line items'};
         let pendingAIState = null;
         window.closeAIReview = function() { pendingAIState = null; const modal=document.getElementById('ai-review-modal'); modal.classList.add('opacity-0'); setTimeout(()=>modal.classList.add('hidden'),250); };
         window.stageAIState = function(proposed, summary, suggestions) {
@@ -1809,23 +2100,64 @@
         4. ALWAYS provide scopes as JSON ARRAYS of strings.
         5. Return ONLY a valid JSON object matching the Current State schema.`;
 
-        const GEMINI_MODELS = ['gemini-3.8-flash','gemini-3.7-flash','gemini-3.5-flash'];
+        const GEMINI_MODELS = [
+            'gemini-4-hydrogen','gemini-4-neon','gemini-4-carbon',
+            'gemini-3.8-flash','gemini-3.7-flash','gemini-3.6-flash',
+            'gemini-3.5-flash','gemini-3.5-flash-lite','gemini-3.1-pro-preview',
+            'gemini-3.1-flash-lite','gemini-3-flash-preview','gemini-3.0-flash',
+            'gemini-2.8-flash','gemini-2.5-flash-lite'
+        ];
+        window.__LAST_GEMINI_MODEL__ = '';
+
+        async function discoverAvailableGeminiModels(apiKey) {
+            try {
+                const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models', { headers: { 'x-goog-api-key': apiKey } });
+                const data = await res.json();
+                if (!res.ok || !Array.isArray(data.models)) return [];
+                const excludeRe = /(live|tts|transcribe|omni|embedding|imagen|nano-banana|veo|lyria|aqa|decision|robotics)/i;
+                return data.models
+                    .filter(m => m.name && Array.isArray(m.supportedGenerationMethods) && m.supportedGenerationMethods.includes('generateContent'))
+                    .map(m => m.name.replace(/^models\//, ''))
+                    .filter(id => /^gemini-/i.test(id) && !excludeRe.test(id))
+                    .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }));
+            } catch (e) { return []; }
+        }
+
+        async function tryGenerateWithModel(model, apiKey, payload) {
+            const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/' + model + ':generateContent', {
+                method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey }, body: JSON.stringify(payload)
+            });
+            const result = await response.json();
+            if (!response.ok || result.error) throw new Error((result.error && result.error.message) || ('HTTP ' + response.status));
+            const part = result.candidates?.[0]?.content?.parts?.find(x => typeof x.text === 'string');
+            if (!part) throw new Error('Empty response.');
+            return part.text;
+        }
 
         async function fetchGeminiWithFallback(payload) {
-            const apiKey=localStorage.getItem('mg_quote_gemini_key');
+            let apiKey = '';
+            try { apiKey = localStorage.getItem('mg_quote_gemini_key') || localStorage.getItem('mg_dc_gemini_key') || ''; } catch(e) {}
             if(!apiKey){openSettings();throw new Error('Gemini API key missing. Add it in Settings to use AI.');}
             let lastError='No model returned a response.';
+            const tried = new Set();
             for(const model of GEMINI_MODELS){
+                tried.add(model);
                 try{
-                    const response=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+model+':generateContent',{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':apiKey},body:JSON.stringify(payload)});
-                    const result=await response.json();
-                    if(!response.ok||result.error){lastError=(result.error&&result.error.message)||('HTTP '+response.status);console.warn('Gemini model '+model+' failed: '+lastError);continue;}
-                    const part=result.candidates&&result.candidates[0]&&result.candidates[0].content&&result.candidates[0].content.parts&&result.candidates[0].content.parts.find(x=>typeof x.text==='string');
-                    if(part)return part.text;
-                    lastError='The model returned no text. Check the API key, model access, and safety response.';
-                }catch(err){lastError=err.message;}
+                    const txt = await tryGenerateWithModel(model, apiKey, payload);
+                    window.__LAST_GEMINI_MODEL__ = model;
+                    return txt;
+                }catch(err){ lastError = model + ': ' + err.message; console.warn('Gemini fallback skipping', model, err.message); }
             }
-            throw new Error('Gemini request failed: '+lastError);
+            const discovered = await discoverAvailableGeminiModels(apiKey);
+            for (const model of discovered) {
+                if (tried.has(model)) continue;
+                try {
+                    const txt = await tryGenerateWithModel(model, apiKey, payload);
+                    window.__LAST_GEMINI_MODEL__ = model;
+                    return txt;
+                } catch (err) { lastError = model + ': ' + err.message; }
+            }
+            throw new Error('All Gemini engines failed. Last error: '+lastError);
         }
 
         function extractJSON(text) {
@@ -2026,7 +2358,470 @@
             }
         }
 
+        // ==================== TOAST, DUPLICATE, RESTORE, CUSTOMER AUTO-SUGGEST, WHATSAPP HD PNG & MOBILE ENGINE ====================
+        function safeGetLS(k) { try { return localStorage.getItem(k); } catch(e) { return null; } }
+        function safeSetLS(k, v) { try { localStorage.setItem(k, v); } catch(e) {} }
+
+        function showToast(message, type = 'success') {
+            const c = document.getElementById('toast-container');
+            if (!c) return;
+            const t = document.createElement('div');
+            const bg = type === 'success' ? 'bg-emerald-600' : (type === 'error' ? 'bg-red-600' : 'bg-indigo-600');
+            t.className = `${bg} text-white px-4 py-2 rounded-lg shadow-xl text-xs font-bold transition-all duration-300 -translate-y-4 opacity-0 flex items-center gap-2`;
+            t.innerHTML = `<i class="fa-solid ${type==='success'?'fa-circle-check':(type==='error'?'fa-triangle-exclamation':'fa-circle-info')}"></i> <span>${escapeHTML(message)}</span>`;
+            c.appendChild(t);
+            setTimeout(() => t.classList.remove('-translate-y-4', 'opacity-0'), 10);
+            setTimeout(() => { t.classList.add('opacity-0', '-translate-y-4'); setTimeout(() => t.remove(), 300); }, 3000);
+        }
+        window.showToast = showToast;
+
+        function htmlToCleanLines(htmlStr) {
+            const norm = String(htmlStr || '').replace(/<br\s*\/?>/gi, '\n').replace(/<\/(div|p|li|tr)>/gi, '\n').replace(/<[^>]+>/g, '');
+            const tmp = document.createElement('textarea'); tmp.innerHTML = norm;
+            return tmp.value.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+        }
+        function formatDisplayDateIN(iso) {
+            if (!iso) return 'N/A';
+            const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            return m ? `${m[3]}-${m[2]}-${m[1]}` : iso;
+        }
+
+        window.runQuickAIBuilder = function(promptText) {
+            const el = document.getElementById('ai_text_input');
+            el.value = el.value.trim() ? (el.value.trim() + '\n' + promptText) : promptText;
+            handleAITextExtraction();
+        };
+
+        window.duplicateQuote = function(id) {
+            const q = (window.quotesData || []).find(x => String(x.id) === String(id));
+            if (!q || !q.stateData) return;
+            const copy = JSON.parse(JSON.stringify(q.stateData));
+            const today = new Date().toISOString().split('T')[0];
+            const validD = new Date(); validD.setDate(validD.getDate() + 30);
+            copy.doc_date = today;
+            copy.valid_date = validD.toISOString().split('T')[0];
+            copy.doc_seq_num = nextDirectoryQuoteSequence(today);
+            document.getElementById('internal_quote_id').value = '';
+            document.getElementById('editor_mode_text').innerHTML = 'Duplicated Draft';
+            deserializeState(copy);
+            resetQuoteHistory();
+            switchView('editor');
+            showToast('Duplicated as a new Quotation!');
+        };
+
+        window.handleRestoreBackup = async function(e) {
+            const file = e.target.files[0]; e.target.value = '';
+            if (!file) return;
+            try {
+                const parsed = JSON.parse(await file.text());
+                if (Array.isArray(parsed.quotes)) { window.quotesData = parsed.quotes; safeSetLS('mg_quote_local_data', JSON.stringify(window.quotesData)); }
+                if (Array.isArray(parsed.items)) { window.itemMasterData = parsed.items; safeSetLS('mg_quote_local_items', JSON.stringify(window.itemMasterData)); }
+                if (Array.isArray(parsed.customers)) { window.custMasterData = parsed.customers; safeSetLS('mg_quote_local_custs', JSON.stringify(window.custMasterData)); }
+                updateFYDropdown(); renderDashboard();
+                showToast(`Restored ${(parsed.quotes || []).length} quotation(s) from backup!`);
+            } catch (err) { showAlert('Restore Error', 'Invalid backup JSON: ' + err.message, 'error'); }
+        };
+
+        // Live Customer Master Auto-Suggest on Bill To
+        (function setupCustomerAutoSuggest() {
+            const addrEl = document.getElementById('bill-to-address');
+            const dd = document.getElementById('cust-suggest-dropdown');
+            if (!addrEl || !dd) return;
+            addrEl.addEventListener('input', function() {
+                const firstLine = (this.innerText || '').split('\n')[0].trim().toLowerCase();
+                if (firstLine.length < 2) { dd.style.display = 'none'; return; }
+                const matches = (window.custMasterData || []).filter(c => c.name && c.name.toLowerCase().includes(firstLine));
+                if (!matches.length) { dd.style.display = 'none'; return; }
+                dd.innerHTML = '';
+                matches.slice(0, 8).forEach(m => {
+                    const item = document.createElement('div');
+                    item.className = 'suggest-item';
+                    item.innerHTML = `<strong>${escapeHTML(m.name)}</strong> ${m.gstin ? '<span class="text-[9px] text-slate-400 ml-1">' + escapeHTML(m.gstin) + '</span>' : ''}`;
+                    item.onclick = () => {
+                        addrEl.innerHTML = safeAIHTML(m.address || m.name);
+                        document.getElementById('bill-to-gstin').value = m.gstin || '';
+                        if (m.contact_name) document.getElementById('bill-contact-name').innerText = m.contact_name;
+                        if (m.contact_phone) document.getElementById('bill-contact-phone').innerText = m.contact_phone;
+                        dd.style.display = 'none';
+                        syncBillToShip(); generateQRCode(); triggerDraftAutoSave();
+                    };
+                    dd.appendChild(item);
+                });
+                dd.style.display = 'block';
+            });
+            document.addEventListener('click', (e) => { if (e.target !== addrEl && !dd.contains(e.target)) dd.style.display = 'none'; });
+        })();
+
+        // ==================== SMART WHATSAPP SHARE + PRE-RENDERED HD PNG ====================
+        window.__READY_QUOTE_PNG_BLOB__ = null;
+        window.__READY_QUOTE_PNG_PROMISE__ = null;
+        window.__READY_QUOTE_PNG_URL__ = null;
+
+        function normalizeWhatsAppPhone(raw) {
+            const d = String(raw || '').replace(/[^\d]/g, '');
+            if (d.length === 10) return '91' + d;
+            if (d.length === 11 && d.startsWith('0')) return '91' + d.slice(1);
+            if (d.length >= 11 && d.length <= 15) return d;
+            return '';
+        }
+        function extractPhoneNumbers(txt) {
+            const m = String(txt || '').match(/(?:\+?91[\s-]?)?[6-9]\d{9}|\d{10,13}/g) || [];
+            const seen = new Set(), out = [];
+            m.forEach(x => { const n = normalizeWhatsAppPhone(x); if (n && !seen.has(n)) { seen.add(n); out.push({ raw: x.trim(), wa: n }); } });
+            return out;
+        }
+        function getQuotePngFilename() {
+            const qNo = (document.getElementById('full-doc-num')?.innerText || 'Quote_Draft').trim().replace(/[\/\\:*?"<>|\s]+/g, '_');
+            const lines = htmlToCleanLines(document.getElementById('bill-to-address')?.innerHTML || '');
+            const shortC = (lines[0] || 'Client').replace(/[^a-zA-Z0-9\s]/g, ' ').trim().split(/\s+/).slice(0, 3).join('_').slice(0, 26) || 'Client';
+            return `${qNo}_${shortC}.png`;
+        }
+        function buildWhatsAppQuoteText() {
+            const st = serializeState();
+            const qNo = document.getElementById('full-doc-num')?.innerText || 'DRAFT';
+            const lines = htmlToCleanLines(st.bill_to_address || '');
+            const clientName = lines[0] || 'Valued Client';
+            const basicAmt = document.getElementById('basic-amount')?.innerText || '0.00';
+            const grandAmt = document.getElementById('grand-total')?.innerText || '₹ 0.00';
+            const itemsList = (st.items || []).map((it, i) => `${i + 1}. *${it.name}* — ${it.qty} ${it.uom}`).join('\n');
+            const msgLines = [
+                `💼 *TECHNICAL QUOTATION — MG TRANSFORMER*`,
+                `*MG TRANSFORMER SERVICES & SUPPLIES*`,
+                `━━━━━━━━━━━━━━━━━━━━━━`,
+                ``,
+                `📄 *Quote No.:*  ${qNo}`,
+                `📅 *Date:*  ${formatDisplayDateIN(st.doc_date)}`,
+                st.valid_date ? `⏳ *Valid Upto:*  ${formatDisplayDateIN(st.valid_date)}` : null,
+                st.doc_ref ? `📑 *Your Ref.:*  ${st.doc_ref}` : null,
+                ``,
+                `🏢 *CLIENT DETAILS*`,
+                `*${clientName}*`,
+                st.bill_contact_name ? `👤 *Attn:*  ${st.bill_contact_name}${st.bill_contact_phone ? ' (' + st.bill_contact_phone + ')' : ''}` : null,
+                ``,
+                `📋 *OFFER SUMMARY*`,
+                itemsList,
+                ``,
+                `💰 *Basic Value:*  ₹ ${basicAmt}`,
+                `✅ *Total Value (Incl. GST):*  *${grandAmt}*`,
+                ``,
+                `━━━━━━━━━━━━━━━━━━━━━━`,
+                `🖼️ _Quotation copy (${getQuotePngFilename()}) is attached for your review._`,
+                ``,
+                `🙏 _We look forward to your valued Purchase Order. Please feel free to reach out for any technical clarification._`,
+                ``,
+                `*MG Transformer Services & Supplies*`,
+                `📞 +91-8898517528 | +91-8591327528`,
+                `✉️ mukund.gawale@mgtransformer.com`
+            ];
+            return msgLines.filter(l => l !== null).join('\n');
+        }
+
+        async function generateQuotePngBlob() {
+            if (typeof html2pdf === 'undefined') throw new Error('Image renderer not loaded yet.');
+            const orig = document.getElementById('document-area');
+            const clone = orig.cloneNode(true);
+            const oInps = orig.querySelectorAll('input, select, textarea');
+            const cInps = clone.querySelectorAll('input, select, textarea');
+            oInps.forEach((oi, idx) => {
+                const ci = cInps[idx]; if (!ci) return;
+                if (oi.type === 'hidden' || oi.type === 'checkbox') { ci.remove(); return; }
+                const sp = document.createElement('span');
+                let v = oi.tagName === 'SELECT' ? (oi.options[oi.selectedIndex]?.text || oi.value) : (oi.value || '');
+                if (oi.type === 'date' && v) v = formatDisplayDateIN(v);
+                sp.textContent = v;
+                sp.className = ci.className.replace(/editable-input/g, '');
+                sp.style.cssText = 'display:inline-block;border:none;background:transparent;';
+                ci.replaceWith(sp);
+            });
+            clone.querySelectorAll('.no-print, .no-print-discount').forEach(n => n.remove());
+            clone.querySelectorAll('[contenteditable="true"]').forEach(el => { el.removeAttribute('contenteditable'); el.style.borderColor = 'transparent'; });
+            const origQr = orig.querySelector('#qrcode canvas');
+            const cloneQr = clone.querySelector('#qrcode');
+            if (origQr && cloneQr) { const im = document.createElement('img'); im.src = origQr.toDataURL('image/png'); im.style.width = '78px'; im.style.height = '78px'; cloneQr.innerHTML = ''; cloneQr.appendChild(im); }
+
+            clone.style.cssText = 'width:794px;max-width:794px;height:auto;margin:0;padding:22px 24px 18px 24px;box-shadow:none;border:none;background:#ffffff;box-sizing:border-box;display:block;';
+            const host = document.createElement('div');
+            host.style.cssText = 'position:fixed;left:0;top:0;width:794px;height:1px;overflow:hidden;opacity:0.001;pointer-events:none;z-index:-9999;background:#ffffff;';
+            const stage = document.createElement('div'); stage.style.cssText = 'position:relative;width:794px;background:#ffffff;';
+            stage.appendChild(clone); host.appendChild(stage); document.body.appendChild(host);
+            try {
+                await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+                const capH = Math.max(clone.scrollHeight, clone.offsetHeight);
+                const canvas = await html2pdf().set({ margin: 0, html2canvas: { scale: 2.2, useCORS: true, allowTaint: false, logging: false, backgroundColor: '#ffffff', x: 0, y: 0, width: 794, height: capH, windowWidth: 794, windowHeight: capH, scrollX: 0, scrollY: 0 } }).from(clone).toCanvas().get('canvas');
+                return await new Promise((res, rej) => canvas.toBlob(b => b ? res(b) : rej(new Error('PNG encode failed')), 'image/png', 1.0));
+            } finally { host.remove(); }
+        }
+
+        window.saveSelfWhatsAppNumber = () => safeSetLS('mg_quote_self_whatsapp', document.getElementById('wa-self-number')?.value.trim() || '');
+
+        window.openWhatsAppModal = function() {
+            const imgName = getQuotePngFilename();
+            document.getElementById('wa-pdf-filename-preview').textContent = 'HD Image: ' + imgName;
+            document.getElementById('wa-pdf-chip').textContent = imgName;
+            document.getElementById('wa-message-preview').value = buildWhatsAppQuoteText();
+            document.getElementById('wa-self-number').value = safeGetLS('mg_quote_self_whatsapp') || safeGetLS('mg_dc_self_whatsapp') || '918898517528';
+            document.getElementById('wa-custom-number').value = '';
+
+            const cName = (document.getElementById('bill-contact-name')?.innerText || '').trim();
+            const phones = extractPhoneNumbers((document.getElementById('bill-contact-phone')?.innerText || '').trim());
+            const box = document.getElementById('wa-client-targets');
+            if (phones.length) {
+                box.innerHTML = phones.map(p => `<button onclick="launchWhatsAppShare('client', '${escapeHTML(p.wa)}')" class="w-full bg-emerald-50 hover:bg-emerald-100 border-2 border-emerald-300 rounded-lg px-3 py-2 flex items-center justify-between transition text-left"><div><div class="text-xs font-black text-emerald-900"><i class="fa-solid fa-user-check mr-1 text-emerald-600"></i>Send Directly to Client${cName ? ' — ' + escapeHTML(cName) : ''}</div><div class="text-[11px] font-mono font-bold text-emerald-700">+${escapeHTML(p.wa)}</div></div><span class="bg-emerald-600 text-white px-2.5 py-1 rounded text-[10px] font-black uppercase flex items-center gap-1"><i class="fa-brands fa-whatsapp"></i> Copy PNG &amp; Chat</span></button>`).join('');
+            } else {
+                box.innerHTML = `<div class="bg-amber-50 border border-amber-200 rounded-lg p-2.5 text-[11px] text-amber-800 font-bold"><i class="fa-solid fa-circle-info mr-1"></i>No client number in <b>CONTACT NO.</b> yet. Add one on the quotation or use the buttons below.</div>`;
+            }
+
+            window.__READY_QUOTE_PNG_BLOB__ = null;
+            if (window.__READY_QUOTE_PNG_URL__) { URL.revokeObjectURL(window.__READY_QUOTE_PNG_URL__); window.__READY_QUOTE_PNG_URL__ = null; }
+            const tw = document.getElementById('wa-png-thumb-wrap'), stT = document.getElementById('wa-png-status-title'), stS = document.getElementById('wa-png-status-sub');
+            if (tw) tw.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-emerald-600 text-sm"></i>';
+            if (stT) stT.textContent = 'Preparing HD PNG Photo...';
+
+            const m = document.getElementById('whatsapp-modal');
+            m.classList.remove('hidden');
+            setTimeout(() => { m.classList.remove('opacity-0'); document.getElementById('whatsapp-modal-card').classList.remove('scale-95'); }, 10);
+
+            window.__READY_QUOTE_PNG_PROMISE__ = generateQuotePngBlob().then(blob => {
+                window.__READY_QUOTE_PNG_BLOB__ = blob;
+                window.__READY_QUOTE_PNG_URL__ = URL.createObjectURL(blob);
+                if (tw) tw.innerHTML = `<img src="${window.__READY_QUOTE_PNG_URL__}" alt="Preview" class="w-full h-full object-cover">`;
+                if (stT) stT.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>HD PNG Ready — Auto-Copies on Send!';
+                if (stS) stS.innerHTML = `Click Send below: <span class="font-mono font-bold">${escapeHTML(imgName)}</span> copies to clipboard &amp; WhatsApp opens — just press <b>Ctrl+V</b>!`;
+                return blob;
+            }).catch(() => null);
+        };
+
+        window.closeWhatsAppModal = () => {
+            const m = document.getElementById('whatsapp-modal');
+            m.classList.add('opacity-0'); document.getElementById('whatsapp-modal-card').classList.add('scale-95');
+            setTimeout(() => m.classList.add('hidden'), 200);
+        };
+
+        function downloadBlobFile(blob, fn) {
+            const u = URL.createObjectURL(blob), a = document.createElement('a');
+            a.href = u; a.download = fn; document.body.appendChild(a); a.click(); a.remove();
+            setTimeout(() => URL.revokeObjectURL(u), 3000);
+        }
+        async function copyPngToClip(bOrP) {
+            if (!navigator.clipboard || typeof ClipboardItem === 'undefined') return false;
+            try { await navigator.clipboard.write([new ClipboardItem({ 'image/png': bOrP })]); return true; } catch (e) { return false; }
+        }
+        window.copyQuotePngToClipboardOnly = async () => {
+            const blob = window.__READY_QUOTE_PNG_BLOB__ || await (window.__READY_QUOTE_PNG_PROMISE__ || generateQuotePngBlob());
+            if (!blob) return showToast('Image not ready.', 'error');
+            const ok = await copyPngToClip(blob);
+            if (ok) showToast('HD PNG copied! Press Ctrl+V inside WhatsApp.');
+            else { downloadBlobFile(blob, getQuotePngFilename()); showToast('Saved HD PNG to Downloads!', 'info'); }
+        };
+        window.launchWhatsAppShare = async function(targetType, explicitWa = '') {
+            const msg = document.getElementById('wa-message-preview').value.trim();
+            const alsoDl = document.getElementById('wa-include-pdf').checked;
+            let waNum = '';
+            if (targetType === 'client') waNum = normalizeWhatsAppPhone(explicitWa);
+            else if (targetType === 'self') { waNum = normalizeWhatsAppPhone(document.getElementById('wa-self-number').value); if (!waNum) return showToast('Enter your valid WhatsApp number.', 'error'); }
+            else if (targetType === 'custom') { waNum = normalizeWhatsAppPhone(document.getElementById('wa-custom-number').value); if (!waNum) return showToast('Enter a valid 10-digit number.', 'error'); }
+
+            const waUrl = waNum ? `https://wa.me/${waNum}?text=${encodeURIComponent(msg)}` : `https://wa.me/?text=${encodeURIComponent(msg)}`;
+            const imgName = getQuotePngFilename();
+            const ready = window.__READY_QUOTE_PNG_BLOB__;
+            const src = ready || window.__READY_QUOTE_PNG_PROMISE__ || generateQuotePngBlob();
+            const copied = await copyPngToClip(ready || src);
+            if (alsoDl || !copied) { const rb = ready || await src; if (rb) downloadBlobFile(rb, imgName); }
+
+            const win = window.open(waUrl, '_blank', 'noopener,noreferrer');
+            if (!win) { const l = document.createElement('a'); l.href = waUrl; l.target = '_blank'; l.rel = 'noopener noreferrer'; document.body.appendChild(l); l.click(); l.remove(); }
+            closeWhatsAppModal();
+            showToast(copied ? 'HD PNG copied & WhatsApp opened — press Ctrl+V!' : 'WhatsApp opened & HD PNG saved to Downloads!', copied ? 'success' : 'info');
+        };
+        window.nativeShareQuotePNG = async () => {
+            const msg = document.getElementById('wa-message-preview').value.trim(), fn = getQuotePngFilename();
+            try {
+                const blob = window.__READY_QUOTE_PNG_BLOB__ || await (window.__READY_QUOTE_PNG_PROMISE__ || generateQuotePngBlob());
+                const file = new File([blob], fn, { type: 'image/png' });
+                if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ title: fn, text: msg, files: [file] }); closeWhatsAppModal(); }
+                else { downloadBlobFile(blob, fn); window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank', 'noopener,noreferrer'); closeWhatsAppModal(); }
+            } catch (e) { if (e.name !== 'AbortError') showToast('Share failed: ' + e.message, 'error'); }
+        };
+        window.copyWhatsAppMessageOnly = () => {
+            const msg = document.getElementById('wa-message-preview').value;
+            if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(msg).then(() => showToast('Message copied!'));
+        };
+
+        // ==================== ADAPTIVE ORIENTATION & MOBILE ENGINE ====================
+        window.applyResponsiveLayout = function() {
+            const pref = safeGetLS('mg_quote_layout_pref') || 'auto';
+            const w = window.innerWidth, h = window.innerHeight;
+            let useMobile = pref === 'mobile' ? true : (pref === 'desktop' ? false : ((w < 768) || (h > w && w < 1024)));
+            document.body.classList.toggle('layout-mobile', useMobile);
+            document.body.classList.toggle('layout-desktop', !useMobile);
+            const txt = document.getElementById('layout-toggle-text'), ico = document.getElementById('layout-toggle-icon');
+            if (txt && ico) {
+                txt.textContent = pref === 'auto' ? 'Auto' : (pref === 'mobile' ? 'Phone' : 'Desktop');
+                ico.className = (pref === 'desktop' || (pref === 'auto' && !useMobile)) ? 'fa-solid fa-desktop' : 'fa-solid fa-mobile-screen-button';
+            }
+            const ev = document.getElementById('editor-view');
+            if (useMobile && ev && ev.classList.contains('mobile-preview-active')) setMobileEditorMode('preview');
+            else if (!useMobile) { const d = document.getElementById('document-area'); if (d) { d.style.transform = ''; d.style.marginBottom = ''; } }
+        };
+        window.cycleLayoutMode = function() {
+            const cur = safeGetLS('mg_quote_layout_pref') || 'auto';
+            const next = cur === 'auto' ? 'mobile' : (cur === 'mobile' ? 'desktop' : 'auto');
+            safeSetLS('mg_quote_layout_pref', next);
+            applyResponsiveLayout();
+            showToast('View: ' + ({ auto: 'Auto (Screen/Orientation)', mobile: 'Phone Mode Locked', desktop: 'Desktop A4 Locked' }[next]), 'info');
+        };
+        window.addEventListener('resize', () => applyResponsiveLayout());
+        window.addEventListener('orientationchange', () => setTimeout(applyResponsiveLayout, 120));
+
+        window.setMobileEditorMode = function(mode) {
+            const view = document.getElementById('editor-view'), tf = document.getElementById('mob-tab-form'), tp = document.getElementById('mob-tab-preview'), docEl = document.getElementById('document-area');
+            if (!view) return;
+            if (mode === 'preview') {
+                view.classList.remove('mobile-form-active'); view.classList.add('mobile-preview-active');
+                tp.className = 'px-3 py-1 rounded-md text-xs font-black bg-white text-orange-600 shadow-sm';
+                tf.className = 'px-3 py-1 rounded-md text-xs font-bold text-slate-600';
+                if (docEl) { const sc = Math.min(1, (window.innerWidth - 20) / 794); docEl.style.transform = `scale(${sc})`; docEl.style.marginBottom = `-${Math.round(docEl.offsetHeight * (1 - sc))}px`; }
+            } else {
+                view.classList.remove('mobile-preview-active'); view.classList.add('mobile-form-active');
+                tf.className = 'px-3 py-1 rounded-md text-xs font-black bg-white text-orange-600 shadow-sm';
+                tp.className = 'px-3 py-1 rounded-md text-xs font-bold text-slate-600';
+                if (docEl) { docEl.style.transform = ''; docEl.style.marginBottom = ''; }
+                syncMobileFormFromDOM();
+            }
+        };
+
+        window.syncFromMobileField = (id, val, isNum = false) => { const el = document.getElementById(id); if (el) el.value = val; if (isNum) { updateDocNumberDisplay(); const b = document.getElementById('mob-quote-badge'); if (b) b.textContent = document.getElementById('full-doc-num')?.innerText || ''; } else triggerDraftAutoSave(); };
+        window.syncMobileBillTo = (val) => { document.getElementById('bill-to-address').innerHTML = escapeHTML(val).replace(/\r?\n/g, '<br>'); syncBillToShip(); generateQRCode(); triggerDraftAutoSave(); };
+        window.syncMobileCE = (id, val) => { const el = document.getElementById(id); if (el) el.innerText = val; triggerDraftAutoSave(); };
+        window.syncMobileTotals = () => {
+            const gt = document.getElementById('mob-grand-total'), bs = document.getElementById('mob-basic-sub');
+            if (gt) gt.textContent = document.getElementById('grand-total')?.innerText || '₹ 0.00';
+            if (bs) bs.textContent = 'Basic: ₹' + (document.getElementById('basic-amount')?.innerText || '0.00');
+        };
+        window.renderMobileQuoteItems = function() {
+            const c = document.getElementById('mob-items-container'); if (!c) return;
+            const rows = Array.from(document.querySelectorAll('#items-body tr'));
+            const cnt = document.getElementById('mob-items-count'); if (cnt) cnt.textContent = rows.length;
+            c.innerHTML = '';
+            rows.forEach((tr, idx) => {
+                const name = tr.querySelector('.item-name')?.innerText || '';
+                const desc = htmlToCleanLines(tr.querySelector('.item-desc')?.innerHTML || '').join('\n');
+                const hsn = tr.querySelector('.item-hsn')?.value || '';
+                const uom = tr.querySelector('.item-uom')?.value || 'NOS';
+                const qty = tr.querySelector('.item-qty')?.value || 1;
+                const rate = tr.querySelector('.item-rate')?.value || 0;
+                const net = tr.querySelector('.item-total')?.innerText || '0.00';
+                const card = document.createElement('div');
+                card.className = 'bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between"><span class="text-[10px] font-black uppercase text-orange-600">Item #${idx+1} &bull; ₹${escapeHTML(net)}</span><button type="button" onclick="removeMobQuoteRow(${idx})" class="text-red-500 text-xs font-bold px-2 py-0.5 rounded bg-red-50"><i class="fa-solid fa-trash mr-1"></i>Remove</button></div>
+                    <input type="text" value="${escapeHTML(name)}" placeholder="Item Name" class="mobile-input text-xs font-bold" oninput="updMobQuoteRow(${idx},'name',this.value)">
+                    <textarea rows="2" placeholder="Specs (one per line for bullets)" class="mobile-input text-xs leading-snug" oninput="updMobQuoteRow(${idx},'desc',this.value)">${escapeHTML(desc)}</textarea>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="mobile-label">Qty</label><input type="number" step="any" value="${escapeHTML(qty)}" class="mobile-input text-xs text-center" oninput="updMobQuoteRow(${idx},'qty',this.value)"></div>
+                        <div><label class="mobile-label">Unit Rate (₹)</label><input type="number" step="any" value="${escapeHTML(rate)}" class="mobile-input text-xs text-right" oninput="updMobQuoteRow(${idx},'rate',this.value)"></div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div><label class="mobile-label">UOM</label><input type="text" value="${escapeHTML(uom)}" class="mobile-input text-xs text-center uppercase" oninput="updMobQuoteRow(${idx},'uom',this.value)"></div>
+                        <div><label class="mobile-label">HSN/SAC</label><input type="text" value="${escapeHTML(hsn)}" class="mobile-input text-xs text-center font-mono" oninput="updMobQuoteRow(${idx},'hsn',this.value)"></div>
+                    </div>`;
+                c.appendChild(card);
+            });
+            syncMobileTotals();
+        };
+        window.updMobQuoteRow = (idx, f, v) => {
+            const tr = document.querySelectorAll('#items-body tr')[idx]; if (!tr) return;
+            if (f === 'name') tr.querySelector('.item-name').innerText = v;
+            else if (f === 'desc') tr.querySelector('.item-desc').innerHTML = formatItemDescHTML(v);
+            else if (f === 'hsn') tr.querySelector('.item-hsn').value = v;
+            else if (f === 'uom') tr.querySelector('.item-uom').value = v;
+            else if (f === 'qty') { tr.querySelector('.item-qty').value = v; calculate(); syncMobileTotals(); }
+            else if (f === 'rate') { tr.querySelector('.item-rate').value = v; calculate(); syncMobileTotals(); }
+            triggerDraftAutoSave();
+        };
+        window.removeMobQuoteRow = (idx) => { const rows = document.querySelectorAll('#items-body tr'); if (rows[idx]) { rows[idx].remove(); reindexRows(); calculate(); renderMobileQuoteItems(); triggerDraftAutoSave(); } };
+
+        window.syncMobileFormFromDOM = function() {
+            const sv = (id, v) => { const e = document.getElementById(id); if (e) e.value = v || ''; };
+            sv('mob-doc-date', document.getElementById('doc-date')?.value);
+            sv('mob-valid-date', document.getElementById('valid-date')?.value);
+            sv('mob-doc-ref', document.getElementById('doc-ref')?.value);
+            sv('mob-doc-place', document.getElementById('doc-place')?.value);
+            sv('mob-bill-to', htmlToCleanLines(document.getElementById('bill-to-address')?.innerHTML || '').join('\n'));
+            sv('mob-bill-gstin', document.getElementById('bill-to-gstin')?.value);
+            sv('mob-contact-name', document.getElementById('bill-contact-name')?.innerText?.trim());
+            sv('mob-contact-phone', document.getElementById('bill-contact-phone')?.innerText?.trim());
+            sv('mob-tax-type', document.getElementById('tax-type')?.value || 'intra');
+            sv('mob-disc-mode', document.getElementById('discount-mode')?.value || 'percent');
+            sv('mob-disc-val', document.getElementById('discount-value')?.value || 0);
+            const ms = document.getElementById('mob-same-ship'); if (ms) ms.checked = !!document.getElementById('same-as-bill')?.checked;
+            const b = document.getElementById('mob-quote-badge'); if (b) b.textContent = document.getElementById('full-doc-num')?.innerText || '';
+            renderMobileQuoteItems();
+        };
+
+        // Mobile Zoho-style Directory + Long-Press Action Sheet
+        let qLP = null, qLPTrig = false, activeSheetQuoteId = null;
+        window.startQuoteLP = (e, id) => { qLPTrig = false; clearTimeout(qLP); qLP = setTimeout(() => { qLPTrig = true; if (navigator.vibrate) try { navigator.vibrate(25); } catch(err){} openMobileActionSheet(id); }, 450); };
+        window.cancelQuoteLP = () => clearTimeout(qLP);
+        window.handleMobileQuoteTap = (id) => { if (qLPTrig) { qLPTrig = false; return; } loadQuoteForEdit(id); };
+
+        window.renderMobileQuoteDirectory = function(filteredData) {
+            const list = document.getElementById('mobile_dash_list'); if (!list) return;
+            if (!filteredData.length) { list.innerHTML = `<div class="py-16 text-center text-slate-400"><i class="fa-solid fa-file-signature text-4xl mb-2 opacity-40"></i><p class="text-xs font-black uppercase">No Quotations Found</p></div>`; return; }
+            list.innerHTML = filteredData.map(q => {
+                const d = q.date ? new Date(q.date) : new Date(q.timestamp || Date.now());
+                const dTxt = isNaN(d) ? (q.date || 'N/A') : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                const cleanClient = (q.stateData && q.stateData.bill_to_address) ? (htmlToCleanLines(q.stateData.bill_to_address)[0] || q.clientName || 'Unknown') : (q.clientName || 'Unknown');
+                const st = q.status || 'Draft';
+                const stCls = st === 'Accepted' ? 'text-emerald-600' : (st === 'Rejected' ? 'text-red-600' : (st === 'Sent' ? 'text-orange-600' : (st === 'Approved' ? 'text-amber-600' : 'text-blue-600')));
+                const idArg = escapeHTML(JSON.stringify(String(q.id)));
+                return `<div onmousedown="startQuoteLP(event,${idArg})" onmouseup="cancelQuoteLP()" onmouseleave="cancelQuoteLP()" ontouchstart="startQuoteLP(event,${idArg})" ontouchend="cancelQuoteLP()" ontouchmove="cancelQuoteLP()" oncontextmenu="event.preventDefault();openMobileActionSheet(${idArg});" onclick="handleMobileQuoteTap(${idArg})" class="px-4 py-3.5 active:bg-orange-50/70 transition cursor-pointer flex justify-between items-start gap-3 select-none">
+                    <div class="min-w-0 flex-1 space-y-0.5">
+                        <div class="text-[13.5px] font-black text-slate-900 leading-snug break-words">${escapeHTML(cleanClient)}</div>
+                        <div class="text-[11.5px] font-semibold text-slate-500">${escapeHTML(dTxt)} &bull; <span class="font-mono font-bold text-slate-700">${escapeHTML(q.quoteNo || 'N/A')}</span></div>
+                        <div class="flex items-center gap-2 pt-0.5"><span class="text-[10.5px] font-black tracking-wide uppercase ${stCls}">${escapeHTML(st)}</span><span class="text-[9px] text-slate-400 font-semibold">&bull; Hold for options</span></div>
+                    </div>
+                    <div class="text-right shrink-0 flex flex-col items-end gap-1">
+                        <div class="text-[13.5px] font-black text-slate-900">₹${(q.amount||0).toLocaleString('en-IN',{minimumFractionDigits:2})}</div>
+                        <div class="text-[10px] font-bold text-slate-400">Basic: ₹${(q.basicAmount||0).toLocaleString('en-IN',{minimumFractionDigits:0})}</div>
+                        <div onclick="event.stopPropagation()"><button onclick="openMobileActionSheet(${idArg})" class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-orange-100 text-slate-700 text-xs font-black border border-slate-200"><i class="fa-solid fa-ellipsis-vertical"></i></button></div>
+                    </div>
+                </div>`;
+            }).join('');
+        };
+
+        window.openMobileActionSheet = function(id) {
+            const q = (window.quotesData || []).find(x => String(x.id) === String(id)); if (!q) return;
+            activeSheetQuoteId = q.id;
+            const cleanC = (q.stateData && q.stateData.bill_to_address) ? (htmlToCleanLines(q.stateData.bill_to_address)[0] || q.clientName || 'Client') : (q.clientName || 'Client');
+            document.getElementById('mas-quote-no').textContent = q.quoteNo || 'Quotation';
+            document.getElementById('mas-client').textContent = cleanC;
+            const statuses = ['Draft', 'Approved', 'Sent', 'Accepted', 'Rejected'];
+            document.getElementById('mas-status-grid').innerHTML = statuses.map(st => {
+                const isCur = (q.status || 'Draft') === st;
+                return `<button onclick="changeQuoteStatusFromSheet('${st}')" class="px-2 py-2 rounded-lg border text-[10.5px] font-black transition ${isCur?'bg-orange-600 text-white border-orange-600 shadow-sm':'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'}">${st}</button>`;
+            }).join('');
+            const sh = document.getElementById('mobile-quote-action-sheet');
+            sh.classList.remove('hidden');
+            setTimeout(() => { sh.classList.remove('opacity-0'); document.getElementById('mobile-quote-action-card').classList.remove('translate-y-6'); }, 10);
+        };
+        window.closeMobileActionSheet = () => {
+            const sh = document.getElementById('mobile-quote-action-sheet');
+            sh.classList.add('opacity-0'); document.getElementById('mobile-quote-action-card').classList.add('translate-y-6');
+            setTimeout(() => sh.classList.add('hidden'), 200);
+        };
+        window.changeQuoteStatusFromSheet = async (st) => { if (!activeSheetQuoteId) return; await changeQuoteStatus(activeSheetQuoteId, st); closeMobileActionSheet(); showToast('Status updated to ' + st); };
+        window.runMobileSheetAction = (act) => {
+            const id = activeSheetQuoteId; closeMobileActionSheet(); if (!id) return;
+            if (act === 'edit') loadQuoteForEdit(id);
+            else if (act === 'preview') previewQuote(id);
+            else if (act === 'duplicate') duplicateQuote(id);
+            else if (act === 'delete') deleteQuote(id);
+            else if (act === 'whatsapp') { loadQuoteForEdit(id); setTimeout(() => openWhatsAppModal(), 150); }
+        };
+
         window.onload = function() {
+            applyResponsiveLayout();
             if(window.__IS_FROZEN_QUOTE__) {
                 console.log("Frozen Quote Loaded. Auto-save is suppressed.");
                 switchView('editor');
