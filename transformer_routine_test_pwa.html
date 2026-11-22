@@ -1,19 +1,20 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Transformer Routine Test Report - Live App</title>
+    <title>MG Transformer Routine Test PRO - Live App</title>
     
-    <!-- PWA Meta Tags for Mobile App Installation -->
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#ea580c">
+    <!-- PWA Meta Tags for Mobile & Tablet App Installation -->
+    <link rel="manifest" href="./test_manifest.json">
+    <meta name="theme-color" content="#0f766e">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="MG Smart App">
-    <link rel="apple-touch-icon" href="https://mgtransformer.com/MG_LOGO_WITH_NAME-removebg-preview.png">
+    <meta name="apple-mobile-web-app-title" content="MG TEST">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%230f766e'/%3E%3Cstop offset='100%25' stop-color='%23065f46'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='192' height='192' rx='38' fill='url(%23g)'/%3E%3Crect x='8' y='8' width='176' height='176' rx='32' fill='none' stroke='%2334d399' stroke-opacity='0.45' stroke-width='3'/%3E%3Cpolygon points='154,24 140,46 150,46 142,66 164,40 152,40' fill='%23fbbf24'/%3E%3Ctext x='96' y='105' text-anchor='middle' font-family='Arial,sans-serif' font-weight='900' font-size='52' fill='%23ffffff' letter-spacing='2'%3ETEST%3C/text%3E%3Crect x='46' y='124' width='100' height='26' rx='8' fill='%23ffffff' fill-opacity='0.16'/%3E%3Ctext x='96' y='142' text-anchor='middle' font-family='Arial,sans-serif' font-weight='700' font-size='14' fill='%23a7f3d0' letter-spacing='1.5'%3EMG ROUTINE%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/test-192.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="./icons/test-192.png">
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -23,28 +24,41 @@
     
     <style>
         :root {
-            --erp-border: #333333; 
-            --erp-bg-header: #f8fafc;
-            --primary-orange: #ea580c; 
-            --primary-orange-hover: #c2410c;
+            --erp-border: #0f172a; 
+            --erp-bg-header: #f1f5f9;
+            --primary-orange: #c2410c; 
+            --primary-orange-hover: #9a3412;
             --success-green-bg: #dcfce7;
-            --success-green-border: #86efac;
-            --success-green-text: #166534;
+            --success-green-border: #4ade80;
+            --success-green-text: #14532d;
             --error-red-bg: #fee2e2;
-            --error-red-border: #fca5a5;
-            --error-red-text: #991b1b;
-            --persian-blue: #2563eb;
-            --app-bg: #e2e8f0;
+            --error-red-border: #f87171;
+            --error-red-text: #7f1d1d;
+            --persian-blue: #1e40af;
+            --app-bg: #cbd5e1;
             --card-bg: #ffffff;
         }
         
         body {
             font-family: 'Inter', Arial, sans-serif;
             background-color: var(--app-bg);
-            color: var(--erp-border);
+            color: #020617;
             font-size: 13.5px;
+            font-weight: 500;
             line-height: 1.4;
             -webkit-font-smoothing: antialiased;
+        }
+        input::placeholder, textarea::placeholder {
+            color: #475569 !important;
+            opacity: 0.85;
+        }
+        .erp-table th, .test-data-table th {
+            color: #0f172a !important;
+            border-color: #94a3b8 !important;
+        }
+        .erp-table td, .test-data-table td {
+            border-color: #94a3b8 !important;
+            color: #020617 !important;
         }
 
         .app-header {
@@ -322,9 +336,28 @@
                 background: transparent !important;
                 background-color: transparent !important;
                 box-shadow: none !important;
-                border: 1px solid #cbd5e1 !important;
-                padding: 15px !important;
-                margin-bottom: 12px !important;
+                border: 1px solid #94a3b8 !important;
+                padding: 10px 12px !important;
+                margin-bottom: 10px !important;
+            }
+            #logo-box-print-cover {
+                padding: 8px 12px !important;
+                margin-bottom: 8px !important;
+            }
+            .general-details-card .erp-table th,
+            .general-details-card .erp-table td {
+                padding: 4px 7px !important;
+                font-size: 11px !important;
+            }
+            .general-details-card input,
+            .general-details-card select {
+                padding: 2px 4px !important;
+                font-size: 11px !important;
+            }
+            .vr-subtable-title {
+                font-size: 11px !important;
+                margin-top: 6px !important;
+                margin-bottom: 3px !important;
             }
 
             /* Pull logo box UP into the 25px thead space to cover the header perfectly on page 1 */
@@ -428,6 +461,403 @@
                 font-weight: 800 !important;
             }
         }
+
+        /* --- DEDICATED MOBILE & TABLET FIELD-ENTRY MODE (< 1024px) --- */
+
+
+        #vr_mobile_cards { display: none; }
+        body.mobile-field-mode #vr_mobile_cards {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+        @media (min-width: 700px) {
+            body.mobile-field-mode #vr_mobile_cards {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        body.mobile-field-mode #vr_ll_table_wrap,
+        body.mobile-field-mode #vr_ln_table_wrap {
+            display: none !important;
+        }
+        @media print {
+            #vr_mobile_cards { display: none !important; }
+        }
+        .vr-tap-card {
+            background: #f8fafc;
+            border: 1px solid #94a3b8;
+            border-radius: 10px;
+            padding: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+        .vr-tap-card-head {
+            background: #e2e8f0;
+            color: #0f172a;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .vr-line-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .vr-line-3 {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+            margin-bottom: 8px;
+        }
+        .vr-sub-label {
+            font-size: 10px;
+            font-weight: 800;
+            color: #1e40af;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+        .vr-field-lbl {
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .test-procedure-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-left: 4px solid #1e40af;
+            border-radius: 6px;
+            padding: 8px 12px;
+            margin-top: 10px;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #0f172a;
+            line-height: 1.45;
+        }
+        .test-procedure-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: #1e40af;
+            text-transform: uppercase;
+            letter-spacing: 0.03em;
+            margin-bottom: 3px;
+        }
+        @media print {
+            .test-procedure-card {
+                background: #ffffff !important;
+                border: 1px solid #94a3b8 !important;
+                border-left: 3px solid #1e40af !important;
+                padding: 6px 10px !important;
+                font-size: 10.5px !important;
+                page-break-inside: avoid !important;
+            }
+        }
+        .test-diagram-card {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        .test-diagram-header {
+            font-size: 11px;
+            font-weight: 800;
+            color: #1e40af;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+        }
+        .vg-split-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 14px;
+            align-items: start;
+        }
+        @media (min-width: 768px) {
+            .vg-split-layout {
+                grid-template-columns: minmax(0, 1.35fr) minmax(240px, 0.95fr);
+            }
+        }
+        @media print {
+            .vg-split-layout {
+                display: grid !important;
+                grid-template-columns: 1.35fr 0.95fr !important;
+                gap: 10px !important;
+            }
+            .test-diagram-card {
+                background: #ffffff !important;
+                border: 1px solid #94a3b8 !important;
+                padding: 8px !important;
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            #field-nav-bar, .field-mode-toggle-btn {
+                display: none !important;
+            }
+        }
+
+        /* Floating Quick-Nav Bar for single-tap Next Box cursor movement */
+        #field-nav-bar {
+            position: fixed;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 950;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(8px);
+            color: #ffffff;
+            border: 1px solid #334155;
+            border-radius: 9999px;
+            padding: 6px 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.28);
+            display: none;
+            align-items: center;
+            gap: 8px;
+            max-width: calc(100vw - 20px);
+        }
+        #field-nav-bar.active {
+            display: flex;
+        }
+        #field-nav-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: #93c5fd;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 145px;
+            padding: 0 4px;
+        }
+        .field-nav-btn {
+            background: #1e293b;
+            color: #ffffff;
+            border: 1px solid #475569;
+            border-radius: 9999px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+        .field-nav-btn.primary {
+            background: #0f766e;
+            border-color: #14b8a6;
+        }
+        .field-nav-btn:active {
+            transform: scale(0.96);
+        }
+
+        /* Mobile & Tablet Field-Entry Card Transformation (active when body.mobile-field-mode) */
+        @media screen {
+            body.mobile-field-mode .document-container {
+                max-width: 100%;
+                margin: 8px auto 80px auto;
+                padding: 0 8px;
+            }
+            body.mobile-field-mode .general-details-card,
+            body.mobile-field-mode .test-section,
+            body.mobile-field-mode .summary-section {
+                padding: 14px 12px;
+                margin-bottom: 14px;
+                border-radius: 12px;
+            }
+            body.mobile-field-mode input[type="text"],
+            body.mobile-field-mode input[type="number"],
+            body.mobile-field-mode input[type="date"],
+            body.mobile-field-mode select,
+            body.mobile-field-mode textarea {
+                font-size: 16px !important;
+                min-height: 42px;
+                padding: 8px 10px;
+                border: 1px solid #cbd5e1;
+                border-bottom: 2px solid #94a3b8;
+                border-radius: 8px;
+                background: #f8fafc;
+            }
+            body.mobile-field-mode input:focus,
+            body.mobile-field-mode select:focus,
+            body.mobile-field-mode textarea:focus {
+                background: #eff6ff;
+                border-color: #2563eb;
+                border-bottom: 2px solid #2563eb;
+                box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+            }
+            body.mobile-field-mode .table-responsive-wrapper {
+                overflow-x: visible;
+            }
+            /* Stack General Details ERP tables into clean 1-col (phone) / 2-col (tablet) field grids */
+            body.mobile-field-mode .erp-table,
+            body.mobile-field-mode .erp-table tbody,
+            body.mobile-field-mode .erp-table tr {
+                display: block;
+                width: 100%;
+            }
+            body.mobile-field-mode .erp-table tr {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 6px;
+                margin-bottom: 8px;
+                padding-bottom: 8px;
+                border-bottom: 1px dashed #e2e8f0;
+            }
+            @media (min-width: 600px) {
+                body.mobile-field-mode .erp-table tr {
+                    grid-template-columns: 1fr 1fr;
+                    gap: 8px 12px;
+                }
+            }
+            body.mobile-field-mode .erp-table th,
+            body.mobile-field-mode .erp-table td {
+                display: block;
+                width: 100% !important;
+                border: none !important;
+                padding: 2px 0 !important;
+                background: transparent !important;
+            }
+            body.mobile-field-mode .erp-table th {
+                font-size: 11px;
+                color: #475569;
+                letter-spacing: 0.03em;
+                margin-top: 4px;
+            }
+            body.mobile-field-mode .test-details-table,
+            body.mobile-field-mode .test-details-table tbody,
+            body.mobile-field-mode .test-details-table tr,
+            body.mobile-field-mode .test-details-table td {
+                display: block;
+                width: 100% !important;
+                padding: 4px 0 !important;
+            }
+            body.mobile-field-mode .voltage-inputs {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 8px;
+                width: 100%;
+            }
+            body.mobile-field-mode .voltage-inputs input {
+                width: 100%;
+            }
+
+            /* Cardify Test Data Tables in Mobile/Tablet Field Mode */
+            body.mobile-field-mode .test-data-table {
+                display: block;
+                width: 100%;
+            }
+            body.mobile-field-mode .test-data-table thead {
+                display: none;
+            }
+            body.mobile-field-mode .test-data-table tbody {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 10px;
+                width: 100%;
+            }
+            @media (min-width: 680px) {
+                body.mobile-field-mode .test-data-table tbody {
+                    grid-template-columns: 1fr 1fr;
+                    gap: 12px;
+                }
+            }
+            body.mobile-field-mode .test-data-table tbody tr {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 8px;
+                background: #f8fafc;
+                border: 1px solid #cbd5e1;
+                border-radius: 10px;
+                padding: 10px;
+                box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            }
+            body.mobile-field-mode .test-data-table tbody tr td {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: center;
+                border: none !important;
+                padding: 0 !important;
+                background: transparent !important;
+                text-align: left !important;
+                min-width: 0;
+            }
+            body.mobile-field-mode .test-data-table tbody tr td[data-field-label]::before {
+                content: attr(data-field-label);
+                font-size: 10.5px;
+                font-weight: 800;
+                color: #1e293b;
+                margin-bottom: 3px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            body.mobile-field-mode .test-data-table tbody tr td.field-card-header {
+                grid-column: 1 / -1;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                background: #e2e8f0 !important;
+                color: #0f172a;
+                padding: 6px 10px !important;
+                border-radius: 6px;
+                font-weight: 800;
+                font-size: 13px;
+            }
+
+        .hidden-col { display: none !important; }
+            body.mobile-field-mode .field-hide-mobile {
+                display: none !important;
+            }
+            body.mobile-field-mode #bdv_ba_table tbody tr {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+            body.mobile-field-mode #bdv_ba_table tbody tr td.bdv-moisture-col {
+                grid-column: 1 / -1;
+            }
+
+            body.mobile-field-mode .test-data-table tbody tr td.field-card-full {
+                grid-column: 1 / -1;
+            }
+            body.mobile-field-mode .test-data-table tbody tr td.dev-col {
+                grid-column: 1 / -1;
+            }
+            body.mobile-field-mode #logo-box-print-cover {
+                flex-direction: column;
+                gap: 10px;
+                text-align: center;
+            }
+            body.mobile-field-mode #logo-box-print-cover > div {
+                width: 100% !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            body.mobile-field-mode .signature-card table,
+            body.mobile-field-mode .signature-card tbody,
+            body.mobile-field-mode .signature-card tr,
+            body.mobile-field-mode .signature-card td {
+                display: block;
+                width: 100% !important;
+            }
+            body.mobile-field-mode .signature-card td {
+                margin-bottom: 18px;
+            }
+        }
     </style>
 </head>
 <body class="hide-deviations">
@@ -441,38 +871,72 @@
 
     <div id="app-toast" class="fixed top-16 right-4 z-[2000] hidden max-w-sm px-4 py-3 rounded-lg shadow-lg border text-xs font-bold flex items-center gap-2 transition-all duration-300 no-print"></div>
 
-    <div class="app-header flex justify-between items-center no-print flex-wrap gap-3">
-        <div class="text-sm font-semibold text-slate-700 flex items-center gap-2">
-            <i class="fa-solid fa-key text-slate-400"></i>
-            <span>Gemini API:</span>
-            <input type="text" id="gemini_api_key" placeholder="Enter Gemini API Key (Not Saved)" class="border border-slate-300 px-3 py-1.5 text-xs rounded-md w-48 md:w-64 text-slate-800 font-mono shadow-inner bg-white focus:ring-2 focus:ring-blue-500 outline-none" value="">
+    <div class="app-header flex justify-between items-center no-print flex-wrap gap-2">
+        <div class="text-xs sm:text-sm font-bold text-slate-900 flex items-center gap-2 flex-wrap">
+            <span id="network-status-pill" class="px-2 py-1 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-400 flex items-center gap-1">
+                <i class="fa-solid fa-wifi"></i> <span>Online</span>
+            </span>
+            <div class="flex items-center gap-1.5">
+                <i class="fa-solid fa-key text-slate-700"></i>
+                <input type="text" id="gemini_api_key" placeholder="Gemini API Key (Not Saved)" class="border border-slate-400 px-2.5 py-1.5 text-xs rounded-md w-44 sm:w-56 text-slate-900 font-mono shadow-inner bg-white focus:ring-2 focus:ring-blue-600 outline-none" value="">
+            </div>
         </div>
-        <div class="flex gap-2">
-            <button id="save-html-button" class="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 transition text-sm font-bold shadow-md flex items-center gap-2">
+        <div class="flex gap-1.5 sm:gap-2 flex-wrap">
+            <button id="open-directory-btn" type="button" class="bg-blue-800 text-white px-3 py-2 rounded-md hover:bg-blue-900 transition text-xs sm:text-sm font-bold shadow-md flex items-center gap-1.5" title="Job Directory & Saved Reports">
+                <i class="fa-solid fa-folder-open"></i> <span>Jobs</span>
+            </button>
+            <button id="save-to-db-btn" type="button" class="bg-teal-700 text-white px-3 py-2 rounded-md hover:bg-teal-800 transition text-xs sm:text-sm font-bold shadow-md flex items-center gap-1.5" title="Save to Offline DB & Cloud Sync">
+                <i class="fa-solid fa-cloud-arrow-up"></i> <span>Save Job</span>
+            </button>
+            <button id="open-sync-modal-btn" type="button" class="bg-slate-700 text-white px-3 py-2 rounded-md hover:bg-slate-800 transition text-xs sm:text-sm font-bold shadow-md flex items-center gap-1.5" title="Firebase Cloud Sync PIN">
+                <i class="fa-solid fa-arrows-rotate"></i> <span>Sync</span>
+            </button>
+            <button id="toggle-field-mode-btn" type="button" class="field-mode-toggle-btn bg-amber-700 text-white px-3 py-2 rounded-md hover:bg-amber-800 transition text-xs sm:text-sm font-bold shadow-md flex items-center gap-1.5" title="Switch between Mobile/Tablet Field Entry & A4 Sheet Layout">
+                <i class="fa-solid fa-mobile-screen-button"></i> <span id="field-mode-btn-text">Field Mode</span>
+            </button>
+            <button id="save-html-button" class="bg-emerald-700 text-white px-3 py-2 rounded-md hover:bg-emerald-800 transition text-xs sm:text-sm font-bold shadow-md flex items-center gap-1.5">
                 <i class="fa-solid fa-floppy-disk"></i> Save App
             </button>
-            <button id="print-pdf-button" class="bg-slate-800 text-white px-4 py-2 rounded-md hover:bg-slate-700 transition text-sm font-bold shadow-md flex items-center gap-2">
+            <button id="print-pdf-button" class="bg-slate-900 text-white px-3 py-2 rounded-md hover:bg-slate-800 transition text-xs sm:text-sm font-bold shadow-md flex items-center gap-1.5">
                 <i class="fa-solid fa-file-pdf"></i> Print / PDF
             </button>
-            <button id="clear-data-button" class="bg-rose-600 text-white px-4 py-2 rounded-md hover:bg-rose-700 transition text-sm font-bold shadow-md flex items-center gap-2">
+            <button id="clear-data-button" class="bg-rose-700 text-white px-3 py-2 rounded-md hover:bg-rose-800 transition text-xs sm:text-sm font-bold shadow-md flex items-center gap-1.5">
                 <i class="fa-solid fa-trash-can"></i> Clear
             </button>
         </div>
     </div>
 
-    <!-- Live AI Assistant Bar -->
-    <div id="ai-assistant-container" class="no-print bg-slate-800 text-white shadow-md z-40 relative w-full text-sm border-b border-slate-700">
-        <div class="px-4 py-2 flex justify-between items-center cursor-pointer hover:bg-slate-700 transition" id="assistant_toggle">
-            <span class="font-bold text-yellow-400 flex items-center gap-2"><i class="fa-solid fa-sparkles"></i> Live AI Assistant (Auto-Updates App Data)</span>
-            <i class="fa-solid fa-chevron-down text-slate-400" id="assistant_toggle_icon"></i>
+    <!-- Live AI Copilot Bar (Active Text Command Box + Inbuilt Clipboard / Handwritten Sheet Extractor) -->
+    <div id="ai-assistant-container" class="no-print bg-slate-900 text-white shadow-md z-40 relative w-full text-sm border-b border-slate-700">
+        <div class="px-4 py-2.5 flex justify-between items-center cursor-pointer hover:bg-slate-800 transition" id="assistant_toggle">
+            <span class="font-bold text-amber-300 flex items-center gap-2"><i class="fa-solid fa-wand-magic-sparkles"></i> AI Test Copilot (Clipboard / Handwritten Sheet Extractor &amp; Live Commands)</span>
+            <i class="fa-solid fa-chevron-down text-slate-300" id="assistant_toggle_icon"></i>
         </div>
-        <div id="assistant_panel" class="hidden px-4 pb-4 flex-col gap-2 border-t border-slate-600 bg-slate-800">
-            <div id="assistant_chat" class="bg-slate-900 border border-slate-700 p-3 rounded mt-3 h-48 overflow-y-auto text-[13px] whitespace-pre-wrap flex flex-col gap-2 shadow-inner">
-                <div class="text-slate-400 italic">Welcome! Ask me to verify tests, check standard parameters, or dynamically update data (e.g., "Change location to Pune" or "Are these Winding Resistances acceptable?").</div>
+        <div id="assistant_panel" class="hidden px-4 pb-4 flex-col gap-2 border-t border-slate-700 bg-slate-900">
+            <div id="assistant_chat" class="bg-slate-950 border border-slate-700 p-3 rounded mt-3 h-44 overflow-y-auto text-[13px] whitespace-pre-wrap flex flex-col gap-2 shadow-inner">
+                <div class="text-slate-300">Paste (Ctrl+V) or upload a photo of your engineer's <strong>handwritten test sheet</strong>, paste raw <strong>nameplate/test text</strong>, or give a command (e.g., <em>"Extract all values from this sheet"</em>, <em>"Set 3-winding HV/LV1/LV2"</em>, <em>"Check VR tolerances"</em>).</div>
             </div>
-            <div class="flex gap-2 mt-2">
-                <input type="text" id="assistant_input" class="flex-1 bg-slate-700 border border-slate-600 text-white px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-yellow-400 text-[13.5px] placeholder-slate-400" placeholder="Type a command or question...">
-                <button id="assistant_send" class="bg-yellow-600 hover:bg-yellow-500 text-slate-900 px-4 py-2 rounded font-bold transition shadow-sm flex items-center gap-2"><i class="fa-solid fa-paper-plane"></i> Send</button>
+            <div id="copilot_image_preview_wrap" class="hidden items-center gap-3 bg-slate-800 border border-slate-600 rounded p-2 mt-1">
+                <img id="copilot_image_preview" src="" alt="Clipboard Attachment" class="h-14 w-auto rounded border border-slate-500 object-contain bg-white">
+                <div class="flex-1 text-xs text-emerald-300 font-bold" id="copilot_image_label">Handwritten sheet / image attached to clipboard</div>
+                <button type="button" id="copilot_image_clear" class="text-rose-400 hover:text-rose-300 text-xs font-bold px-2 py-1"><i class="fa-solid fa-xmark"></i> Remove</button>
+            </div>
+            <div class="flex flex-col gap-2 mt-2">
+                <textarea id="assistant_input" rows="2" class="w-full bg-slate-800 border border-slate-600 text-white px-3 py-2 rounded focus:outline-none focus:ring-2 focus:ring-amber-400 text-[13.5px] placeholder-slate-400 resize-y" placeholder="Type command, paste raw text, or press Ctrl+V to attach handwritten test sheet image..."></textarea>
+                <div class="flex flex-wrap gap-2 justify-between items-center">
+                    <div class="flex flex-wrap gap-2">
+                        <input type="file" id="copilot_sheet_file" accept="image/*" style="display:none;">
+                        <input type="file" id="copilot_sheet_camera" accept="image/*" capture="environment" style="display:none;">
+                        <button type="button" id="copilot_paste_btn" class="bg-slate-700 hover:bg-slate-600 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5 border border-slate-500"><i class="fa-solid fa-clipboard"></i> Paste Clipboard</button>
+                        <button type="button" id="copilot_upload_btn" class="bg-indigo-700 hover:bg-indigo-600 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-file-pen"></i> Upload Handwritten Sheet</button>
+                        <button type="button" id="copilot_camera_btn" class="bg-teal-700 hover:bg-teal-600 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5"><i class="fa-solid fa-camera"></i> Snap Sheet</button>
+                        <button type="button" id="copilot_offline_parse_btn" class="bg-slate-600 hover:bg-slate-500 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1.5" title="Parse pasted nameplate/test text 100% offline"><i class="fa-solid fa-bolt"></i> Offline Text Parse</button>
+                    </div>
+                    <div class="flex gap-2">
+                        <button type="button" id="copilot_audit_btn" class="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1.5 rounded font-extrabold transition shadow-sm flex items-center gap-1.5" title="Copilot audits all entered readings & suggests fixes for your approval"><i class="fa-solid fa-user-doctor"></i> Smart Audit &amp; Suggest</button>
+                        <button type="button" id="assistant_send" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-5 py-1.5 rounded font-extrabold transition shadow-sm flex items-center gap-2"><i class="fa-solid fa-paper-plane"></i> Send</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -512,6 +976,7 @@
                                     <input type="file" id="nameplate_file_input" accept="image/*" style="display: none;">
                                     <button id="nameplate_camera_btn" class="ai-extract-btn"><i class="fa-solid fa-camera"></i> Scan Plate</button>
                                     <button id="nameplate_upload_btn" class="ai-extract-btn"><i class="fa-solid fa-image"></i> Upload</button>
+                                    <button id="nameplate_offline_btn" type="button" class="ai-extract-btn" style="background-color:#334155;" title="Paste raw nameplate text offline to auto-fill"><i class="fa-solid fa-paste"></i> Offline Paste</button>
                                     <span id="ai_status" style="font-size: 11px; color: var(--primary-orange); align-self: center; display: none; font-weight: bold;"><i class="fa-solid fa-spinner fa-spin"></i> Extracting...</span>
                                 </div>
                             </div>
@@ -559,6 +1024,26 @@
                                         <td class="font-bold"><input type="text" id="tx_rating" class="bold-input" placeholder="e.g. 4000 KVA"></td>
                                     </tr>
                                     <tr>
+                                        <th class="text-left">WINDING ARCHITECTURE</th>
+                                        <td class="font-bold">
+                                            <select id="tx_winding_config" class="bold-input no-print vr-dependency" value="2W">
+                                                <option value="2W" selected>2-Winding (HV / LV)</option>
+                                                <option value="3W_1HV_2LV">3-Winding (1 HV + 2 LVs: HV / LV1 / LV2)</option>
+                                                <option value="3W_HV_MV_LV">3-Winding (HV / MV / LV)</option>
+                                                <option value="4W_2HV_2LV">4-Winding (2 HV + 2 LV)</option>
+                                                <option value="AUTO">Auto-Transformer (HV / IV / TV)</option>
+                                            </select>
+                                            <span id="tx_winding_config_print" class="print-only">2-Winding (HV / LV)</span>
+                                        </td>
+                                        <th class="text-left">ACTIVE TEST PAIR</th>
+                                        <td class="font-bold">
+                                            <select id="tx_active_pair" class="bold-input no-print vr-dependency" value="HV-LV">
+                                                <option value="HV-LV" selected>HV – LV</option>
+                                            </select>
+                                            <span id="tx_active_pair_print" class="print-only">HV – LV</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
                                         <th class="text-left">TRANSFORMER TYPE</th>
                                         <td class="font-bold">
                                             <select id="tx_type" class="bold-input no-print" value="Oil Immersed">
@@ -590,7 +1075,7 @@
                                     </tr>
                                     <tr>
                                         <th class="text-left">RATED KV (HV/LV)</th>
-                                        <td class="font-bold"><input type="text" id="tx_voltage" class="bold-input vr-dependency" placeholder="e.g. 22000 / 415"></td>
+                                        <td class="font-bold"><input type="text" id="tx_voltage" class="bold-input vr-dependency" placeholder="e.g. 220 / 22 or 22 / 0.433"></td>
                                         <th class="text-left">RATED AMPS</th>
                                         <td class="font-bold"><input type="text" id="tx_amps" class="bold-input" placeholder="e.g. 82.66A / 4382.29A"></td>
                                     </tr>
@@ -685,24 +1170,28 @@
                                     </tr>
                                 </table>
                             </div>
+
                         </div>
 
                         <h3 class="section-title" id="tests-heading">
                             <span><i class="fa-solid fa-list-check mr-2"></i>2. TESTS PERFORMED</span>
                         </h3>
                         
-                        <div class="border border-slate-300 rounded-md p-4 mb-4 no-print bg-slate-50 shadow-sm">
-                            <div class="flex flex-wrap gap-x-6 gap-y-3">
+                        <div class="border border-slate-400 rounded-md p-4 mb-4 no-print bg-slate-50 shadow-sm">
+                            <div class="text-[11px] font-extrabold uppercase text-slate-800 mb-2 tracking-wide">Routine Electrical Tests Selection</div>
+                            <div class="flex flex-wrap gap-x-5 gap-y-2.5">
                                 <label class="checkbox-label"><input type="checkbox" id="perform_vr_test" class="summary-trigger" checked> Voltage Ratio</label>
                                 <label class="checkbox-label"><input type="checkbox" id="perform_mb_test" class="summary-trigger" checked> Magnetic Balance</label>
                                 <label class="checkbox-label"><input type="checkbox" id="perform_mc_test" class="summary-trigger" checked> Magnetizing Current</label>
                                 <label class="checkbox-label"><input type="checkbox" id="perform_vg_test" class="summary-trigger" checked> Vector Group</label>
-                                <label class="checkbox-label"><input type="checkbox" id="perform_wr_test" class="summary-trigger" checked> HT & LT Winding Resistance</label>
-                                <label class="checkbox-label"><input type="checkbox" id="perform_ir_test" class="summary-trigger" checked> IR Value</label>
+                                <label class="checkbox-label"><input type="checkbox" id="perform_wr_test" class="summary-trigger" checked> HT &amp; LT Winding Resistance</label>
+                                <label class="checkbox-label"><input type="checkbox" id="perform_ir_test" class="summary-trigger" checked> IR Value &amp; PI</label>
+                                <label class="checkbox-label"><input type="checkbox" id="perform_bdv_test" class="summary-trigger" checked> Oil BDV &amp; Moisture</label>
+                                <label class="checkbox-label"><input type="checkbox" id="perform_bf_test" class="summary-trigger"> Backfeeding / No-Load</label>
                             </div>
                             <div class="mt-3 pt-3 border-t border-slate-300">
                                 <label class="checkbox-label" style="color: var(--primary-orange); font-weight: 700;">
-                                    <input type="checkbox" id="toggle_dev_cols"> Show Deviation Columns (% Dev) for VR, MB & WR
+                                    <input type="checkbox" id="toggle_dev_cols"> Show Deviation Columns (% Dev) for VR, MB &amp; WR
                                 </label>
                             </div>
                         </div>
@@ -712,6 +1201,7 @@
                                 <span><i class="fa-solid fa-bolt mr-2 text-yellow-500"></i>VOLTAGE RATIO TEST</span>
                                 <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
                             </h4>
+                            <div id="vr_procedure_box" class="test-procedure-card"></div>
                             
                             <table class="test-details-table text-[12px]">
                                 <tr>
@@ -719,34 +1209,63 @@
                                     <td>
                                         <label class="checkbox-label no-print"><input type="radio" name="vr_direction" value="hv_to_lv" checked class="vr-calc-trigger"> HV → LV</label>
                                         <label class="checkbox-label no-print"><input type="radio" name="vr_direction" value="lv_to_hv" class="vr-calc-trigger"> LV → HV</label>
-                                        <span class="print-only font-bold">HV → LV</span>
+                                        <span id="vr_direction_print" class="print-only font-bold">HV → LV</span>
                                     </td>
                                     <td><strong>MEASURED VOLTAGE:</strong></td>
                                     <td>
                                         <label class="checkbox-label no-print"><input type="checkbox" id="vr_measure_ll" class="vr-calc-trigger"> (L-L)</label>
                                         <label class="checkbox-label no-print"><input type="checkbox" id="vr_measure_ln" class="vr-calc-trigger" checked> (L-N)</label>
-                                        <span class="print-only font-bold">L-N</span>
+                                        <span id="vr_measured_print" class="print-only font-bold">L-N</span>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <td><strong>APPLIED VOLTAGE (L-L):</strong></td>
+                                    <td><strong>APPLIED VOLTAGE MODE:</strong></td>
                                     <td colspan="3">
-                                        <div class="voltage-inputs flex items-center gap-2">
-                                            <div><label id="vr_applied_label_1" class="font-bold">1U-1V</label><br><input type="number" id="vr_applied_1" class="vr-calc-trigger" placeholder="Volts"> V</div>
-                                            <div><label id="vr_applied_label_2" class="font-bold">1V-1W</label><br><input type="number" id="vr_applied_2" class="vr-calc-trigger" placeholder="Volts"> V</div>
-                                            <div><label id="vr_applied_label_3" class="font-bold">1W-1U</label><br><input type="number" id="vr_applied_3" class="vr-calc-trigger" placeholder="Volts"> V</div>
+                                        <label class="checkbox-label no-print"><input type="radio" name="vr_applied_mode" value="ll" checked class="vr-calc-trigger"> (L-L) Phase-to-Phase</label>
+                                        <label class="checkbox-label no-print"><input type="radio" name="vr_applied_mode" value="ln" class="vr-calc-trigger"> (L-N) Phase-to-Neutral</label>
+                                        <span id="vr_applied_mode_print" class="print-only font-bold">L-L</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td><strong id="vr_master_applied_heading">MASTER APPLIED VTG (L-L):</strong></td>
+                                    <td colspan="3">
+                                        <div class="flex flex-wrap items-center gap-3">
+                                            <div class="voltage-inputs flex items-center gap-2">
+                                                <div><label id="vr_applied_label_1" class="font-bold">1U-1V</label><br><input type="number" step="0.01" id="vr_applied_1" class="vr-master-applied vr-calc-trigger" placeholder="Volts"> V</div>
+                                                <div><label id="vr_applied_label_2" class="font-bold">1V-1W</label><br><input type="number" step="0.01" id="vr_applied_2" class="vr-master-applied vr-calc-trigger" placeholder="Volts"> V</div>
+                                                <div><label id="vr_applied_label_3" class="font-bold">1W-1U</label><br><input type="number" step="0.01" id="vr_applied_3" class="vr-master-applied vr-calc-trigger" placeholder="Volts"> V</div>
+                                            </div>
+                                            <div class="no-print flex flex-wrap items-center gap-2 bg-blue-50 border border-blue-200 rounded px-2.5 py-1.5">
+                                                <label class="checkbox-label m-0 text-[11.5px] text-blue-900">
+                                                    <input type="checkbox" id="vr_copy_applied_all" checked> Copy to All Taps (No Fluctuation)
+                                                </label>
+                                                <button type="button" id="vr_apply_all_btn" class="bg-blue-800 hover:bg-blue-900 text-white text-[11px] font-bold px-2.5 py-1 rounded">Copy Now</button>
+                                            </div>
                                         </div>
                                     </td>
                                 </tr>
                             </table>
 
-                            <div class="table-responsive-wrapper">
-                                <table class="test-data-table w-full" id="vr_table">
-                                    <thead id="vr_table_head">
-                                    </thead>
-                                    <tbody id="vr_table_body">
-                                    </tbody>
-                                </table>
+                            <!-- Stacked VR Tables: L-L on top, L-N underneath when both selected -->
+                            <div id="vr_mobile_cards" class="mb-3 no-print"></div>
+                            <div id="vr_ll_table_wrap" class="mb-3" style="display: none;">
+                                <div class="vr-subtable-title font-extrabold text-[12px] text-blue-900 mb-1 px-2 border-l-4 border-blue-700 uppercase" id="vr_ll_table_title">MEASURED LINE-TO-LINE (L-L) VOLTAGES</div>
+                                <div class="table-responsive-wrapper">
+                                    <table class="test-data-table w-full" id="vr_ll_table">
+                                        <thead id="vr_ll_table_head"></thead>
+                                        <tbody id="vr_ll_table_body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div id="vr_ln_table_wrap" class="mb-2" style="display: block;">
+                                <div class="vr-subtable-title font-extrabold text-[12px] text-orange-800 mb-1 px-2 border-l-4 border-orange-600 uppercase" id="vr_ln_table_title">MEASURED LINE-TO-NEUTRAL (L-N) VOLTAGES</div>
+                                <div class="table-responsive-wrapper">
+                                    <table class="test-data-table w-full" id="vr_ln_table">
+                                        <thead id="vr_ln_table_head"></thead>
+                                        <tbody id="vr_ln_table_body"></tbody>
+                                    </table>
+                                </div>
                             </div>
                             
                             <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
@@ -763,6 +1282,7 @@
                                 <span><i class="fa-solid fa-magnet mr-2 text-indigo-500"></i>MAGNETIC BALANCE TEST</span>
                                 <span class="ref-std">(Ref: IS 10028-2)</span>
                             </h4>
+                            <div id="mb_procedure_box" class="test-procedure-card"></div>
                             
                             <div id="mb_dyn_table" class="table-responsive-wrapper" style="display: block;">
                                 <table class="test-data-table w-full">
@@ -859,6 +1379,7 @@
                                 <span><i class="fa-solid fa-wave-square mr-2 text-teal-500"></i>MAGNETIZING CURRENT TEST</span>
                                 <span class="ref-std">(Ref: IEEE C57.12.90)</span>
                             </h4>
+                            <div id="mc_procedure_box" class="test-procedure-card"></div>
                             
                             <div class="flex items-center gap-2 mb-3 text-[12px]">
                                 <strong>TAPS TO MEASURE:</strong>
@@ -895,6 +1416,7 @@
                                 <span><i class="fa-solid fa-arrows-to-circle mr-2 text-purple-500"></i>VECTOR GROUP TEST</span>
                                 <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
                             </h4>
+                            <div id="vg_procedure_box" class="test-procedure-card"></div>
                             
                             <div id="vg_container" class="text-[12px] p-4 rounded border border-slate-200">
                             </div>
@@ -913,6 +1435,7 @@
                                 <span><i class="fa-solid fa-temperature-half mr-2 text-red-500"></i>HT & LT WINDING RESISTANCE TEST</span>
                                 <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
                             </h4>
+                            <div id="wr_procedure_box" class="test-procedure-card"></div>
                             
                             <table class="test-details-table text-[12px] mb-4">
                                 <tr>
@@ -1006,6 +1529,7 @@
                                 <span><i class="fa-solid fa-shield-halved mr-2 text-green-600"></i>IR VALUE TEST</span>
                                 <span class="ref-std">(Ref: IS 1180 / IEEE C57.12.90)</span>
                             </h4>
+                            <div id="ir_procedure_box" class="test-procedure-card"></div>
                             
                             <table class="test-details-table text-[12px] mb-4">
                                 <tr>
@@ -1093,6 +1617,198 @@
                             <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
                                 <span class="mr-2 text-slate-600"><i class="fa-solid fa-flag-checkered mr-1 no-print"></i>REMARKS:</span>
                                 <select id="ir_remarks" class="summary-trigger w-36 border border-slate-300 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
+                                    <option value="Satisfactory">Satisfactory</option>
+                                    <option value="Not Satisfactory">Not Satisfactory</option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <!-- BACKFEEDING / NO-LOAD TEST -->
+                        <div id="bf_test_container" class="test-section" style="display: none;">
+                            <h4 class="sub-heading">
+                                <span><i class="fa-solid fa-repeat mr-2 text-emerald-700"></i>BACKFEEDING / NO-LOAD EXCITATION TEST</span>
+                                <span class="ref-std">(Ref: IS 2026-1 / IEC 60076-1)</span>
+                            </h4>
+                            <div id="bf_procedure_box" class="test-procedure-card"></div>
+
+                            <table class="test-details-table text-[12px] mb-3">
+                                <tr>
+                                    <td><strong>FEED SIDE:</strong></td>
+                                    <td>
+                                        <select id="bf_side" class="no-print bold-input">
+                                            <option value="lv_to_hv" selected>LV → HV (Backfeed)</option>
+                                            <option value="hv_to_lv">HV → LV</option>
+                                        </select>
+                                        <span id="bf_side_print" class="print-only font-bold">LV → HV (Backfeed)</span>
+                                    </td>
+                                    <td><strong>APPLIED VOLTAGE MODE:</strong></td>
+                                    <td>
+                                        <div class="no-print flex flex-wrap gap-3">
+                                            <label class="checkbox-label"><input type="checkbox" id="bf_mode_ll" checked> (L-L) Applied</label>
+                                            <label class="checkbox-label"><input type="checkbox" id="bf_mode_ln"> (L-N) Applied</label>
+                                        </div>
+                                        <span id="bf_mode_print" class="print-only font-bold">L-L</span>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- L-L Backfeeding Block (Applied 3-Ph Volts + Measured 3-Ph Current) -->
+                            <div id="bf_ll_block" class="mb-4" style="display: block;">
+                                <div class="font-extrabold text-[12px] text-blue-900 mb-1.5 px-2 border-l-4 border-blue-700 uppercase">LINE-TO-LINE (L-L) APPLIED VOLTAGE &amp; MEASURED CURRENT</div>
+                                <div class="table-responsive-wrapper">
+                                    <table class="test-data-table w-full" id="bf_ll_table">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="3">Applied L-L Voltage (V)</th>
+                                                <th colspan="3">Measured No-Load Current I0 (A)</th>
+                                                <th>Loss (W)</th>
+                                            </tr>
+                                            <tr>
+                                                <th id="bf_ll_v1_h">2u-2v (V)</th>
+                                                <th id="bf_ll_v2_h">2v-2w (V)</th>
+                                                <th id="bf_ll_v3_h">2w-2u (V)</th>
+                                                <th>R-Ph I0 (A)</th>
+                                                <th>Y-Ph I0 (A)</th>
+                                                <th>B-Ph I0 (A)</th>
+                                                <th>Loss (W)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td data-field-label="2u-2v (V)" id="bf_ll_v1_td"><input type="number" step="0.1" id="bf_ll_v1" class="text-center-input bold-input" placeholder="V"></td>
+                                                <td data-field-label="2v-2w (V)" id="bf_ll_v2_td"><input type="number" step="0.1" id="bf_ll_v2" class="text-center-input bold-input" placeholder="V"></td>
+                                                <td data-field-label="2w-2u (V)" id="bf_ll_v3_td"><input type="number" step="0.1" id="bf_ll_v3" class="text-center-input bold-input" placeholder="V"></td>
+                                                <td data-field-label="R-Ph I0 (A)"><input type="number" step="0.01" id="bf_ll_ir" class="text-center-input bold-input" placeholder="A"></td>
+                                                <td data-field-label="Y-Ph I0 (A)"><input type="number" step="0.01" id="bf_ll_iy" class="text-center-input bold-input" placeholder="A"></td>
+                                                <td data-field-label="B-Ph I0 (A)"><input type="number" step="0.01" id="bf_ll_ib" class="text-center-input bold-input" placeholder="A"></td>
+                                                <td class="field-card-full" data-field-label="Measured Loss (W)"><input type="number" step="0.1" id="bf_ll_loss" class="text-center-input bold-input" placeholder="W"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- L-N Backfeeding Block (Applied 3-Ph Volts + Measured 3-Ph Current) -->
+                            <div id="bf_ln_block" class="mb-2" style="display: none;">
+                                <div class="font-extrabold text-[12px] text-orange-800 mb-1.5 px-2 border-l-4 border-orange-600 uppercase">LINE-TO-NEUTRAL (L-N) APPLIED VOLTAGE &amp; MEASURED CURRENT</div>
+                                <div class="table-responsive-wrapper">
+                                    <table class="test-data-table w-full" id="bf_ln_table">
+                                        <thead>
+                                            <tr>
+                                                <th colspan="3">Applied L-N Voltage (V)</th>
+                                                <th colspan="3">Measured No-Load Current I0 (A)</th>
+                                                <th>Loss (W)</th>
+                                            </tr>
+                                            <tr>
+                                                <th id="bf_ln_v1_h">2u-2n (V)</th>
+                                                <th id="bf_ln_v2_h">2v-2n (V)</th>
+                                                <th id="bf_ln_v3_h">2w-2n (V)</th>
+                                                <th>R-Ph I0 (A)</th>
+                                                <th>Y-Ph I0 (A)</th>
+                                                <th>B-Ph I0 (A)</th>
+                                                <th>Loss (W)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td data-field-label="2u-2n (V)" id="bf_ln_v1_td"><input type="number" step="0.1" id="bf_ln_v1" class="text-center-input bold-input" placeholder="V"></td>
+                                                <td data-field-label="2v-2n (V)" id="bf_ln_v2_td"><input type="number" step="0.1" id="bf_ln_v2" class="text-center-input bold-input" placeholder="V"></td>
+                                                <td data-field-label="2w-2n (V)" id="bf_ln_v3_td"><input type="number" step="0.1" id="bf_ln_v3" class="text-center-input bold-input" placeholder="V"></td>
+                                                <td data-field-label="R-Ph I0 (A)"><input type="number" step="0.01" id="bf_ln_ir" class="text-center-input bold-input" placeholder="A"></td>
+                                                <td data-field-label="Y-Ph I0 (A)"><input type="number" step="0.01" id="bf_ln_iy" class="text-center-input bold-input" placeholder="A"></td>
+                                                <td data-field-label="B-Ph I0 (A)"><input type="number" step="0.01" id="bf_ln_ib" class="text-center-input bold-input" placeholder="A"></td>
+                                                <td class="field-card-full" data-field-label="Measured Loss (W)"><input type="number" step="0.1" id="bf_ln_loss" class="text-center-input bold-input" placeholder="W"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
+                                <span class="mr-2 text-slate-700">REMARKS:</span>
+                                <select id="bf_remarks" class="summary-trigger w-36 border border-slate-400 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
+                                    <option value="Satisfactory">Satisfactory</option>
+                                    <option value="Not Satisfactory">Not Satisfactory</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- OIL BDV & MOISTURE -->
+                        <div id="bdv_test_container" class="test-section" style="display: block;">
+                            <h4 class="sub-heading">
+                                <span><i class="fa-solid fa-droplet mr-2 text-amber-700"></i>OIL BDV (DIELECTRIC BREAKDOWN) TEST</span>
+                                <span class="ref-std">(Ref: IS 6792 / IEC 60156)</span>
+                            </h4>
+                            <div id="bdv_procedure_box" class="test-procedure-card"></div>
+
+                            <table class="test-details-table text-[12px] mb-3">
+                                <tr>
+                                    <td><strong>BDV RECORDING MODE:</strong></td>
+                                    <td>
+                                        <div class="no-print flex flex-wrap gap-3">
+                                            <label class="checkbox-label"><input type="radio" name="bdv_mode" value="before_after" checked> Before &amp; After Filtration</label>
+                                            <label class="checkbox-label"><input type="radio" name="bdv_mode" value="six_strokes"> 6 Strokes &amp; Avg BDV</label>
+                                        </div>
+                                        <span id="bdv_mode_print" class="print-only font-bold">Before &amp; After Filtration</span>
+                                    </td>
+                                    <td><strong>MOISTURE CONTENT:</strong></td>
+                                    <td>
+                                        <label class="checkbox-label no-print"><input type="checkbox" id="bdv_include_moisture"> Record Moisture (ppm)</label>
+                                        <span id="bdv_moisture_print_flag" class="print-only font-bold">Not Included</span>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Mode 1 (Default): Before & After Filtration BDV -->
+                            <div id="bdv_before_after_wrap" class="table-responsive-wrapper" style="display: block;">
+                                <table class="test-data-table w-full" id="bdv_ba_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Before Filtration BDV (kV)</th>
+                                            <th>After Filtration BDV (kV)</th>
+                                            <th class="bdv-moisture-col hidden-col">Moisture Content (ppm)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td data-field-label="Before Filtration BDV (kV)"><input type="number" step="0.1" id="bdv_before" class="text-center-input bold-input" placeholder="kV"></td>
+                                            <td data-field-label="After Filtration BDV (kV)"><input type="number" step="0.1" id="bdv_after" class="text-center-input bold-input" placeholder="kV"></td>
+                                            <td class="bdv-moisture-col hidden-col" data-field-label="Moisture Content (ppm)"><input type="number" step="0.1" id="bdv_ba_ppm" class="text-center-input bold-input" placeholder="ppm"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- Mode 2: 6 Strokes & Avg BDV -->
+                            <div id="bdv_six_strokes_wrap" class="table-responsive-wrapper" style="display: none;">
+                                <table class="test-data-table w-full" id="bdv_6s_table">
+                                    <thead>
+                                        <tr>
+                                            <th>Shot 1 (kV)</th><th>Shot 2 (kV)</th><th>Shot 3 (kV)</th>
+                                            <th>Shot 4 (kV)</th><th>Shot 5 (kV)</th><th>Shot 6 (kV)</th>
+                                            <th>Avg BDV (kV)</th>
+                                            <th class="bdv-moisture-col hidden-col">Moisture (ppm)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td data-field-label="Shot 1 (kV)"><input type="number" step="0.1" id="bdv_s1" class="bdv-calc-trigger text-center-input bold-input" placeholder="kV"></td>
+                                            <td data-field-label="Shot 2 (kV)"><input type="number" step="0.1" id="bdv_s2" class="bdv-calc-trigger text-center-input bold-input" placeholder="kV"></td>
+                                            <td data-field-label="Shot 3 (kV)"><input type="number" step="0.1" id="bdv_s3" class="bdv-calc-trigger text-center-input bold-input" placeholder="kV"></td>
+                                            <td data-field-label="Shot 4 (kV)"><input type="number" step="0.1" id="bdv_s4" class="bdv-calc-trigger text-center-input bold-input" placeholder="kV"></td>
+                                            <td data-field-label="Shot 5 (kV)"><input type="number" step="0.1" id="bdv_s5" class="bdv-calc-trigger text-center-input bold-input" placeholder="kV"></td>
+                                            <td data-field-label="Shot 6 (kV)"><input type="number" step="0.1" id="bdv_s6" class="bdv-calc-trigger text-center-input bold-input" placeholder="kV"></td>
+                                            <td class="field-card-full" data-field-label="Average BDV (kV)"><input type="text" id="bdv_avg" class="text-center-input bold-input" readonly></td>
+                                            <td class="bdv-moisture-col field-card-full hidden-col" data-field-label="Moisture Content (ppm)"><input type="number" step="0.1" id="bdv_ppm" class="text-center-input bold-input" placeholder="ppm"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="flex justify-end mt-3 text-[11px] uppercase font-bold items-center">
+                                <span class="mr-2 text-slate-700">REMARKS:</span>
+                                <select id="bdv_remarks" class="summary-trigger w-36 border border-slate-400 rounded px-2 py-1.5 font-bold qr-trigger" value="Satisfactory">
                                     <option value="Satisfactory">Satisfactory</option>
                                     <option value="Not Satisfactory">Not Satisfactory</option>
                                 </select>
@@ -1270,39 +1986,88 @@ Recommendations: No immediate action or troubleshooting is required. The unit ca
             document.getElementById('tx_tag_no').addEventListener('input', updatePrintHeader);
             document.getElementById('tx_rating').addEventListener('input', updatePrintHeader);
 
-            // --- GEMINI ROBUST FALLBACK MECHANISM ---
-            const GEMINI_MODELS = [
+            // --- GEMINI 4 / 3 / 2.5 ROBUST CASCADING FALLBACK + LISTMODELS DISCOVERY ---
+            const GEMINI_STATIC_MODELS = [
+                "gemini-4.0-pro",
+                "gemini-4.0-flash",
+                "gemini-4-pro",
+                "gemini-4-flash",
                 "gemini-3.8-flash",
                 "gemini-3.5-pro",
                 "gemini-3.5-flash",
                 "gemini-3.2-flash",
+                "gemini-3.1-pro",
                 "gemini-3.1-flash",
+                "gemini-3.0-pro",
                 "gemini-3.0-flash",
                 "gemini-2.8-flash",
+                "gemini-2.5-pro",
                 "gemini-2.5-flash",
-                "gemini-2.0-flash",
-                "gemini-1.5-flash"
+                "gemini-2.5-flash-lite"
             ];
 
+            let cachedDiscoveredModels = null;
+            let cachedDiscoveredKey = null;
+
+            async function discoverActiveGeminiModels(apiKey) {
+                if (cachedDiscoveredModels && cachedDiscoveredKey === apiKey) {
+                    return cachedDiscoveredModels;
+                }
+                try {
+                    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${encodeURIComponent(apiKey)}`);
+                    if (!resp.ok) return [];
+                    const data = await resp.json();
+                    if (!Array.isArray(data.models)) return [];
+                    const active = data.models
+                        .filter(m =>
+                            Array.isArray(m.supportedGenerationMethods) &&
+                            m.supportedGenerationMethods.includes("generateContent") &&
+                            m.name && m.name.includes("gemini") &&
+                            !/embedding|aqa|imagen|veo|tts|audio|robotics|1\.0|1\.5|2\.0/i.test(m.name)
+                        )
+                        .map(m => m.name.replace(/^models\//, ""));
+
+                    const scoreModel = (name) => {
+                        const match = name.match(/gemini-(\d+)(?:\.(\d+))?/i);
+                        const major = match ? parseInt(match[1], 10) : 0;
+                        const minor = match && match[2] ? parseInt(match[2], 10) : 0;
+                        const tier = /pro/i.test(name) ? 3 : (/flash-lite/i.test(name) ? 1 : 2);
+                        const previewPenalty = /exp|preview/i.test(name) ? -0.1 : 0;
+                        return major * 100 + minor * 10 + tier + previewPenalty;
+                    };
+
+                    active.sort((a, b) => scoreModel(b) - scoreModel(a));
+                    cachedDiscoveredModels = active;
+                    cachedDiscoveredKey = apiKey;
+                    return active;
+                } catch (err) {
+                    console.warn("ListModels discovery skipped:", err);
+                    return [];
+                }
+            }
+
             async function callGeminiWithFallback(apiKey, requestBody) {
+                const discovered = await discoverActiveGeminiModels(apiKey);
+                const modelQueue = Array.from(new Set([...discovered, ...GEMINI_STATIC_MODELS]));
                 let lastError = null;
-                for (const model of GEMINI_MODELS) {
+                for (const model of modelQueue) {
                     try {
                         console.log("Attempting Gemini API with model:", model);
-                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, {
+                        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify(requestBody)
                         });
                         const result = await response.json();
-                        
+
                         if (result.error) {
                             console.warn(`Model ${model} failed:`, result.error.message);
                             lastError = new Error(result.error.message);
-                            continue; 
+                            continue;
                         }
                         if (result.candidates && result.candidates.length > 0) {
-                            return result; 
+                            result._usedModel = model;
+                            return result;
                         } else {
                             lastError = new Error("No candidates returned from " + model);
                             continue;
@@ -1565,9 +2330,10 @@ Instructions:
                       "rating": "Rated MVA or KVA (e.g., 2.5 MVA or 2500 KVA)",
                       "tx_type": "Transformer Construction/Sealing Type: choose from 'Oil Immersed', 'Hermetically Sealed', 'Dry Type', 'Cast Resin' if applicable, or exact text from nameplate",
                       "duty_type": "Type of Transformer duty/application if mentioned on nameplate, e.g., 'Power / Distribution Transformer', 'Furnace Transformer', 'Converter Duty Transformer', 'Earthing Transformer', 'Zig-Zag Transformer', 'Inverter Duty / Solar Transformer', 'Rectifier Transformer', 'Auto Transformer'",
-                      "voltage": "Rated Voltage HV/LV (e.g., 11000 / 433)",
+                      "voltage": "Rated Voltage HV/LV strictly in kV (convert Volts to kV by dividing by 1000, e.g., 220000/22000 V -> 220 / 22, 11000/433 V -> 11 / 0.433, 22000/415 V -> 22 / 0.415)",
                       "amps": "Rated Amperes HV/LV (e.g., 131.2A / 3333A)",
                       "vector": "Vector Group (e.g., Dyn11, YNd1, etc.)",
+                      "winding_config": "Choose one of: 2W (2-winding HV/LV), 3W_1HV_2LV (1 HV + 2 LVs), 3W_HV_MV_LV (HV/MV/LV), 4W_2HV_2LV (2 HV + 2 LV), AUTO (Auto-Transformer)",
                       "impedance": "Percentage Impedance (e.g., 5.5%)",
                       "load_losses": "Load Losses (and No-Load Losses if available) with unit (e.g., 24.5 kW or LL: 24.5 kW / NLL: 3.8 kW)",
                       "tap_count": "Number of Taps (integer, e.g., 17)",
@@ -1601,7 +2367,7 @@ Instructions:
                         if (data.make_yom) document.getElementById('tx_make_yom').value = data.make_yom;
                         if (data.serial) document.getElementById('tx_serial').value = data.serial;
                         if (data.rating) document.getElementById('tx_rating').value = data.rating;
-                        if (data.voltage) document.getElementById('tx_voltage').value = data.voltage;
+                        if (data.voltage) document.getElementById('tx_voltage').value = formatVoltagePairToKV(data.voltage);
                         if (data.amps) document.getElementById('tx_amps').value = data.amps;
                         if (data.impedance) document.getElementById('tx_impedance').value = data.impedance;
                         if (data.load_losses) document.getElementById('tx_load_losses').value = data.load_losses;
@@ -1663,6 +2429,16 @@ Instructions:
                             }
                         }
 
+                        if (data.winding_config && document.getElementById('tx_winding_config')) {
+                            document.getElementById('tx_winding_config').value = data.winding_config;
+                            syncWindingPairs();
+                        }
+                        updateVrTable();
+                        updateWrTable();
+                        updateMcTable();
+                        updateMbTable();
+                        updateVectorGroupTest();
+                        hookDiagramAndFieldUpdates();
                         calculateVRDeviation(); 
                         saveToSession();
                         updatePrintHeader();
@@ -1775,6 +2551,16 @@ Instructions:
             const clientSigImg = document.getElementById('client_signature_img');
             const sigWatermark = document.getElementById('sig_placeholder_watermark');
             
+            // Lightweight offline fallback if SignaturePad CDN is unavailable
+            if (typeof SignaturePad === 'undefined') {
+                window.SignaturePad = class {
+                    constructor(canvas) { this.canvas = canvas; this._empty = true; this._listeners = {}; }
+                    addEventListener(evt, fn) { this._listeners[evt] = fn; }
+                    clear() { if (this.canvas) { const ctx = this.canvas.getContext('2d'); ctx && ctx.clearRect(0,0,this.canvas.width,this.canvas.height); } this._empty = true; }
+                    isEmpty() { return this._empty; }
+                    toDataURL() { return this.canvas ? this.canvas.toDataURL('image/png') : ''; }
+                };
+            }
             const inlineSigCanvas = document.getElementById('inline-signature-pad');
             const inlineSignaturePad = new SignaturePad(inlineSigCanvas, {
                 minWidth: 0.8,
@@ -1863,6 +2649,8 @@ Instructions:
                 mb: document.getElementById('perform_mb_test'),
                 mc: document.getElementById('perform_mc_test'),
                 vg: document.getElementById('perform_vg_test'),
+                bdv: document.getElementById('perform_bdv_test'),
+                bf: document.getElementById('perform_bf_test'),
             };
 
             const testContainers = {
@@ -1872,6 +2660,8 @@ Instructions:
                 mb: document.getElementById('mb_test_container'),
                 mc: document.getElementById('mc_test_container'),
                 vg: document.getElementById('vg_test_container'),
+                bdv: document.getElementById('bdv_test_container'),
+                bf: document.getElementById('bf_test_container'),
             };
             
             const mbDynTable = document.getElementById('mb_dyn_table');
@@ -2344,143 +3134,336 @@ Instructions:
                 });
             }
 
+            function formatVoltagePairToKV(voltageStr) {
+                const parsed = parseNominalVoltagesKV(voltageStr);
+                if (!parsed) return voltageStr;
+                const fmt = (kv) => {
+                    if (kv >= 1) return Number(kv.toFixed(3)).toString();
+                    return Number(kv.toFixed(4)).toString();
+                };
+                return `${fmt(parsed.hvKV)} / ${fmt(parsed.lvKV)}`;
+            }
+
+            function parseNominalVoltagesKV(voltageStr) {
+                if (!voltageStr || !voltageStr.includes('/')) return null;
+                const rawParts = voltageStr.split('/');
+                const hvRaw = rawParts[0].trim();
+                const lvRaw = rawParts[1].trim();
+                const hvNum = parseFloat(hvRaw.replace(/[^0-9.]/g, ''));
+                const lvNum = parseFloat(lvRaw.replace(/[^0-9.]/g, ''));
+                if (isNaN(hvNum) || isNaN(lvNum) || hvNum <= 0 || lvNum <= 0) return null;
+
+                const hvHasKV = /kv/i.test(hvRaw);
+                const lvHasKV = /kv/i.test(lvRaw);
+                const hvHasV = /\bv\b/i.test(hvRaw) && !hvHasKV;
+                const lvHasV = /\bv\b/i.test(lvRaw) && !lvHasKV;
+
+                let hvKV, lvKV;
+                if (hvHasKV) hvKV = hvNum;
+                else if (hvHasV) hvKV = hvNum / 1000;
+                else hvKV = hvNum >= 500 ? (hvNum / 1000) : hvNum;
+
+                if (lvHasKV) lvKV = lvNum;
+                else if (lvHasV) lvKV = lvNum / 1000;
+                else lvKV = lvNum >= 100 ? (lvNum / 1000) : lvNum;
+
+                return { hvKV, lvKV };
+            }
+
+            function copyMasterAppliedToAllTaps(force) {
+                const copyChk = document.getElementById('vr_copy_applied_all');
+                if (!force && copyChk && !copyChk.checked) return;
+                const v1 = document.getElementById('vr_applied_1')?.value || '';
+                const v2 = document.getElementById('vr_applied_2')?.value || '';
+                const v3 = document.getElementById('vr_applied_3')?.value || '';
+                const tapCount = parseInt(document.getElementById('tx_tap_count').value, 10) || 21;
+                ['ll', 'ln'].forEach(mode => {
+                    for (let i = 1; i <= tapCount; i++) {
+                        const a1 = document.getElementById(`vr_app_${mode}_${i}_1`);
+                        const a2 = document.getElementById(`vr_app_${mode}_${i}_2`);
+                        const a3 = document.getElementById(`vr_app_${mode}_${i}_3`);
+                        if (a1) a1.value = v1;
+                        if (a2) a2.value = v2;
+                        if (a3) a3.value = v3;
+                    }
+                });
+                for (let i = 1; i <= tapCount; i++) {
+                    const m1 = document.getElementById(`vr_mob_app_${i}_1`);
+                    const m2 = document.getElementById(`vr_mob_app_${i}_2`);
+                    const m3 = document.getElementById(`vr_mob_app_${i}_3`);
+                    if (m1) m1.value = v1;
+                    if (m2) m2.value = v2;
+                    if (m3) m3.value = v3;
+                }
+                calculateVRDeviation();
+            }
+
             function calculateVRDeviation() {
                 const voltageStr = document.getElementById('tx_voltage').value;
-                if (!voltageStr || !voltageStr.includes('/')) return;
-                
-                const parts = voltageStr.split('/');
-                const hvNom = parseFloat(parts[0].replace(/[^0-9.]/g, ''));
-                const lvNom = parseFloat(parts[1].replace(/[^0-9.]/g, ''));
-                const principalTap = parseInt(document.getElementById('tx_principal_tap').value);
+                const parsed = parseNominalVoltagesKV(voltageStr);
+                const principalTap = parseInt(document.getElementById('tx_principal_tap').value, 10);
                 const tapStep = parseFloat(document.getElementById('tx_tap_step').value) / 100;
-                
-                if (isNaN(hvNom) || isNaN(lvNom) || isNaN(principalTap) || isNaN(tapStep)) return;
-                
-                const tapCount = parseInt(document.getElementById('tx_tap_count').value);
-                const measureLN = document.getElementById('vr_measure_ln').checked;
-                const measureLL = document.getElementById('vr_measure_ll').checked;
-                const direction = document.querySelector('input[name="vr_direction"]:checked').value;
+                const tapCount = parseInt(document.getElementById('tx_tap_count').value, 10) || 21;
+                const direction = document.querySelector('input[name="vr_direction"]:checked')?.value || 'hv_to_lv';
 
-                const app1 = parseFloat(document.getElementById('vr_applied_1').value);
-                const app2 = parseFloat(document.getElementById('vr_applied_2').value);
-                const app3 = parseFloat(document.getElementById('vr_applied_3').value);
+                const master1 = parseFloat(document.getElementById('vr_applied_1')?.value);
+                const master2 = parseFloat(document.getElementById('vr_applied_2')?.value);
+                const master3 = parseFloat(document.getElementById('vr_applied_3')?.value);
 
-                for (let i = 1; i <= tapCount; i++) {
-                    
-                    const expectedHV = hvNom * (1 + (principalTap - i) * tapStep);
-                    const standardRatio = expectedHV / lvNom;
+                if (!parsed || isNaN(principalTap) || isNaN(tapStep)) return;
+                const { hvKV, lvKV } = parsed;
 
-                    const stdRatioInput = document.getElementById(`vr_std_ratio_${i}`);
-                    if (stdRatioInput) stdRatioInput.value = standardRatio.toFixed(3);
+                const computeModeRow = (mode, i, tapHvKV, standardRatio, isLN) => {
+                    const tapHvInp = document.getElementById(`vr_tap_hv_${mode}_${i}`);
+                    if (tapHvInp) tapHvInp.value = tapHvKV.toFixed(3);
+                    const stdInp = document.getElementById(`vr_std_ratio_${mode}_${i}`);
+                    if (stdInp) stdInp.value = standardRatio.toFixed(2);
 
-                    let m1_LL = NaN, m2_LL = NaN, m3_LL = NaN;
-                    let m1_LN = NaN, m2_LN = NaN, m3_LN = NaN;
+                    const a1 = parseFloat(document.getElementById(`vr_app_${mode}_${i}_1`)?.value);
+                    const a2 = parseFloat(document.getElementById(`vr_app_${mode}_${i}_2`)?.value);
+                    const a3 = parseFloat(document.getElementById(`vr_app_${mode}_${i}_3`)?.value);
+                    const app1 = !isNaN(a1) ? a1 : master1;
+                    const app2 = !isNaN(a2) ? a2 : master2;
+                    const app3 = !isNaN(a3) ? a3 : master3;
 
-                    if (measureLL) {
-                        m1_LL = parseFloat(document.getElementById(`vr_ll_${i}_r`)?.value);
-                        m2_LL = parseFloat(document.getElementById(`vr_ll_${i}_y`)?.value);
-                        m3_LL = parseFloat(document.getElementById(`vr_ll_${i}_b`)?.value);
-                    }
-                    if (measureLN) {
-                        m1_LN = parseFloat(document.getElementById(`vr_ln_${i}_r`)?.value);
-                        m2_LN = parseFloat(document.getElementById(`vr_ln_${i}_y`)?.value);
-                        m3_LN = parseFloat(document.getElementById(`vr_ln_${i}_b`)?.value);
-                    }
+                    const m1 = parseFloat(document.getElementById(`vr_${mode}_${i}_r`)?.value);
+                    const m2 = parseFloat(document.getElementById(`vr_${mode}_${i}_y`)?.value);
+                    const m3 = parseFloat(document.getElementById(`vr_${mode}_${i}_b`)?.value);
 
-                    const computeError = (app, m, isLN) => {
-                        if (isNaN(app) || isNaN(m) || m === 0 || app === 0) return null;
-                        
-                        let actualRatio;
-                        if (direction === 'hv_to_lv') {
-                            let equivLV = isLN ? (m * Math.sqrt(3)) : m; 
-                            actualRatio = app / equivLV;
-                        } else {
-                            let equivHV = isLN ? (m * Math.sqrt(3)) : m;
-                            actualRatio = equivHV / app;
-                        }
+                    const appMode = document.querySelector('input[name="vr_applied_mode"]:checked')?.value || 'll';
+                    const appIsLN = (appMode === 'ln');
+                    const computeErr = (app, m) => {
+                        if (isNaN(app) || isNaN(m) || app <= 0 || m <= 0) return null;
+                        const appLL = appIsLN ? (app * Math.sqrt(3)) : app;
+                        const measLL = isLN ? (m * Math.sqrt(3)) : m;
+                        const actualRatio = (direction === 'hv_to_lv') ? (appLL / measLL) : (measLL / appLL);
                         return ((actualRatio - standardRatio) / standardRatio) * 100;
                     };
 
-                    let allErrors = [];
-                    if (measureLL) {
-                        allErrors.push(computeError(app1, m1_LL, false));
-                        allErrors.push(computeError(app2, m2_LL, false));
-                        allErrors.push(computeError(app3, m3_LL, false));
-                    }
-                    if (measureLN) {
-                        allErrors.push(computeError(app1, m1_LN, true));
-                        allErrors.push(computeError(app2, m2_LN, true));
-                        allErrors.push(computeError(app3, m3_LN, true));
-                    }
+                    const errs = [computeErr(app1, m1), computeErr(app2, m2), computeErr(app3, m3)].filter(v => v !== null);
+                    const devInp = document.getElementById(`vr_dev_${mode}_${i}`);
+                    if (!devInp) return;
 
-                    let maxAbsError = -1;
-                    let finalErrorToDisplay = null;
-                    let hasData = false;
-
-                    allErrors.forEach(err => {
-                        if (err !== null) {
-                            hasData = true;
-                            if (Math.abs(err) > maxAbsError) {
-                                maxAbsError = Math.abs(err);
-                                finalErrorToDisplay = err;
-                            }
-                        }
-                    });
-
-                    const devInput = document.getElementById(`vr_dev_${i}`);
-                    if (devInput) {
-                        if (hasData && finalErrorToDisplay !== null) {
-                            devInput.value = (finalErrorToDisplay > 0 ? '+' : '') + finalErrorToDisplay.toFixed(2) + '%';
-                            if(Math.abs(finalErrorToDisplay) > 0.5) {
-                                devInput.style.color = 'var(--error-red-text)';
-                                devInput.style.backgroundColor = 'var(--error-red-bg)';
-                            } else {
-                                devInput.style.color = 'var(--success-green-text)';
-                                devInput.style.backgroundColor = 'var(--success-green-bg)';
-                            }
+                    if (errs.length > 0) {
+                        let worst = errs[0];
+                        errs.forEach(e => { if (Math.abs(e) > Math.abs(worst)) worst = e; });
+                        devInp.value = (worst > 0 ? '+' : '') + worst.toFixed(2) + '%';
+                        // ±1.00% site fluctuation limit: red if beyond, green if within
+                        if (Math.abs(worst) > 1.0) {
+                            devInp.style.color = '#b91c1c';
+                            devInp.style.backgroundColor = 'var(--error-red-bg)';
                         } else {
-                            devInput.value = '';
-                            devInput.style.backgroundColor = 'transparent';
+                            devInp.style.color = '#15803d';
+                            devInp.style.backgroundColor = 'var(--success-green-bg)';
                         }
+                    } else {
+                        devInp.value = '';
+                        devInp.style.color = '';
+                        devInp.style.backgroundColor = 'transparent';
+                    }
+                };
+
+                for (let i = 1; i <= tapCount; i++) {
+                    const tapHvKV = hvKV * (1 + (principalTap - i) * tapStep);
+                    const standardRatio = tapHvKV / lvKV;
+                    computeModeRow('ll', i, tapHvKV, standardRatio, false);
+                    computeModeRow('ln', i, tapHvKV, standardRatio, true);
+                    const mobKv = document.getElementById(`vr_mob_kv_${i}`);
+                    const mobRatio = document.getElementById(`vr_mob_ratio_${i}`);
+                    const mobDev = document.getElementById(`vr_mob_dev_${i}`);
+                    if (mobKv) mobKv.value = tapHvKV.toFixed(3);
+                    if (mobRatio) mobRatio.value = standardRatio.toFixed(2);
+                    const llDev = document.getElementById(`vr_dev_ll_${i}`)?.value || '';
+                    const lnDev = document.getElementById(`vr_dev_ln_${i}`)?.value || '';
+                    const bestDev = llDev || lnDev || '';
+                    if (mobDev) {
+                        mobDev.value = (llDev && lnDev) ? `L-L: ${llDev} | L-N: ${lnDev}` : bestDev;
+                        const llNum = parseFloat(llDev);
+                        const lnNum = parseFloat(lnDev);
+                        const over = (!isNaN(llNum) && Math.abs(llNum) > 1.0) || (!isNaN(lnNum) && Math.abs(lnNum) > 1.0);
+                        mobDev.style.color = bestDev ? (over ? '#b91c1c' : '#15803d') : '';
+                        mobDev.style.backgroundColor = bestDev ? (over ? 'var(--error-red-bg)' : 'var(--success-green-bg)') : 'transparent';
                     }
                 }
             }
 
             function updateVrTable() {
-                const direction = document.querySelector('input[name="vr_direction"]:checked').value;
+                const direction = document.querySelector('input[name="vr_direction"]:checked')?.value || 'hv_to_lv';
+                const appMode = document.querySelector('input[name="vr_applied_mode"]:checked')?.value || 'll';
                 const measureLN = vrMeasureLN.checked;
-                const measureLL = vrMeasureLL.checked; 
-                const tapCount = parseInt(tapCountSelect.value, 10);
-                const appliedLabels = {'hv_to_lv': ['1U-1V', '1V-1W', '1W-1U'],'lv_to_hv': ['2u-2v', '2v-2w', '2u-2w']};
-                const measuredHeaders = {'hv_to_lv': {'ll': ['2u-2v (V)', '2v-2w (V)', '2w-2u (V)'], 'ln': ['2u-2n (V)', '2v-2n (V)', '2w-2n (V)']},'lv_to_hv': {'ll': ['1U-1V (V)', '1V-1W (V)', '1W-1U (V)'], 'ln': ['1U-1N (V)', '1V-1N (V)', '1W-1N (V)']}
+                const measureLL = vrMeasureLL.checked;
+                const tapCount = parseInt(tapCountSelect.value, 10) || 21;
+
+                // Primary: 1 + uppercase (1U,1V,1W,1N); Secondary: 2 + lowercase (2u,2v,2w,2n)
+                const appliedLabels = {
+                    'hv_to_lv': {
+                        'll': ['1U-1V', '1V-1W', '1W-1U'],
+                        'ln': ['1U-1N', '1V-1N', '1W-1N']
+                    },
+                    'lv_to_hv': {
+                        'll': ['2u-2v', '2v-2w', '2w-2u'],
+                        'ln': ['2u-2n', '2v-2n', '2w-2n']
+                    }
                 };
-                document.getElementById('vr_applied_label_1').textContent = appliedLabels[direction][0];
-                document.getElementById('vr_applied_label_2').textContent = appliedLabels[direction][1];
-                document.getElementById('vr_applied_label_3').textContent = appliedLabels[direction][2];
-                const tableHead = document.getElementById('vr_table_head');
-                
-                let headHTML = '<tr><th>Tap</th><th>Std. Ratio</th>';
-                if(measureLL) { headHTML += measuredHeaders[direction]['ll'].map(h => `<th>${h}</th>`).join(''); }
-                if(measureLN) { headHTML += measuredHeaders[direction]['ln'].map(h => `<th>${h}</th>`).join(''); }
-                headHTML += '<th class="dev-col">% Dev.</th></tr>';
-                tableHead.innerHTML = headHTML;
-                
-                const tableBody = document.getElementById('vr_table_body');
-                let bodyHTML = '';
-                
-                for (let i = 1; i <= tapCount; i++) {
-                    bodyHTML += `<tr><td class="font-bold bg-transparent">${i}</td>`;
-                    bodyHTML += `<td class="bg-transparent"><input type="text" id="vr_std_ratio_${i}" class="text-center-input font-bold" readonly title="Calculated Nameplate Ratio"></td>`;
-                    if(measureLL){ bodyHTML += `<td><input type="number" step="0.01" id="vr_ll_${i}_r" class="text-center-input bold-input vr-calc-trigger"></td><td><input type="number" step="0.01" id="vr_ll_${i}_y" class="text-center-input bold-input vr-calc-trigger"></td><td><input type="number" step="0.01" id="vr_ll_${i}_b" class="text-center-input bold-input vr-calc-trigger"></td>`; }
-                    if(measureLN){ bodyHTML += `<td><input type="number" step="0.01" id="vr_ln_${i}_r" class="text-center-input bold-input vr-calc-trigger"></td><td><input type="number" step="0.01" id="vr_ln_${i}_y" class="text-center-input bold-input vr-calc-trigger"></td><td><input type="number" step="0.01" id="vr_ln_${i}_b" class="text-center-input bold-input vr-calc-trigger"></td>`; }
-                    bodyHTML += `<td class="dev-col"><input type="text" id="vr_dev_${i}" class="text-center-input bold-input" title="Deviation vs Standard Nameplate Ratio" readonly></td></tr>`;
+                const measuredHeaders = {
+                    'hv_to_lv': {
+                        'll': ['2u-2v (V)', '2v-2w (V)', '2w-2u (V)'],
+                        'ln': ['2u-2n (V)', '2v-2n (V)', '2w-2n (V)']
+                    },
+                    'lv_to_hv': {
+                        'll': ['1U-1V (V)', '1V-1W (V)', '1W-1U (V)'],
+                        'ln': ['1U-1N (V)', '1V-1N (V)', '1W-1N (V)']
+                    }
+                };
+
+                const appLbls = appliedLabels[direction][appMode];
+                const masterHeading = document.getElementById('vr_master_applied_heading');
+                if (masterHeading) masterHeading.textContent = `MASTER APPLIED VTG (${appMode.toUpperCase()}):`;
+                const dirPrint = document.getElementById('vr_direction_print');
+                if (dirPrint) dirPrint.textContent = direction === 'hv_to_lv' ? 'HV → LV' : 'LV → HV';
+                const appModePrint = document.getElementById('vr_applied_mode_print');
+                if (appModePrint) appModePrint.textContent = appMode.toUpperCase();
+                const measPrint = document.getElementById('vr_measured_print');
+                if (measPrint) measPrint.textContent = (measureLL && measureLN) ? 'L-L & L-N' : (measureLL ? 'L-L' : 'L-N');
+                document.getElementById('vr_applied_label_1').textContent = appLbls[0];
+                document.getElementById('vr_applied_label_2').textContent = appLbls[1];
+                document.getElementById('vr_applied_label_3').textContent = appLbls[2];
+
+                const llWrap = document.getElementById('vr_ll_table_wrap');
+                const lnWrap = document.getElementById('vr_ln_table_wrap');
+                if (llWrap) llWrap.style.display = measureLL ? 'block' : 'none';
+                if (lnWrap) lnWrap.style.display = measureLN ? 'block' : 'none';
+
+                const buildSubTable = (mode, headId, bodyId) => {
+                    const mHdrs = measuredHeaders[direction][mode];
+                    const headEl = document.getElementById(headId);
+                    const bodyEl = document.getElementById(bodyId);
+                    if (!headEl || !bodyEl) return;
+
+                    // Preserve existing values before rebuild
+                    const prevVals = {};
+                    bodyEl.querySelectorAll('input').forEach(inp => { if (inp.id) prevVals[inp.id] = inp.value; });
+
+                    headEl.innerHTML = `
+                        <tr>
+                            <th rowspan="2">Tap</th>
+                            <th rowspan="2">Tap HV (kV)</th>
+                            <th rowspan="2">Std. Ratio</th>
+                            <th colspan="3" contenteditable="true">Applied Voltage (${direction === 'hv_to_lv' ? 'HV' : 'LV'})</th>
+                            <th colspan="3" contenteditable="true">Measured ${mode.toUpperCase()} (${direction === 'hv_to_lv' ? 'LV' : 'HV'})</th>
+                            <th rowspan="2" class="dev-col">% Dev.<br>(±1%)</th>
+                        </tr>
+                        <tr>
+                            <th contenteditable="true">${appLbls[0]}</th>
+                            <th contenteditable="true">${appLbls[1]}</th>
+                            <th contenteditable="true">${appLbls[2]}</th>
+                            <th contenteditable="true">${mHdrs[0]}</th>
+                            <th contenteditable="true">${mHdrs[1]}</th>
+                            <th contenteditable="true">${mHdrs[2]}</th>
+                        </tr>`;
+
+                    let rows = '';
+                    for (let i = 1; i <= tapCount; i++) {
+                        rows += `<tr>
+                            <td class="font-bold bg-transparent">${i}</td>
+                            <td class="bg-transparent"><input type="text" id="vr_tap_hv_${mode}_${i}" class="text-center-input font-bold" readonly title="Calculated Tap HV in kV"></td>
+                            <td class="bg-transparent"><input type="text" id="vr_std_ratio_${mode}_${i}" class="text-center-input font-bold" readonly title="Standard Nameplate Ratio (00.00)"></td>
+                            <td><input type="number" step="0.01" id="vr_app_${mode}_${i}_1" class="text-center-input vr-calc-trigger" placeholder="V"></td>
+                            <td><input type="number" step="0.01" id="vr_app_${mode}_${i}_2" class="text-center-input vr-calc-trigger" placeholder="V"></td>
+                            <td><input type="number" step="0.01" id="vr_app_${mode}_${i}_3" class="text-center-input vr-calc-trigger" placeholder="V"></td>
+                            <td><input type="number" step="0.01" id="vr_${mode}_${i}_r" class="text-center-input bold-input vr-calc-trigger"></td>
+                            <td><input type="number" step="0.01" id="vr_${mode}_${i}_y" class="text-center-input bold-input vr-calc-trigger"></td>
+                            <td><input type="number" step="0.01" id="vr_${mode}_${i}_b" class="text-center-input bold-input vr-calc-trigger"></td>
+                            <td class="dev-col"><input type="text" id="vr_dev_${mode}_${i}" class="text-center-input bold-input" readonly title="Max Phase Deviation vs Standard Ratio (±1% limit)"></td>
+                        </tr>`;
+                    }
+                    bodyEl.innerHTML = rows;
+                    Object.entries(prevVals).forEach(([id, val]) => {
+                        const el = document.getElementById(id);
+                        if (el && val !== '') el.value = val;
+                    });
+                };
+
+                buildSubTable('ll', 'vr_ll_table_head', 'vr_ll_table_body');
+                buildSubTable('ln', 'vr_ln_table_head', 'vr_ln_table_body');
+
+                // Build unified Mobile/Tablet Tap Cards (Line 1: Tap kV & Std Ratio, Line 2: 3x Applied, Line 3: 3x L-L, Line 4: 3x L-N)
+                const mobWrap = document.getElementById('vr_mobile_cards');
+                if (mobWrap) {
+                    const llHdrs = measuredHeaders[direction]['ll'];
+                    const lnHdrs = measuredHeaders[direction]['ln'];
+                    let mobHTML = '';
+                    for (let i = 1; i <= tapCount; i++) {
+                        const a1Val = document.getElementById(`vr_app_ll_${i}_1`)?.value || document.getElementById(`vr_app_ln_${i}_1`)?.value || '';
+                        const a2Val = document.getElementById(`vr_app_ll_${i}_2`)?.value || document.getElementById(`vr_app_ln_${i}_2`)?.value || '';
+                        const a3Val = document.getElementById(`vr_app_ll_${i}_3`)?.value || document.getElementById(`vr_app_ln_${i}_3`)?.value || '';
+                        const llR = document.getElementById(`vr_ll_${i}_r`)?.value || '';
+                        const llY = document.getElementById(`vr_ll_${i}_y`)?.value || '';
+                        const llB = document.getElementById(`vr_ll_${i}_b`)?.value || '';
+                        const lnR = document.getElementById(`vr_ln_${i}_r`)?.value || '';
+                        const lnY = document.getElementById(`vr_ln_${i}_y`)?.value || '';
+                        const lnB = document.getElementById(`vr_ln_${i}_b`)?.value || '';
+
+                        mobHTML += `<div class="vr-tap-card">
+                            <div class="vr-tap-card-head"><span>Tap ${i}</span><span class="text-[10.5px] text-slate-600">${direction === 'hv_to_lv' ? 'HV → LV' : 'LV → HV'}</span></div>
+                            <div class="vr-line-2">
+                                <div><span class="vr-field-lbl">Tap HV (kV)</span><input type="text" id="vr_mob_kv_${i}" class="text-center-input font-bold" readonly></div>
+                                <div><span class="vr-field-lbl">Std. Ratio</span><input type="text" id="vr_mob_ratio_${i}" class="text-center-input font-bold" readonly></div>
+                            </div>
+                            <div class="vr-sub-label">Applied Voltage (${appMode.toUpperCase()})</div>
+                            <div class="vr-line-3">
+                                <div><span class="vr-field-lbl">${appLbls[0]}</span><input type="number" step="0.01" id="vr_mob_app_${i}_1" data-sync-a="1" data-tap="${i}" class="vr-mob-sync text-center-input" value="${a1Val}" placeholder="V"></div>
+                                <div><span class="vr-field-lbl">${appLbls[1]}</span><input type="number" step="0.01" id="vr_mob_app_${i}_2" data-sync-a="2" data-tap="${i}" class="vr-mob-sync text-center-input" value="${a2Val}" placeholder="V"></div>
+                                <div><span class="vr-field-lbl">${appLbls[2]}</span><input type="number" step="0.01" id="vr_mob_app_${i}_3" data-sync-a="3" data-tap="${i}" class="vr-mob-sync text-center-input" value="${a3Val}" placeholder="V"></div>
+                            </div>
+                            ${measureLL ? `
+                            <div class="vr-sub-label" style="color:#1e40af;">Measured L-L</div>
+                            <div class="vr-line-3">
+                                <div><span class="vr-field-lbl">${llHdrs[0]}</span><input type="number" step="0.01" id="vr_mob_ll_${i}_r" data-sync-target="vr_ll_${i}_r" class="vr-mob-sync text-center-input bold-input" value="${llR}"></div>
+                                <div><span class="vr-field-lbl">${llHdrs[1]}</span><input type="number" step="0.01" id="vr_mob_ll_${i}_y" data-sync-target="vr_ll_${i}_y" class="vr-mob-sync text-center-input bold-input" value="${llY}"></div>
+                                <div><span class="vr-field-lbl">${llHdrs[2]}</span><input type="number" step="0.01" id="vr_mob_ll_${i}_b" data-sync-target="vr_ll_${i}_b" class="vr-mob-sync text-center-input bold-input" value="${llB}"></div>
+                            </div>` : ''}
+                            ${measureLN ? `
+                            <div class="vr-sub-label" style="color:#c2410c;">Measured L-N</div>
+                            <div class="vr-line-3">
+                                <div><span class="vr-field-lbl">${lnHdrs[0]}</span><input type="number" step="0.01" id="vr_mob_ln_${i}_r" data-sync-target="vr_ln_${i}_r" class="vr-mob-sync text-center-input bold-input" value="${lnR}"></div>
+                                <div><span class="vr-field-lbl">${lnHdrs[1]}</span><input type="number" step="0.01" id="vr_mob_ln_${i}_y" data-sync-target="vr_ln_${i}_y" class="vr-mob-sync text-center-input bold-input" value="${lnY}"></div>
+                                <div><span class="vr-field-lbl">${lnHdrs[2]}</span><input type="number" step="0.01" id="vr_mob_ln_${i}_b" data-sync-target="vr_ln_${i}_b" class="vr-mob-sync text-center-input bold-input" value="${lnB}"></div>
+                            </div>` : ''}
+                            <div class="dev-col mt-1"><span class="vr-field-lbl">% Dev (±1%)</span><input type="text" id="vr_mob_dev_${i}" class="text-center-input bold-input" readonly></div>
+                        </div>`;
+                    }
+                    mobWrap.innerHTML = mobHTML;
+                    mobWrap.querySelectorAll('.vr-mob-sync').forEach(inp => {
+                        inp.setAttribute('inputmode', 'decimal');
+                        inp.setAttribute('enterkeyhint', 'next');
+                        inp.addEventListener('input', () => {
+                            const t = inp.getAttribute('data-sync-target');
+                            const aIdx = inp.getAttribute('data-sync-a');
+                            const tap = inp.getAttribute('data-tap');
+                            if (t) {
+                                const dst = document.getElementById(t);
+                                if (dst) dst.value = inp.value;
+                            } else if (aIdx && tap) {
+                                ['ll', 'ln'].forEach(m => {
+                                    const dst = document.getElementById(`vr_app_${m}_${tap}_${aIdx}`);
+                                    if (dst) dst.value = inp.value;
+                                });
+                            }
+                            calculateVRDeviation();
+                            saveToSession();
+                        });
+                    });
                 }
-                tableBody.innerHTML = bodyHTML;
-                
-                document.querySelectorAll('.vr-calc-trigger').forEach(el => el.addEventListener('input', calculateVRDeviation));
+
+                document.querySelectorAll('.vr-calc-trigger').forEach(el => {
+                    el.removeEventListener('input', calculateVRDeviation);
+                    el.addEventListener('input', calculateVRDeviation);
+                });
+                copyMasterAppliedToAllTaps(false);
                 calculateVRDeviation();
             }
-            
+
             function calculateIRat20C() {
                 const oti = parseFloat(document.getElementById('ir_temp_oti').value);
                 
@@ -2598,7 +3581,7 @@ Instructions:
                 updateMcTable(); 
                 togglePiRows();
 
-                document.querySelectorAll('#vr_table_body input, #wr_hv_table_body input, #mc_table_body input, #vg_container input, #ir_table_body input, .dev-col input').forEach(input => {
+                document.querySelectorAll('#vr_ll_table_body input, #vr_ln_table_body input, #wr_hv_table_body input, #mc_table_body input, #vg_container input, #ir_table_body input, .dev-col input').forEach(input => {
                      const id = input.id;
                     if (id && data[id] !== undefined) { input.value = data[id]; }
                 });
@@ -2914,6 +3897,7 @@ Instructions:
                 updateVrTable(); 
                 updateWrTable();
                 updateMcTable();
+                enhanceTablesForFieldEntry();
             });
             
             testDateInput.addEventListener('change', updateReportNumber);
@@ -2924,19 +3908,51 @@ Instructions:
                 input.addEventListener('change', generateQRCode);
             });
 
-            vrDirectionRadios.forEach(radio => radio.addEventListener('change', updateVrTable));
-            vrMeasureLN.addEventListener('change', updateVrTable);
-            vrMeasureLL.addEventListener('change', updateVrTable);
+
+            function autoAdaptVRFromVectorGroup() {
+                const vg = vectorGroupSelect.value || 'Dyn11';
+                const meta = getVectorGroupMeta(vg);
+                const direction = document.querySelector('input[name="vr_direction"]:checked')?.value || 'hv_to_lv';
+                const hvHasNeutral = (meta.hvType === 'YN' || /^Y/i.test(vg));
+                const lvHasNeutral = (meta.lvType === 'yn' || /yn/i.test(vg));
+
+                // Source side neutral check -> auto-select Applied L-N vs L-L
+                const srcHasNeutral = (direction === 'hv_to_lv') ? hvHasNeutral : lvHasNeutral;
+                const appTarget = srcHasNeutral ? 'ln' : 'll';
+                const appRadio = document.querySelector(`input[name="vr_applied_mode"][value="${appTarget}"]`);
+                if (appRadio) appRadio.checked = true;
+
+                // Measured side neutral check -> auto-select Measured L-N vs L-L
+                const dstHasNeutral = (direction === 'hv_to_lv') ? lvHasNeutral : hvHasNeutral;
+                if (dstHasNeutral) {
+                    vrMeasureLN.checked = true;
+                    vrMeasureLL.checked = false;
+                } else {
+                    vrMeasureLN.checked = false;
+                    vrMeasureLL.checked = true;
+                }
+            }
+
+            document.querySelectorAll('input[name="vr_applied_mode"]').forEach(r => {
+                r.addEventListener('change', () => { updateVrTable(); hookDiagramAndFieldUpdates(); });
+            });
+
+            vrDirectionRadios.forEach(radio => radio.addEventListener('change', () => { autoAdaptVRFromVectorGroup(); updateVrTable(); hookDiagramAndFieldUpdates(); }));
+            vrMeasureLN.addEventListener('change', () => { updateVrTable(); hookDiagramAndFieldUpdates(); });
+            vrMeasureLL.addEventListener('change', () => { updateVrTable(); hookDiagramAndFieldUpdates(); });
             
             vectorGroupSelect.addEventListener('change', () => {
+                autoAdaptVRFromVectorGroup();
+                updateVrTable();
                 updateMbTable();
                 updateVectorGroupTest();
                 updateWrTable();
+                hookDiagramAndFieldUpdates();
             });
             
-            wrTapsModeSelect.addEventListener('change', generateWrTableRows);
-            mcTapsModeSelect.addEventListener('change', updateMcTable);
-            irTestTypeRadios.forEach(radio => radio.addEventListener('change', togglePiRows));
+            wrTapsModeSelect.addEventListener('change', () => { generateWrTableRows(); enhanceTablesForFieldEntry(); });
+            mcTapsModeSelect.addEventListener('change', () => { updateMcTable(); enhanceTablesForFieldEntry(); });
+            irTestTypeRadios.forEach(radio => radio.addEventListener('change', () => { togglePiRows(); renderAllConnectionDiagrams(); }));
             
             document.querySelectorAll('.vr-dependency').forEach(el => el.addEventListener('input', calculateVRDeviation));
             document.getElementById('ir_table_body').addEventListener('input', calculatePi);
@@ -2947,13 +3963,1210 @@ Instructions:
             document.querySelectorAll('.ir-calc-trigger').forEach(el => { el.addEventListener('input', calculateIRat20C); });
             document.querySelectorAll('select[id$="_remarks"]').forEach(select => { select.addEventListener('change', updateRemarksColors); });
 
-            loadEmbeddedData(); 
+
+            // --- VECTOR GROUP & TEST CONNECTION SVG DIAGRAM ENGINE ---
+            function getVectorGroupMeta(vg) {
+                const map = {
+                    'Dd0':   { hv: 'Delta (Δ)', hvType: 'D', lv: 'Delta (d)', lvType: 'd', clock: '12 o’clock (0°)', angle: 0, short: '1U — 2u', hvShort: '1U', lvShort: '2u' },
+                    'Dyn1':  { hv: 'Delta (Δ)', hvType: 'D', lv: 'Star + N (yn)', lvType: 'yn', clock: '1 o’clock (-30°)', angle: 30, short: '1U — 2n', hvShort: '1U', lvShort: '2n' },
+                    'Dyn11': { hv: 'Delta (Δ)', hvType: 'D', lv: 'Star + N (yn)', lvType: 'yn', clock: '11 o’clock (+30°)', angle: -30, short: '1U — 2u', hvShort: '1U', lvShort: '2u' },
+                    'YNd1':  { hv: 'Star + N (YN)', hvType: 'YN', lv: 'Delta (d)', lvType: 'd', clock: '1 o’clock (-30°)', angle: 30, short: '1N — 2u', hvShort: '1N', lvShort: '2u' },
+                    'YNd11': { hv: 'Star + N (YN)', hvType: 'YN', lv: 'Delta (d)', lvType: 'd', clock: '11 o’clock (+30°)', angle: -30, short: '1N — 2u', hvShort: '1N', lvShort: '2u' },
+                    'YNyn0': { hv: 'Star + N (YN)', hvType: 'YN', lv: 'Star + N (yn)', lvType: 'yn', clock: '12 o’clock (0°)', angle: 0, short: '1N — 2n', hvShort: '1N', lvShort: '2n' }
+                };
+                return map[vg] || { hv: 'Custom HV', hvType: 'D', lv: 'Custom LV', lvType: 'yn', clock: 'Custom', angle: 0, short: 'Per Nameplate', hvShort: '1U', lvShort: '2u' };
+            }
+
+            function windingGlyphSVG(x, y, type, isHV, showShortPin) {
+                const col = isHV ? '#1e40af' : '#ea580c';
+                const p1 = isHV ? '1U' : '2u';
+                const p2 = isHV ? '1V' : '2v';
+                const p3 = isHV ? '1W' : '2w';
+                const pn = isHV ? '1N' : '2n';
+                if (type === 'D' || type === 'd') {
+                    return `
+                        <polygon points="${x},${y-26} ${x-24},${y+18} ${x+24},${y+18}" fill="none" stroke="${col}" stroke-width="2.4" stroke-linejoin="round"/>
+                        <circle cx="${x}" cy="${y-26}" r="3.2" fill="${col}"/>
+                        <circle cx="${x-24}" cy="${y+18}" r="3.2" fill="${col}"/>
+                        <circle cx="${x+24}" cy="${y+18}" r="3.2" fill="${col}"/>
+                        <text x="${x}" y="${y-32}" text-anchor="middle" font-size="9.5" font-weight="800" fill="${col}">${p1}</text>
+                        <text x="${x-29}" y="${y+26}" text-anchor="end" font-size="9.5" font-weight="800" fill="${col}">${p2}</text>
+                        <text x="${x+29}" y="${y+26}" text-anchor="start" font-size="9.5" font-weight="800" fill="${col}">${p3}</text>
+                    `;
+                }
+                return `
+                    <line x1="${x}" y1="${y}" x2="${x}" y2="${y-26}" stroke="${col}" stroke-width="2.4"/>
+                    <line x1="${x}" y1="${y}" x2="${x-23}" y2="${y+16}" stroke="${col}" stroke-width="2.4"/>
+                    <line x1="${x}" y1="${y}" x2="${x+23}" y2="${y+16}" stroke="${col}" stroke-width="2.4"/>
+                    <circle cx="${x}" cy="${y}" r="3.5" fill="${col}"/>
+                    <circle cx="${x}" cy="${y-26}" r="3.2" fill="${col}"/>
+                    <circle cx="${x-23}" cy="${y+16}" r="3.2" fill="${col}"/>
+                    <circle cx="${x+23}" cy="${y+16}" r="3.2" fill="${col}"/>
+                    <text x="${x}" y="${y-32}" text-anchor="middle" font-size="9.5" font-weight="800" fill="${col}">${p1}</text>
+                    <text x="${x-27}" y="${y+24}" text-anchor="end" font-size="9.5" font-weight="800" fill="${col}">${p2}</text>
+                    <text x="${x+27}" y="${y+24}" text-anchor="start" font-size="9.5" font-weight="800" fill="${col}">${p3}</text>
+                    <text x="${x+10}" y="${y+3}" font-size="9" font-weight="800" fill="#0f766e">${pn}</text>
+                `;
+            }
+
+            function buildVectorGroupSVG(vg, mode) {
+                const meta = getVectorGroupMeta(vg);
+                const rad = (meta.angle - 90) * Math.PI / 180;
+                const cx = 248, cy = 54, r = 24;
+                const lx = (cx + r * 0.82 * Math.cos(rad)).toFixed(1);
+                const ly = (cy + r * 0.82 * Math.sin(rad)).toFixed(1);
+                const shortBadge = mode === 'vg_test'
+                    ? `<line x1="68" y1="28" x2="150" y2="28" stroke="#059669" stroke-width="2.2" stroke-dasharray="4,3"/>
+                       <rect x="86" y="13" width="46" height="14" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="1"/>
+                       <text x="109" y="23" text-anchor="middle" font-size="8" font-weight="800" fill="#166534">${meta.short}</text>`
+                    : `<text x="109" y="57" text-anchor="middle" font-size="14" font-weight="900" fill="#64748b">||</text>`;
+
+                const title = mode === 'vg_test'
+                    ? `VECTOR GROUP & SHORTING DIAGRAM (${vg})`
+                    : `NAMEPLATE VECTOR GROUP SCHEMATIC (${vg})`;
+
+                return `
+                    <div class="test-diagram-header">
+                        <span><i class="fa-solid fa-diagram-project mr-1"></i>${title}</span>
+                        <span class="px-2 py-0.5 rounded bg-blue-100 text-blue-800 text-[10px] font-extrabold">${meta.clock}</span>
+                    </div>
+                    <svg viewBox="0 0 300 106" class="w-full max-w-[380px] mx-auto block" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="2" y="2" width="296" height="102" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+                        <text x="62" y="15" text-anchor="middle" font-size="8.5" font-weight="800" fill="#1e40af">HV: ${meta.hv}</text>
+                        <text x="156" y="15" text-anchor="middle" font-size="8.5" font-weight="800" fill="#ea580c">LV: ${meta.lv}</text>
+                        <text x="248" y="15" text-anchor="middle" font-size="8.5" font-weight="800" fill="#0f766e">PHASOR CLOCK</text>
+                        ${windingGlyphSVG(62, 58, meta.hvType, true)}
+                        ${shortBadge}
+                        ${windingGlyphSVG(156, 58, meta.lvType, false)}
+                        <circle cx="${cx}" cy="${cy}" r="${r}" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.5"/>
+                        <line x1="${cx}" y1="${cy}" x2="${cx}" y2="${cy - r + 3}" stroke="#1e40af" stroke-width="2.4" stroke-linecap="round"/>
+                        <line x1="${cx}" y1="${cy}" x2="${lx}" y2="${ly}" stroke="#ea580c" stroke-width="2.4" stroke-linecap="round"/>
+                        <circle cx="${cx}" cy="${cy}" r="2.5" fill="#0f172a"/>
+                        <text x="${cx}" y="${cy + r + 12}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#334155">${vg} • 1U=12h</text>
+                    </svg>
+                `;
+            }
+
+            function renderAllConnectionDiagrams() {
+                const vg = vectorGroupSelect.value || 'Dyn11';
+                const meta = getVectorGroupMeta(vg);
+                const pair = document.getElementById('tx_active_pair')?.value || 'HV-LV';
+
+                const procHTML = (title, text) => `
+                    <div class="test-procedure-title"><i class="fa-solid fa-clipboard-list mr-1"></i>${title}</div>
+                    <div contenteditable="true" class="outline-none">${text}</div>
+                `;
+
+                const vrDir = document.querySelector('input[name="vr_direction"]:checked')?.value || 'hv_to_lv';
+                const measLL = document.getElementById('vr_measure_ll')?.checked;
+                const measLN = document.getElementById('vr_measure_ln')?.checked;
+                const measMode = (measLL && measLN) ? 'both L-L and L-N' : (measLL ? 'L-L' : 'L-N');
+                const vrBox = document.getElementById('vr_procedure_box');
+                if (vrBox) {
+                    const text = vrDir === 'hv_to_lv'
+                        ? `<strong>Test Procedure (${pair}, ${vg}):</strong> Applied three-phase AC supply (${(document.querySelector('input[name="vr_applied_mode"]:checked')?.value || 'll').toUpperCase()}) at HV side terminals (${(document.querySelector('input[name="vr_applied_mode"]:checked')?.value || 'll') === 'ln' ? '1U–1N, 1V–1N, 1W–1N' : '1U–1V–1W'}) and measured induced voltages at LV side terminals (${measMode}) across all tap positions. Verified measured ratios against nameplate theoretical ratios within permissible ±1.0% site tolerance (ref. IS 2026-1 / IEC 60076-1).`
+                        : `<strong>Test Procedure (${pair}, ${vg}):</strong> Applied three-phase AC supply (${(document.querySelector('input[name="vr_applied_mode"]:checked')?.value || 'll').toUpperCase()}) at LV side terminals (${(document.querySelector('input[name="vr_applied_mode"]:checked')?.value || 'll') === 'ln' ? '2u–2n, 2v–2n, 2w–2n' : '2u–2v–2w'}) and measured induced voltages at HV side terminals (${measMode}) across all tap positions. Verified measured ratios against nameplate theoretical ratios within permissible ±1.0% site tolerance (ref. IS 2026-1 / IEC 60076-1).`;
+                    vrBox.innerHTML = procHTML('Voltage Ratio Test Procedure', text);
+                }
+
+                const mbBox = document.getElementById('mb_procedure_box');
+                if (mbBox) {
+                    const mbApply = meta.hvType === 'D' ? '1U–1V, 1V–1W, and 1W–1U' : '1U–1N, 1V–1N, and 1W–1N';
+                    const text = `<strong>Test Procedure (${pair}, ${vg}):</strong> Applied single-phase 230V AC supply sequentially across one HV winding phase at a time (${mbApply}) with LV side open-circuited. Measured induced voltages across the remaining two HV phases and all three LV phases to verify magnetic flux symmetry across the 3-limb core (V_applied ≈ sum of induced voltages on other two limbs, per IS 10028-2).`;
+                    mbBox.innerHTML = procHTML('Magnetic Balance Test Procedure', text);
+                }
+
+                const mcBox = document.getElementById('mc_procedure_box');
+                if (mcBox) {
+                    const text = `<strong>Test Procedure (${pair}, ${vg}):</strong> Applied three-phase 415V AC supply to HV terminals (1U–1V–1W) with LV terminals kept completely open-circuited. Recorded no-load magnetizing current (mA) in R, Y, and B phases to verify core integrity and outer-limb vs. center-limb current symmetry (IEEE C57.12.90).`;
+                    mcBox.innerHTML = procHTML('Magnetizing Current Test Procedure', text);
+                }
+
+                const vgBox = document.getElementById('vg_procedure_box');
+                if (vgBox) {
+                    const text = `<strong>Test Procedure (${vg}):</strong> Shorted terminals <strong>${meta.short}</strong> with a jumper link and applied low-voltage three-phase AC supply to HV terminals (1U–1V–1W). Measured inter-terminal voltages between HV and LV bushings and verified the required phase-displacement conditions for <strong>${vg} (${meta.clock})</strong> per IS 2026-1 / IEC 60076-1.`;
+                    vgBox.innerHTML = procHTML('Vector Group Verification Procedure', text);
+                }
+
+                const wrBox = document.getElementById('wr_procedure_box');
+                if (wrBox) {
+                    const hvPairs = meta.hvType === 'D' ? '1U–1V, 1V–1W, 1W–1U' : '1U–1N, 1V–1N, 1W–1N';
+                    const lvPairs = meta.lvType === 'd' ? '2u–2v, 2v–2w, 2w–2u' : '2u–2n, 2v–2n, 2w–2n';
+                    const text = `<strong>Test Procedure (${pair}, ${vg}):</strong> Measured DC winding resistance using a 4-wire Kelvin micro-ohm meter after core saturation stabilization. Recorded HV resistance across ${hvPairs} at selected tap(s) and LV resistance across ${lvPairs} at Principal Tap along with OTI/WTI temperatures; checked phase-to-phase unbalance within ±2% (IS 2026-1 / IEC 60076-1).`;
+                    wrBox.innerHTML = procHTML('Winding Resistance Test Procedure', text);
+                }
+
+                const irBox = document.getElementById('ir_procedure_box');
+                if (irBox) {
+                    const irType = document.querySelector('input[name="ir_test_type"]:checked')?.value === 'ir_pi' ? '1-minute and 10-minute (PI)' : '1-minute';
+                    const text = `<strong>Test Procedure:</strong> Shorted all HV terminals together and all LV terminals together. Applied DC test voltage via insulation tester (Megger) for ${irType} readings between HV–Earth (LV grounded), LV–Earth (HV grounded), and HV–LV (Tank guarded/earthed). Recorded OTI/WTI temperatures and normalized IR to 20°C (IS 1180 / IEEE C57.12.90).`;
+                    irBox.innerHTML = procHTML('Insulation Resistance (IR / PI) Test Procedure', text);
+                }
+
+                const bdvBox = document.getElementById('bdv_procedure_box');
+                if (bdvBox) {
+                    const bdvMode = document.querySelector('input[name="bdv_mode"]:checked')?.value || 'before_after';
+                    const text = bdvMode === 'before_after'
+                        ? `<strong>Test Procedure:</strong> Collected representative insulating oil samples from the bottom drain valve before and after oil filtration into a clean dry cell (2.5 mm electrode gap) and measured dielectric breakdown voltage (kV) at 2 kV/s ramp rate per IS 6792 / IEC 60156.`
+                        : `<strong>Test Procedure:</strong> Collected representative insulating oil sample from the bottom drain valve into a clean dry cell with 2.5 mm electrode gap. Allowed settling time and applied AC voltage ramping at 2 kV/s for 6 consecutive breakdown shots with 2-minute intervals and gentle stirring; computed average BDV (kV) per IS 6792 / IEC 60156.`;
+                    bdvBox.innerHTML = procHTML('Oil BDV Test Procedure', text);
+                }
+
+                const bfBox = document.getElementById('bf_procedure_box');
+                if (bfBox) {
+                    const text = `<strong>Test Procedure (${pair}, ${vg}):</strong> Energized the transformer from the LV side at rated low-voltage three-phase supply (415V/433V) with HV terminals open-circuited and safely isolated. Measured no-load excitation current (I0) in R, Y, B phases and core loss (W) to confirm healthy magnetic circuit and inter-turn insulation (IS 2026-1 / IEC 60076-1).`;
+                    bfBox.innerHTML = procHTML('Backfeeding / No-Load Test Procedure', text);
+                }
+            }
+
+            // --- MOBILE & TABLET FIELD-ENTRY LABELS + SINGLE-CLICK NEXT-BOX NAVIGATION ---
+            function enhanceTablesForFieldEntry() {
+                // Enhance numeric inputs for mobile keypad & Next key
+                document.querySelectorAll('input[type="number"]').forEach(inp => {
+                    inp.setAttribute('inputmode', 'decimal');
+                    inp.setAttribute('enterkeyhint', 'next');
+                });
+                document.querySelectorAll('input[type="text"]:not([readonly])').forEach(inp => {
+                    if (inp.id !== 'gemini_api_key' && inp.id !== 'assistant_input') {
+                        inp.setAttribute('enterkeyhint', 'next');
+                    }
+                });
+
+                // Tag stacked VR L-L & L-N tables with data-field-label
+                ['ll', 'ln'].forEach(mode => {
+                    const row2Ths = Array.from(document.querySelectorAll(`#vr_${mode}_table_head tr:nth-child(2) th`)).map(th => th.textContent.trim());
+                    const labels = [
+                        'Tap', 'Tap HV (kV)', 'Std. Ratio',
+                        'App ' + (row2Ths[0] || '1'), 'App ' + (row2Ths[1] || '2'), 'App ' + (row2Ths[2] || '3'),
+                        row2Ths[3] || 'Ph1', row2Ths[4] || 'Ph2', row2Ths[5] || 'Ph3',
+                        '% Dev (±1%)'
+                    ];
+                    document.querySelectorAll(`#vr_${mode}_table_body tr`).forEach(tr => {
+                        tr.querySelectorAll('td').forEach((td, idx) => {
+                            if (idx === 0) {
+                                td.classList.add('field-card-header');
+                                td.textContent = 'Tap ' + td.textContent.replace(/^Tap\s*/i, '').trim();
+                            } else if (labels[idx]) {
+                                td.setAttribute('data-field-label', labels[idx]);
+                            }
+                        });
+                    });
+                });
+
+                // Tag MC table cells: Tap Position ALWAYS on its own full line so R, Y, B sit together in 1 line of 3!
+                const mcHeads = Array.from(document.querySelectorAll('#mc_table_head th')).map(th => th.textContent.trim());
+                document.querySelectorAll('#mc_table_body tr').forEach(tr => {
+                    const tds = tr.querySelectorAll('td');
+                    tds.forEach((td, idx) => {
+                        if (idx === 0) {
+                            if (!td.querySelector('input')) {
+                                td.classList.add('field-card-header');
+                                td.textContent = 'Tap ' + td.textContent.replace(/^Tap\s*/i, '').trim();
+                            } else {
+                                td.classList.add('field-card-full');
+                                td.setAttribute('data-field-label', mcHeads[0] || 'Tap Position');
+                            }
+                        } else if (mcHeads[idx]) {
+                            td.setAttribute('data-field-label', mcHeads[idx]);
+                        }
+                    });
+                });
+
+                // Tag WR HV table cells: Tap Position full-width, 3 phases in 1 line, hide dummy '-' unit cell on mobile
+                const wrHvHeads = Array.from(document.querySelectorAll('#wr_hv_table thead th')).map(th => th.childNodes[0]?.textContent?.trim() || th.textContent.trim());
+                document.querySelectorAll('#wr_hv_table_body tr').forEach(tr => {
+                    const tds = tr.querySelectorAll('td');
+                    tds.forEach((td, idx) => {
+                        if (idx === 0) {
+                            td.classList.add('field-card-header');
+                            if (!td.querySelector('input') && !/^Tap/i.test(td.textContent.trim())) {
+                                td.textContent = 'Tap ' + td.textContent.trim();
+                            }
+                        } else if (idx === 4) {
+                            td.classList.add('field-hide-mobile');
+                        } else if (wrHvHeads[idx]) {
+                            td.setAttribute('data-field-label', wrHvHeads[idx]);
+                        }
+                    });
+                });
+
+                // Tag WR LV table cells: 3 phases in 1 line, hide dummy '-' unit cell on mobile
+                const wrLvHeads = Array.from(document.querySelectorAll('#wr_lv_table thead th')).map(th => th.childNodes[0]?.textContent?.trim() || th.textContent.trim());
+                document.querySelectorAll('#wr_lv_table tbody tr').forEach(tr => {
+                    tr.querySelectorAll('td').forEach((td, idx) => {
+                        if (idx === 3) td.classList.add('field-hide-mobile');
+                        else if (wrLvHeads[idx]) td.setAttribute('data-field-label', wrLvHeads[idx]);
+                    });
+                });
+
+
+
+                // Tag MB tables
+                const tagMbTable = (tableSelector, hvPrefix, lvPrefix) => {
+                    const table = document.querySelector(tableSelector + ' table');
+                    if (!table) return;
+                    const row2Ths = Array.from(table.querySelectorAll('thead tr:nth-child(2) th')).map(th => {
+                        const inp = th.querySelector('input');
+                        return inp ? inp.value : th.textContent.trim();
+                    });
+                    const labels = [
+                        'Applied',
+                        hvPrefix + (row2Ths[0] || 'P1'), hvPrefix + (row2Ths[1] || 'P2'), hvPrefix + (row2Ths[2] || 'P3'),
+                        'HV % Dev',
+                        lvPrefix + (row2Ths[3] || 'S1'), lvPrefix + (row2Ths[4] || 'S2'), lvPrefix + (row2Ths[5] || 'S3'),
+                        'LV % Dev'
+                    ];
+                    table.querySelectorAll('tbody tr').forEach(tr => {
+                        tr.querySelectorAll('td').forEach((td, idx) => {
+                            if (idx === 0) {
+                                td.classList.add('field-card-header');
+                            } else if (labels[idx]) {
+                                td.setAttribute('data-field-label', labels[idx]);
+                            }
+                        });
+                    });
+                };
+                tagMbTable('#mb_dyn_table', 'HV ', 'LV ');
+                tagMbTable('#mb_ynd_table', 'HV ', 'LV ');
+                tagMbTable('#mb_custom_table', 'Pri ', 'Sec ');
+
+                // Tag IR table
+                const irCols = ['Parameter', 'HV-E', 'LV-E', 'HV-LV'];
+                document.querySelectorAll('#ir_table_body tr').forEach(tr => {
+                    tr.querySelectorAll('td').forEach((td, idx) => {
+                        if (idx === 0) td.classList.add('field-card-header');
+                        else if (irCols[idx]) td.setAttribute('data-field-label', irCols[idx]);
+                    });
+                });
+            }
+
+            // Responsive Field Mode Toggle (Auto-enabled on Mobile & Tablet < 1024px)
+            const fieldModeBtn = document.getElementById('toggle-field-mode-btn');
+            const fieldModeBtnText = document.getElementById('field-mode-btn-text');
+            let userToggledFieldMode = null;
+
+            function applyResponsiveFieldMode() {
+                const autoMobile = window.innerWidth < 1024;
+                const active = userToggledFieldMode !== null ? userToggledFieldMode : autoMobile;
+                document.body.classList.toggle('mobile-field-mode', active);
+                if (fieldModeBtnText) {
+                    fieldModeBtnText.textContent = active ? 'A4 View' : 'Field Mode';
+                }
+            }
+            if (fieldModeBtn) {
+                fieldModeBtn.addEventListener('click', () => {
+                    const isCurrentlyField = document.body.classList.contains('mobile-field-mode');
+                    userToggledFieldMode = !isCurrentlyField;
+                    applyResponsiveFieldMode();
+                });
+            }
+            window.addEventListener('resize', applyResponsiveFieldMode);
+            applyResponsiveFieldMode();
+
+            // Floating Quick-Nav Bar (Single-Tap Next Box / Enter Key Auto-Advance)
+            const fieldNavBar = document.getElementById('field-nav-bar');
+            const fieldNavLabel = document.getElementById('field-nav-label');
+            const fieldNavPrev = document.getElementById('field-nav-prev');
+            const fieldNavNext = document.getElementById('field-nav-next');
+            const fieldNavDone = document.getElementById('field-nav-done');
+            let currentFocusedInput = null;
+
+            function getNavigableInputs() {
+                return Array.from(document.querySelectorAll('.report-content input:not([type="hidden"]):not([type="file"]):not([readonly]):not([disabled]), .report-content select:not([disabled])'))
+                    .filter(el => el.offsetParent !== null);
+            }
+
+            function moveFocusToRelative(step) {
+                const inputs = getNavigableInputs();
+                if (!inputs.length) return;
+                let idx = currentFocusedInput ? inputs.indexOf(currentFocusedInput) : -1;
+                let nextIdx = idx + step;
+                if (nextIdx < 0) nextIdx = 0;
+                if (nextIdx >= inputs.length) nextIdx = inputs.length - 1;
+                const target = inputs[nextIdx];
+                if (target) {
+                    target.focus({ preventScroll: false });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    if (typeof target.select === 'function' && (target.type === 'text' || target.type === 'number')) {
+                        try { target.select(); } catch (e) {}
+                    }
+                }
+            }
+
+            document.addEventListener('focusin', (e) => {
+                const el = e.target;
+                if (el && el.closest('.report-content') && (el.tagName === 'INPUT' || el.tagName === 'SELECT') && !el.readOnly && el.type !== 'checkbox' && el.type !== 'radio') {
+                    currentFocusedInput = el;
+                    const td = el.closest('td');
+                    const lbl = td?.getAttribute('data-field-label') || el.placeholder || el.id.replace(/_/g, ' ');
+                    if (fieldNavLabel) fieldNavLabel.textContent = lbl;
+                    if (fieldNavBar) fieldNavBar.classList.add('active');
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && e.target && e.target.tagName === 'INPUT' && e.target.closest('.report-content')) {
+                    e.preventDefault();
+                    moveFocusToRelative(1);
+                }
+            });
+
+            if (fieldNavPrev) fieldNavPrev.addEventListener('click', () => moveFocusToRelative(-1));
+            if (fieldNavNext) fieldNavNext.addEventListener('click', () => moveFocusToRelative(1));
+            if (fieldNavDone) fieldNavDone.addEventListener('click', () => {
+                if (currentFocusedInput) currentFocusedInput.blur();
+                if (fieldNavBar) fieldNavBar.classList.remove('active');
+            });
+
+            // Re-run diagram & field-label hooks whenever tables/vector group update
+            const hookDiagramAndFieldUpdates = () => {
+                renderAllConnectionDiagrams();
+                enhanceTablesForFieldEntry();
+            };
+
+
+            // --- NETWORK STATUS INDICATOR ---
+            const netPill = document.getElementById('network-status-pill');
+            function updateNetworkStatus() {
+                if (!netPill) return;
+                if (navigator.onLine) {
+                    netPill.className = 'px-2 py-1 rounded-full text-[11px] font-extrabold bg-emerald-100 text-emerald-900 border border-emerald-400 flex items-center gap-1';
+                    netPill.innerHTML = '<i class="fa-solid fa-wifi"></i> <span>Online</span>';
+                } else {
+                    netPill.className = 'px-2 py-1 rounded-full text-[11px] font-extrabold bg-amber-100 text-amber-900 border border-amber-400 flex items-center gap-1';
+                    netPill.innerHTML = '<i class="fa-solid fa-plane-slash"></i> <span>Offline Ready</span>';
+                }
+            }
+            window.addEventListener('online', updateNetworkStatus);
+            window.addEventListener('offline', updateNetworkStatus);
+            updateNetworkStatus();
+
+            // --- MULTI-WINDING TOPOLOGY & ACTIVE PAIR ADAPTER ---
+            const windingConfigSelect = document.getElementById('tx_winding_config');
+            const activePairSelect = document.getElementById('tx_active_pair');
+            const windingPairOptions = {
+                '2W': [{ v: 'HV-LV', t: 'HV – LV' }],
+                '3W_1HV_2LV': [
+                    { v: 'HV-LV1', t: 'HV – LV1' },
+                    { v: 'HV-LV2', t: 'HV – LV2' },
+                    { v: 'LV1-LV2', t: 'LV1 – LV2' }
+                ],
+                '3W_HV_MV_LV': [
+                    { v: 'HV-MV', t: 'HV – MV' },
+                    { v: 'HV-LV', t: 'HV – LV' },
+                    { v: 'MV-LV', t: 'MV – LV' }
+                ],
+                '4W_2HV_2LV': [
+                    { v: 'HV1-LV1', t: 'HV1 – LV1' },
+                    { v: 'HV1-LV2', t: 'HV1 – LV2' },
+                    { v: 'HV2-LV1', t: 'HV2 – LV1' },
+                    { v: 'HV2-LV2', t: 'HV2 – LV2' }
+                ],
+                'AUTO': [
+                    { v: 'HV-IV', t: 'HV – IV (Series/Common)' },
+                    { v: 'HV-TV', t: 'HV – TV (Tertiary)' },
+                    { v: 'IV-TV', t: 'IV – TV' }
+                ]
+            };
+
+            function syncWindingPairs() {
+                if (!windingConfigSelect || !activePairSelect) return;
+                const cfg = windingConfigSelect.value || '2W';
+                const opts = windingPairOptions[cfg] || windingPairOptions['2W'];
+                const prev = activePairSelect.value;
+                activePairSelect.innerHTML = '';
+                opts.forEach(o => activePairSelect.add(new Option(o.t, o.v)));
+                if (opts.some(o => o.v === prev)) activePairSelect.value = prev;
+                const wcPrint = document.getElementById('tx_winding_config_print');
+                if (wcPrint) wcPrint.textContent = windingConfigSelect.options[windingConfigSelect.selectedIndex]?.text || cfg;
+                const apPrint = document.getElementById('tx_active_pair_print');
+                if (apPrint) apPrint.textContent = activePairSelect.options[activePairSelect.selectedIndex]?.text || activePairSelect.value;
+                hookDiagramAndFieldUpdates();
+            }
+            if (windingConfigSelect) windingConfigSelect.addEventListener('change', syncWindingPairs);
+            if (activePairSelect) activePairSelect.addEventListener('change', syncWindingPairs);
+
+            // --- OFFLINE NAMEPLATE TEXT PARSER ---
+            function parseNameplateTextOffline(rawText) {
+                if (!rawText) return 0;
+                let filled = 0;
+                const setVal = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el && val) {
+                        el.value = String(val).trim();
+                        el.dispatchEvent(new Event('input', { bubbles: true }));
+                        filled++;
+                    }
+                };
+                const kvaMatch = rawText.match(/(\d+(?:\.\d+)?)\s*(KVA|MVA)/i);
+                if (kvaMatch) setVal('tx_rating', kvaMatch[1] + ' ' + kvaMatch[2].toUpperCase());
+
+                const voltMatch = rawText.match(/(\d{3,6})\s*[\/\-]\s*(\d{3,5})\s*V?/i);
+                if (voltMatch) setVal('tx_voltage', formatVoltagePairToKV(voltMatch[1] + ' / ' + voltMatch[2]));
+
+                const impMatch = rawText.match(/(?:%\s*Z|IMPEDANCE)\s*[:=]?\s*(\d+(?:\.\d+)?)\s*%?/i);
+                if (impMatch) setVal('tx_impedance', impMatch[1] + '%');
+
+                const vgMatch = rawText.match(/\b(Dyn11|Dyn1|YNd11|YNd1|YNyn0|Dd0)\b/i);
+                if (vgMatch) {
+                    const vs = document.getElementById('tx_vector');
+                    if (vs) {
+                        for (let i = 0; i < vs.options.length; i++) {
+                            if (vs.options[i].text.toUpperCase() === vgMatch[1].toUpperCase()) {
+                                vs.selectedIndex = i;
+                                vs.dispatchEvent(new Event('change'));
+                                filled++;
+                                break;
+                            }
+                        }
+                    }
+                }
+                const srMatch = rawText.match(/(?:S\.?\s*NO\.?|SERIAL\s*NO\.?)\s*[:=]?\s*([A-Z0-9\-\/]+)/i);
+                if (srMatch) setVal('tx_serial', srMatch[1]);
+
+                const tapStepMatch = rawText.match(/(?:STEP|TAP)\s*[:=]?\s*[±+-]?\s*(\d+(?:\.\d+)?)\s*%/i);
+                if (tapStepMatch) setVal('tx_tap_step', tapStepMatch[1]);
+
+                const oilMatch = rawText.match(/(\d+(?:\.\d+)?)\s*(?:LTRS|LITRES|L)\b/i);
+                if (oilMatch) setVal('tx_oil_qty', oilMatch[1] + ' LTRS');
+
+                const coolMatch = rawText.match(/\b(ONAN\s*\/\s*ONAF|ONAN|ONAF|KNAN|ANAF|AN)\b/i);
+                if (coolMatch) {
+                    setSelectOrAddOption('tx_cooling', 'tx_cooling_custom', 'tx_cooling_print', coolMatch[1].toUpperCase());
+                    filled++;
+                }
+                calculateVRDeviation();
+                saveToSession();
+                return filled;
+            }
+
+            const npOfflineBtn = document.getElementById('nameplate_offline_btn');
+            if (npOfflineBtn) {
+                npOfflineBtn.addEventListener('click', () => {
+                    assistantPanel.classList.remove('hidden');
+                    assistantToggleIcon.classList.remove('fa-chevron-down');
+                    assistantToggleIcon.classList.add('fa-chevron-up');
+                    assistantInput.focus();
+                    assistantInput.placeholder = "Paste raw nameplate text here and click 'Offline Text Parse' (works with zero internet)...";
+                    showNotification("Paste nameplate text in the Copilot box and click 'Offline Text Parse'.", "info");
+                });
+            }
+
+            // --- INBUILT CLIPBOARD IMAGE PASTE & HANDWRITTEN SHEET EXTRACTOR IN COPILOT ---
+            let copilotAttachedBase64 = null;
+            let copilotAttachedMime = null;
+            const copilotPreviewWrap = document.getElementById('copilot_image_preview_wrap');
+            const copilotPreviewImg = document.getElementById('copilot_image_preview');
+            const copilotClearBtn = document.getElementById('copilot_image_clear');
+            const copilotPasteBtn = document.getElementById('copilot_paste_btn');
+            const copilotUploadBtn = document.getElementById('copilot_upload_btn');
+            const copilotCameraBtn = document.getElementById('copilot_camera_btn');
+            const copilotSheetFile = document.getElementById('copilot_sheet_file');
+            const copilotSheetCamera = document.getElementById('copilot_sheet_camera');
+            const copilotOfflineParseBtn = document.getElementById('copilot_offline_parse_btn');
+
+            function attachCopilotImageFile(file) {
+                if (!file || !file.type.startsWith('image/')) return;
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    copilotAttachedBase64 = ev.target.result.split(',')[1];
+                    copilotAttachedMime = file.type;
+                    if (copilotPreviewImg) copilotPreviewImg.src = ev.target.result;
+                    if (copilotPreviewWrap) {
+                        copilotPreviewWrap.classList.remove('hidden');
+                        copilotPreviewWrap.classList.add('flex');
+                    }
+                    showNotification("Image attached to Copilot clipboard!", "success");
+                };
+                reader.readAsDataURL(file);
+            }
+
+            if (copilotClearBtn) {
+                copilotClearBtn.addEventListener('click', () => {
+                    copilotAttachedBase64 = null;
+                    copilotAttachedMime = null;
+                    if (copilotPreviewWrap) {
+                        copilotPreviewWrap.classList.add('hidden');
+                        copilotPreviewWrap.classList.remove('flex');
+                    }
+                });
+            }
+            if (copilotUploadBtn && copilotSheetFile) copilotUploadBtn.addEventListener('click', () => copilotSheetFile.click());
+            if (copilotCameraBtn && copilotSheetCamera) copilotCameraBtn.addEventListener('click', () => copilotSheetCamera.click());
+            if (copilotSheetFile) copilotSheetFile.addEventListener('change', (e) => attachCopilotImageFile(e.target.files[0]));
+            if (copilotSheetCamera) copilotSheetCamera.addEventListener('change', (e) => attachCopilotImageFile(e.target.files[0]));
+
+            if (assistantInput) {
+                assistantInput.addEventListener('paste', (e) => {
+                    const items = e.clipboardData?.items;
+                    if (!items) return;
+                    for (const item of items) {
+                        if (item.type.startsWith('image/')) {
+                            e.preventDefault();
+                            attachCopilotImageFile(item.getAsFile());
+                            break;
+                        }
+                    }
+                });
+            }
+
+            if (copilotPasteBtn) {
+                copilotPasteBtn.addEventListener('click', async () => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.read) {
+                            const items = await navigator.clipboard.read();
+                            for (const item of items) {
+                                const imgType = item.types.find(t => t.startsWith('image/'));
+                                if (imgType) {
+                                    const blob = await item.getType(imgType);
+                                    attachCopilotImageFile(new File([blob], 'clipboard.png', { type: imgType }));
+                                    return;
+                                }
+                            }
+                        }
+                        if (navigator.clipboard && navigator.clipboard.readText) {
+                            const txt = await navigator.clipboard.readText();
+                            if (txt) {
+                                assistantInput.value = (assistantInput.value ? assistantInput.value + '\n' : '') + txt;
+                                showNotification("Clipboard text pasted!", "info");
+                                return;
+                            }
+                        }
+                        showNotification("Press Ctrl+V inside the Copilot box to paste image/text.", "info");
+                    } catch (err) {
+                        showNotification("Press Ctrl+V inside the Copilot box to paste from clipboard.", "info");
+                    }
+                });
+            }
+
+            if (copilotOfflineParseBtn) {
+                copilotOfflineParseBtn.addEventListener('click', () => {
+                    const txt = assistantInput.value.trim();
+                    if (!txt) { showNotification("Paste nameplate or test text first.", "error"); return; }
+                    const count = parseNameplateTextOffline(txt);
+                    assistantChat.innerHTML += `<div><strong class="text-emerald-400">Offline Parser:</strong> Extracted and updated ${count} nameplate fields without internet.</div>`;
+                    assistantChat.scrollTop = assistantChat.scrollHeight;
+                });
+            }
+
+            // Override assistantSend click to support attached handwritten sheet image extraction!
+            const newAssistantSend = assistantSend.cloneNode(true);
+            assistantSend.parentNode.replaceChild(newAssistantSend, assistantSend);
+            newAssistantSend.addEventListener('click', async () => {
+                const query = assistantInput.value.trim() || (copilotAttachedBase64 ? "Extract all handwritten test values and nameplate details from this image and return JSON with element IDs." : "");
+                if (!query && !copilotAttachedBase64) return;
+                const apiKey = getGeminiApiKey();
+                if (!apiKey) {
+                    if (!copilotAttachedBase64 && query) {
+                        const c = parseNameplateTextOffline(query);
+                        if (c > 0) {
+                            assistantChat.innerHTML += `<div><strong class="text-emerald-400">Offline Parser:</strong> Extracted ${c} fields offline.</div>`;
+                            return;
+                        }
+                    }
+                    showNotification("Please enter your Gemini API Key at the top (or use Offline Text Parse).", "error");
+                    return;
+                }
+
+                assistantChat.innerHTML += `<div><strong class="text-amber-300">You:</strong> ${query}${copilotAttachedBase64 ? ' <em>[Image Attached]</em>' : ''}</div>`;
+                assistantInput.value = '';
+
+                const data = collectData();
+                delete data['client_signature_img_src'];
+                delete data['company_logo_src'];
+                delete data['nameplate_ref_img_src'];
+
+                const allFieldIds = Array.from(document.querySelectorAll('.report-content input[id], .report-content select[id], .report-content textarea[id]'))
+                    .map(el => el.id).filter(Boolean).slice(0, 180);
+
+                const prompt = `You are the Lead Transformer Site Engineer, Designer, and Operator driving this Routine Test Report app.
+Your job: auto-adapt the entire report structure from nameplate data or commands so the site engineer only has to enter measured readings.
+Critical engineering rules you enforce:
+- Verify kV vs V conversions strictly (e.g., 22/0.433 kV or 22000/433 V both yield Tap HV in kV and Std. Ratio = 50.81 in 00.00 format).
+- Primary terminals use prefix 1 + UPPERCASE (1U-1V, 1V-1W, 1W-1U / 1U-1N); Secondary uses prefix 2 + lowercase (2u-2v, 2v-2w, 2w-2u / 2u-2n).
+- Voltage Ratio tolerance at site is ±1.00% (green within ±1%, red beyond ±1%).
+- Each tap has per-tap applied voltage IDs (vr_app_ll_<tap>_1/2/3, vr_app_ln_<tap>_1/2/3) and measured IDs (vr_ll_<tap>_r/y/b, vr_ln_<tap>_r/y/b).
+Current live form data (JSON):
+${JSON.stringify(data)}
+
+Available active HTML element IDs you can populate:
+${allFieldIds.join(', ')}
+
+User Request: "${query}"
+
+Instructions:
+1. If an image of a handwritten test sheet or nameplate is attached, extract EVERY readable test value (VR per tap: vr_ln_<tap>_r/y/b or vr_ll_<tap>_r/y/b, vr_applied_1/2/3; MB: mb_dyn_* or mb_ynd_*; MC: mc_single_r/y/b or mc_all_r/y/b_<tap>; WR: wr_sum_hv_* or wr_all_hv_* and wr_lv_r/y/b, wr_temp_oti/wti; IR: ir_hve_1m, ir_lve_1m, ir_hvlv_1m, ir_temp_oti/wti) and nameplate fields.
+2. Provide a concise technical answer, and whenever you populate or update fields, output a strict \`\`\`json { "element_id": "value" } \`\`\` block at the end.`;
+
+                const parts = [{ text: prompt }];
+                if (copilotAttachedBase64) {
+                    parts.push({ inlineData: { mimeType: copilotAttachedMime || 'image/png', data: copilotAttachedBase64 } });
+                }
+
+                const loadingId = 'loading-' + Date.now();
+                assistantChat.innerHTML += `<div id="${loadingId}" class="text-slate-400 italic"><i class="fa-solid fa-spinner fa-spin"></i> Running Gemini 4/3 Copilot...</div>`;
+                assistantChat.scrollTop = assistantChat.scrollHeight;
+
+                try {
+                    const result = await callGeminiWithFallback(apiKey, {
+                        contents: [{ parts }],
+                        generationConfig: { temperature: 0.15 }
+                    });
+                    const responseText = result.candidates[0].content.parts[0].text;
+                    document.getElementById(loadingId)?.remove();
+
+                    let chatDisplay = responseText;
+                    const jsonMatch = responseText.match(/```json([\s\S]*?)```/);
+                    if (jsonMatch) {
+                        chatDisplay = responseText.replace(jsonMatch[0], '').trim();
+                        try {
+                            const updates = JSON.parse(jsonMatch[1]);
+                            const entries = Object.entries(updates);
+                            if (entries.length > 0) {
+                                const cardId = 'approve-' + Date.now();
+                                const previewList = entries.slice(0, 6).map(([k, v]) => `<li><code>${k}</code> → <strong>${String(v)}</strong></li>`).join('');
+                                const moreTxt = entries.length > 6 ? `<li class="text-slate-400">+ ${entries.length - 6} more field(s)...</li>` : '';
+                                chatDisplay += `
+                                    <div id="${cardId}" class="mt-2 p-2.5 rounded bg-slate-800 border border-amber-400 text-xs">
+                                        <div class="font-extrabold text-amber-300 mb-1"><i class="fa-solid fa-shield-check mr-1"></i>Proposed Changes (${entries.length} fields) — Awaiting Your Approval:</div>
+                                        <ul class="list-disc pl-4 text-slate-200 space-y-0.5 mb-2">${previewList}${moreTxt}</ul>
+                                        <div class="flex gap-2">
+                                            <button type="button" class="copilot-approve-btn bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-3 py-1 rounded font-extrabold">Approve &amp; Apply</button>
+                                            <button type="button" class="copilot-dismiss-btn bg-slate-600 hover:bg-slate-500 text-white px-3 py-1 rounded font-bold">Dismiss</button>
+                                        </div>
+                                    </div>`;
+                                setTimeout(() => {
+                                    const cardEl = document.getElementById(cardId);
+                                    if (!cardEl) return;
+                                    cardEl.querySelector('.copilot-approve-btn')?.addEventListener('click', () => {
+                                        let applied = 0;
+                                        entries.forEach(([id, val]) => {
+                                            const el = document.getElementById(id);
+                                            if (!el) return;
+                                            if (el.type === 'checkbox') el.checked = Boolean(val);
+                                            else el.value = val;
+                                            el.dispatchEvent(new Event('input', { bubbles: true }));
+                                            el.dispatchEvent(new Event('change', { bubbles: true }));
+                                            applied++;
+                                        });
+                                        saveToSession();
+                                        updatePrintHeader();
+                                        cardEl.innerHTML = `<span class="text-emerald-400 font-bold"><i class="fa-solid fa-check-double mr-1"></i>Approved &amp; applied ${applied} updates!</span>`;
+                                    });
+                                    cardEl.querySelector('.copilot-dismiss-btn')?.addEventListener('click', () => {
+                                        cardEl.innerHTML = `<span class="text-slate-400 italic">Proposal dismissed.</span>`;
+                                    });
+                                }, 30);
+                            }
+                        } catch (e) { console.error("Copilot JSON parse error:", e); }
+                    }
+                    assistantChat.innerHTML += `<div><strong class="text-blue-300">Copilot (${result._usedModel || 'AI'}):</strong> ${chatDisplay.replace(/\n/g, '<br>')}</div>`;
+                    assistantChat.scrollTop = assistantChat.scrollHeight;
+                    if (copilotClearBtn && copilotAttachedBase64) copilotClearBtn.click();
+                } catch (err) {
+                    document.getElementById(loadingId)?.remove();
+                    assistantChat.innerHTML += `<div class="text-rose-400"><strong>Error:</strong> ${err.message}</div>`;
+                }
+            });
+
+            // --- VOICE DICTATION IN FLOATING NAV BAR ---
+            const fieldNavMic = document.getElementById('field-nav-mic');
+            let activeRecognition = null;
+            if (fieldNavMic) {
+                fieldNavMic.addEventListener('click', () => {
+                    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+                    if (!SpeechRec) {
+                        showNotification("Voice dictation is not supported in this browser.", "error");
+                        return;
+                    }
+                    if (activeRecognition) {
+                        activeRecognition.stop();
+                        return;
+                    }
+                    const rec = new SpeechRec();
+                    rec.lang = 'en-IN';
+                    rec.interimResults = false;
+                    rec.maxAlternatives = 1;
+                    activeRecognition = rec;
+                    fieldNavMic.classList.add('bg-rose-600');
+                    showNotification("Listening... speak value (say 'next' between numbers)", "info");
+
+                    rec.onresult = (event) => {
+                        const transcript = event.results[0][0].transcript.trim();
+                        const tokens = transcript.split(/\bnext\b/i).map(t => t.trim()).filter(Boolean);
+                        tokens.forEach((tok, idx) => {
+                            if (idx > 0) moveFocusToRelative(1);
+                            if (currentFocusedInput) {
+                                const cleaned = currentFocusedInput.type === 'number'
+                                    ? tok.replace(/[^0-9.-]/g, '')
+                                    : tok;
+                                if (cleaned) {
+                                    currentFocusedInput.value = cleaned;
+                                    currentFocusedInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            }
+                        });
+                        showNotification(`Dictated: "${transcript}"`, "success");
+                    };
+                    rec.onerror = () => showNotification("Voice recognition stopped.", "error");
+                    rec.onend = () => {
+                        activeRecognition = null;
+                        fieldNavMic.classList.remove('bg-rose-600');
+                    };
+                    rec.start();
+                });
+            }
+
+            // --- OFFLINE INDEXEDDB JOB DIRECTORY & FIREBASE FIRESTORE SYNC ---
+            const DB_NAME = 'mg_test_pro_db';
+            const STORE_NAME = 'reports';
+
+            function openJobDB() {
+                return new Promise((resolve, reject) => {
+                    const req = indexedDB.open(DB_NAME, 1);
+                    req.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+                        if (!db.objectStoreNames.contains(STORE_NAME)) {
+                            db.createObjectStore(STORE_NAME, { keyPath: 'reportId' });
+                        }
+                    };
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            async function saveJobToDB(record) {
+                const db = await openJobDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readwrite');
+                    tx.objectStore(STORE_NAME).put(record);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
+            }
+
+            async function getAllJobsFromDB() {
+                const db = await openJobDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readonly');
+                    const req = tx.objectStore(STORE_NAME).getAll();
+                    req.onsuccess = () => resolve(req.result || []);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            async function deleteJobFromDB(reportId) {
+                const db = await openJobDB();
+                return new Promise((resolve, reject) => {
+                    const tx = db.transaction(STORE_NAME, 'readwrite');
+                    tx.objectStore(STORE_NAME).delete(reportId);
+                    tx.oncomplete = () => resolve();
+                    tx.onerror = () => reject(tx.error);
+                });
+            }
+
+            function getSyncConfig() {
+                try {
+                    return {
+                        apiKey: localStorage.getItem('mg_test_fb_key') || '',
+                        pin: localStorage.getItem('mg_test_sync_pin') || ''
+                    };
+                } catch (e) { return { apiKey: '', pin: '' }; }
+            }
+
+            async function pushJobToFirestore(record) {
+                const { apiKey, pin } = getSyncConfig();
+                if (!apiKey || !pin || !navigator.onLine) return false;
+                const docId = record.reportId.replace(/[^a-zA-Z0-9_-]/g, '_');
+                const url = `https://firestore.googleapis.com/v1/projects/mg-quotation-pro/databases/(default)/documents/artifacts/mg-test-pro/users/custom_sync_${encodeURIComponent(pin)}/reports/${docId}?key=${encodeURIComponent(apiKey)}`;
+                const body = {
+                    fields: {
+                        reportId: { stringValue: record.reportId },
+                        reportNo: { stringValue: record.reportNo || '' },
+                        clientName: { stringValue: record.clientName || '' },
+                        txTag: { stringValue: record.txTag || '' },
+                        testDate: { stringValue: record.testDate || '' },
+                        status: { stringValue: record.status || 'Healthy' },
+                        updatedAt: { stringValue: record.updatedAt || new Date().toISOString() },
+                        payloadJson: { stringValue: JSON.stringify(record.data) }
+                    }
+                };
+                try {
+                    const resp = await fetch(url, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+                    return resp.ok;
+                } catch (err) {
+                    console.warn("Firestore push fallback (offline):", err);
+                    return false;
+                }
+            }
+
+            async function pullJobsFromFirestore() {
+                const { apiKey, pin } = getSyncConfig();
+                if (!apiKey || !pin) { showNotification("Enter Firebase API Key & Sync PIN first.", "error"); return 0; }
+                const url = `https://firestore.googleapis.com/v1/projects/mg-quotation-pro/databases/(default)/documents/artifacts/mg-test-pro/users/custom_sync_${encodeURIComponent(pin)}/reports?key=${encodeURIComponent(apiKey)}`;
+                let resp;
+                try {
+                    resp = await fetch(url);
+                } catch (err) {
+                    throw new Error("Offline or network blocked: using local IndexedDB reports.");
+                }
+                if (!resp.ok) throw new Error("Cloud sync failed (" + resp.status + ")");
+                const json = await resp.json();
+                let count = 0;
+                if (Array.isArray(json.documents)) {
+                    for (const doc of json.documents) {
+                        const f = doc.fields || {};
+                        const dataStr = f.payloadJson?.stringValue;
+                        if (!dataStr) continue;
+                        await saveJobToDB({
+                            reportId: f.reportId?.stringValue || doc.name.split('/').pop(),
+                            reportNo: f.reportNo?.stringValue || '',
+                            clientName: f.clientName?.stringValue || '',
+                            txTag: f.txTag?.stringValue || '',
+                            testDate: f.testDate?.stringValue || '',
+                            status: f.status?.stringValue || 'Healthy',
+                            updatedAt: f.updatedAt?.stringValue || '',
+                            synced: true,
+                            data: JSON.parse(dataStr)
+                        });
+                        count++;
+                    }
+                }
+                return count;
+            }
+
+            const saveToDbBtn = document.getElementById('save-to-db-btn');
+            if (saveToDbBtn) {
+                saveToDbBtn.addEventListener('click', async () => {
+                    const data = collectData();
+                    const reportNo = (data.report_no_full || '').trim() || ('DRAFT-' + Date.now());
+                    const record = {
+                        reportId: reportNo,
+                        reportNo: reportNo,
+                        clientName: data.client_name || 'Unnamed Client',
+                        txTag: data.tx_tag_no || '',
+                        testDate: data.test_date || '',
+                        status: getOverallStatus(),
+                        updatedAt: new Date().toISOString(),
+                        synced: false,
+                        data
+                    };
+                    await saveJobToDB(record);
+                    let cloudMsg = 'Saved offline';
+                    try {
+                        if (await pushJobToFirestore(record)) {
+                            record.synced = true;
+                            await saveJobToDB(record);
+                            cloudMsg = 'Saved & Cloud Synced';
+                        }
+                    } catch (e) {}
+                    showNotification(`${cloudMsg}: ${reportNo}`, "success");
+                });
+            }
+
+            // Job Directory Modal Logic
+            const dirModal = document.getElementById('job-directory-modal');
+            const openDirBtn = document.getElementById('open-directory-btn');
+            const closeDirBtn = document.getElementById('close-directory-btn');
+            const dirSearch = document.getElementById('dir_search_input');
+            const dirSort = document.getElementById('dir_sort_select');
+            const dirFilter = document.getElementById('dir_filter_status');
+            const dirList = document.getElementById('dir_list_container');
+            const dirCountLabel = document.getElementById('dir_count_label');
+            const dirPullCloudBtn = document.getElementById('dir_pull_cloud_btn');
+
+            async function renderJobDirectory() {
+                if (!dirList) return;
+                let jobs = await getAllJobsFromDB();
+                const q = (dirSearch?.value || '').trim().toLowerCase();
+                const st = dirFilter?.value || 'all';
+                if (q) {
+                    jobs = jobs.filter(j =>
+                        (j.reportNo || '').toLowerCase().includes(q) ||
+                        (j.clientName || '').toLowerCase().includes(q) ||
+                        (j.txTag || '').toLowerCase().includes(q) ||
+                        (j.data?.tx_serial || '').toLowerCase().includes(q)
+                    );
+                }
+                if (st !== 'all') jobs = jobs.filter(j => j.status === st);
+
+                const sortMode = dirSort?.value || 'report_desc';
+                jobs.sort((a, b) => {
+                    if (sortMode === 'report_asc') return (a.reportNo || '').localeCompare(b.reportNo || '');
+                    if (sortMode === 'report_desc') return (b.reportNo || '').localeCompare(a.reportNo || '');
+                    if (sortMode === 'date_asc') return (a.testDate || '').localeCompare(b.testDate || '');
+                    if (sortMode === 'date_desc') return (b.testDate || '').localeCompare(a.testDate || '');
+                    return (a.clientName || '').localeCompare(b.clientName || '');
+                });
+
+                if (dirCountLabel) dirCountLabel.textContent = `${jobs.length} report(s)`;
+                if (!jobs.length) {
+                    dirList.innerHTML = '<div class="text-center text-slate-500 py-8 text-xs font-bold">No saved reports match your filter. Click "Save Job" to store a report.</div>';
+                    return;
+                }
+                dirList.innerHTML = '';
+                jobs.forEach(j => {
+                    const card = document.createElement('div');
+                    card.className = 'p-3 rounded-lg border border-slate-300 bg-slate-50 flex flex-col sm:flex-row sm:items-center justify-between gap-2';
+                    const badgeCls = j.status === 'Healthy' ? 'bg-emerald-100 text-emerald-900 border-emerald-400' : 'bg-rose-100 text-rose-900 border-rose-400';
+                    card.innerHTML = `
+                        <div>
+                            <div class="font-extrabold text-slate-900 text-xs sm:text-sm">${j.reportNo} <span class="ml-1 px-2 py-0.5 rounded border text-[10px] ${badgeCls}">${j.status}</span></div>
+                            <div class="text-[11px] text-slate-700 font-semibold">${j.clientName} • ${j.txTag || 'No Tag'} • ${j.testDate || 'No Date'}</div>
+                        </div>
+                        <div class="flex gap-1.5">
+                            <button type="button" class="dir-load-btn bg-blue-800 text-white px-2.5 py-1 rounded text-xs font-bold">Load</button>
+                            <button type="button" class="dir-clone-btn bg-slate-700 text-white px-2.5 py-1 rounded text-xs font-bold">Clone</button>
+                            <button type="button" class="dir-del-btn bg-rose-600 text-white px-2.5 py-1 rounded text-xs font-bold"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    `;
+                    card.querySelector('.dir-load-btn').addEventListener('click', () => {
+                        populateData(j.data);
+                        saveToSession();
+                        dirModal.style.display = 'none';
+                        showNotification("Loaded " + j.reportNo, "success");
+                    });
+                    card.querySelector('.dir-clone-btn').addEventListener('click', () => {
+                        const cloned = Object.assign({}, j.data);
+                        cloned.report_no_full = '';
+                        populateData(cloned);
+                        updateReportNumber();
+                        saveToSession();
+                        dirModal.style.display = 'none';
+                        showNotification("Cloned into new report!", "info");
+                    });
+                    card.querySelector('.dir-del-btn').addEventListener('click', async () => {
+                        await deleteJobFromDB(j.reportId);
+                        renderJobDirectory();
+                    });
+                    dirList.appendChild(card);
+                });
+            }
+
+            if (openDirBtn) openDirBtn.addEventListener('click', () => { dirModal.style.display = 'flex'; renderJobDirectory(); });
+            if (closeDirBtn) closeDirBtn.addEventListener('click', () => { dirModal.style.display = 'none'; });
+            if (dirSearch) dirSearch.addEventListener('input', renderJobDirectory);
+            if (dirSort) dirSort.addEventListener('change', renderJobDirectory);
+            if (dirFilter) dirFilter.addEventListener('change', renderJobDirectory);
+            if (dirPullCloudBtn) {
+                dirPullCloudBtn.addEventListener('click', async () => {
+                    try {
+                        const n = await pullJobsFromFirestore();
+                        renderJobDirectory();
+                        showNotification(`Synced ${n} job(s) from cloud.`, "success");
+                    } catch (e) { showNotification(e.message, "error"); }
+                });
+            }
+
+            // Sync Modal Logic
+            const syncModal = document.getElementById('sync-config-modal');
+            const openSyncBtn = document.getElementById('open-sync-modal-btn');
+            const closeSyncBtn = document.getElementById('close-sync-modal-btn');
+            const saveSyncBtn = document.getElementById('save-sync-config-btn');
+            const fbKeyInp = document.getElementById('fb_api_key_input');
+            const fbPinInp = document.getElementById('fb_sync_pin_input');
+
+            if (openSyncBtn) {
+                openSyncBtn.addEventListener('click', () => {
+                    const cfg = getSyncConfig();
+                    if (fbKeyInp) fbKeyInp.value = cfg.apiKey;
+                    if (fbPinInp) fbPinInp.value = cfg.pin;
+                    syncModal.style.display = 'flex';
+                });
+            }
+            if (closeSyncBtn) closeSyncBtn.addEventListener('click', () => { syncModal.style.display = 'none'; });
+            if (saveSyncBtn) {
+                saveSyncBtn.addEventListener('click', async () => {
+                    try {
+                        localStorage.setItem('mg_test_fb_key', fbKeyInp.value.trim());
+                        localStorage.setItem('mg_test_sync_pin', fbPinInp.value.trim());
+                    } catch (e) {}
+                    syncModal.style.display = 'none';
+                    try {
+                        const n = await pullJobsFromFirestore();
+                        showNotification(`Sync enabled (${n} cloud jobs pulled).`, "success");
+                    } catch (e) {
+                        showNotification("Sync settings saved locally.", "info");
+                    }
+                });
+            }
+
+            loadEmbeddedData();
+
+            // --- OIL BDV AVERAGE & SHORT-CIRCUIT %Z DEVIATION ---
+            function calculateBDVAverage() {
+                const vals = ['bdv_s1','bdv_s2','bdv_s3','bdv_s4','bdv_s5','bdv_s6']
+                    .map(id => parseFloat(document.getElementById(id)?.value))
+                    .filter(v => !isNaN(v));
+                const out = document.getElementById('bdv_avg');
+                if (out) out.value = vals.length ? (vals.reduce((a,b) => a+b, 0) / vals.length).toFixed(1) + ' kV' : '';
+            }
+            document.querySelectorAll('.bdv-calc-trigger').forEach(el => el.addEventListener('input', calculateBDVAverage));
+
+
+            const copilotAuditBtn = document.getElementById('copilot_audit_btn');
+            if (copilotAuditBtn) {
+                copilotAuditBtn.addEventListener('click', () => {
+                    assistantInput.value = "Audit all entered nameplate and routine/special test readings right now. Check tolerances per IS/IEC/IEEE, flag any anomalies or missing fields, and propose exact JSON updates (remarks, winding config, test toggles, or calculated values) for my approval.";
+                    newAssistantSend.click();
+                });
+            }
+
+            // --- TOP-LEVEL CONTROLLERS: VR COPY, KV FORMAT, BDV MODES, BACKFEEDING L-L/L-N ---
+            document.querySelectorAll('.vr-master-applied').forEach(el => {
+                el.addEventListener('input', () => copyMasterAppliedToAllTaps(false));
+            });
+            const vrCopyChk = document.getElementById('vr_copy_applied_all');
+            if (vrCopyChk) vrCopyChk.addEventListener('change', () => copyMasterAppliedToAllTaps(false));
+            const vrApplyBtn = document.getElementById('vr_apply_all_btn');
+            if (vrApplyBtn) vrApplyBtn.addEventListener('click', () => {
+                copyMasterAppliedToAllTaps(true);
+                showNotification("Copied master applied voltages to all taps!", "success");
+            });
+
+            const txVoltageEl = document.getElementById('tx_voltage');
+            if (txVoltageEl) {
+                txVoltageEl.addEventListener('change', () => {
+                    const formatted = formatVoltagePairToKV(txVoltageEl.value);
+                    if (formatted && formatted !== txVoltageEl.value) {
+                        txVoltageEl.value = formatted;
+                    }
+                    calculateVRDeviation();
+                    saveToSession();
+                });
+            }
+
+            function updateBdvModeUI() {
+                const mode = document.querySelector('input[name="bdv_mode"]:checked')?.value || 'before_after';
+                const incMoist = document.getElementById('bdv_include_moisture')?.checked || false;
+                const baWrap = document.getElementById('bdv_before_after_wrap');
+                const s6Wrap = document.getElementById('bdv_six_strokes_wrap');
+                if (baWrap) baWrap.style.display = (mode === 'before_after') ? 'block' : 'none';
+                if (s6Wrap) s6Wrap.style.display = (mode === 'six_strokes') ? 'block' : 'none';
+
+                document.querySelectorAll('.bdv-moisture-col').forEach(el => {
+                    el.classList.toggle('hidden-col', !incMoist);
+                });
+
+                const modePrint = document.getElementById('bdv_mode_print');
+                if (modePrint) modePrint.textContent = (mode === 'before_after') ? 'Before & After Filtration' : '6 Strokes & Avg BDV';
+                const moistPrint = document.getElementById('bdv_moisture_print_flag');
+                if (moistPrint) moistPrint.textContent = incMoist ? 'Included' : 'Not Included';
+                renderAllConnectionDiagrams();
+            }
+            document.querySelectorAll('input[name="bdv_mode"]').forEach(r => r.addEventListener('change', () => { updateBdvModeUI(); saveToSession(); }));
+            const bdvMoistChk = document.getElementById('bdv_include_moisture');
+            if (bdvMoistChk) bdvMoistChk.addEventListener('change', () => { updateBdvModeUI(); saveToSession(); });
+
+            function updateBackfeedUI() {
+                const side = document.getElementById('bf_side')?.value || 'lv_to_hv';
+                const showLL = document.getElementById('bf_mode_ll')?.checked || false;
+                const showLN = document.getElementById('bf_mode_ln')?.checked || false;
+                const llBlock = document.getElementById('bf_ll_block');
+                const lnBlock = document.getElementById('bf_ln_block');
+                if (llBlock) llBlock.style.display = showLL ? 'block' : 'none';
+                if (lnBlock) lnBlock.style.display = showLN ? 'block' : 'none';
+
+                const llLbls = side === 'lv_to_hv' ? ['2u-2v (V)', '2v-2w (V)', '2w-2u (V)'] : ['1U-1V (V)', '1V-1W (V)', '1W-1U (V)'];
+                const lnLbls = side === 'lv_to_hv' ? ['2u-2n (V)', '2v-2n (V)', '2w-2n (V)'] : ['1U-1N (V)', '1V-1N (V)', '1W-1N (V)'];
+                for (let k = 1; k <= 3; k++) {
+                    const hLL = document.getElementById(`bf_ll_v${k}_h`);
+                    const tdLL = document.getElementById(`bf_ll_v${k}_td`);
+                    if (hLL) hLL.textContent = llLbls[k - 1];
+                    if (tdLL) tdLL.setAttribute('data-field-label', llLbls[k - 1]);
+
+                    const hLN = document.getElementById(`bf_ln_v${k}_h`);
+                    const tdLN = document.getElementById(`bf_ln_v${k}_td`);
+                    if (hLN) hLN.textContent = lnLbls[k - 1];
+                    if (tdLN) tdLN.setAttribute('data-field-label', lnLbls[k - 1]);
+                }
+
+                const sidePrint = document.getElementById('bf_side_print');
+                if (sidePrint) sidePrint.textContent = side === 'lv_to_hv' ? 'LV → HV (Backfeed)' : 'HV → LV';
+                const modePrint = document.getElementById('bf_mode_print');
+                if (modePrint) modePrint.textContent = (showLL && showLN) ? 'L-L & L-N' : (showLL ? 'L-L' : (showLN ? 'L-N' : 'None'));
+            }
+            const bfSideEl = document.getElementById('bf_side');
+            if (bfSideEl) bfSideEl.addEventListener('change', () => { updateBackfeedUI(); saveToSession(); });
+            const bfLLChk = document.getElementById('bf_mode_ll');
+            if (bfLLChk) bfLLChk.addEventListener('change', () => { updateBackfeedUI(); saveToSession(); });
+            const bfLNChk = document.getElementById('bf_mode_ln');
+            if (bfLNChk) bfLNChk.addEventListener('change', () => { updateBackfeedUI(); saveToSession(); });
+
+            syncWindingPairs(); 
             toggleTestSections();
+            updateBdvModeUI();
+            updateBackfeedUI();
             updateMbTable();
             generateQRCode(); 
-            updatePrintHeader(); 
+            updatePrintHeader();
+            hookDiagramAndFieldUpdates(); 
         });
     </script>
+
+    <!-- Floating Quick-Nav Bar for Smooth Single-Tap Next Box Navigation -->
+    <div id="field-nav-bar" class="no-print" role="toolbar" aria-label="Field Entry Navigation">
+        <button type="button" id="field-nav-prev" class="field-nav-btn" title="Previous Input"><i class="fa-solid fa-chevron-left"></i> Prev</button>
+        <span id="field-nav-label">Field</span>
+        <button type="button" id="field-nav-mic" class="field-nav-btn" title="Voice Dictation (Say numbers or 'next')"><i class="fa-solid fa-microphone"></i></button>
+        <button type="button" id="field-nav-next" class="field-nav-btn primary" title="Next Input">Next <i class="fa-solid fa-chevron-right"></i></button>
+        <button type="button" id="field-nav-done" class="field-nav-btn" title="Close Keyboard"><i class="fa-solid fa-check"></i></button>
+    </div>
+
+    <!-- Job Directory Modal (Report No.-wise Sort & Filter + Offline IndexedDB + Firebase Sync) -->
+    <div id="job-directory-modal" class="modal-overlay">
+        <div class="modal-content relative text-left" style="max-width: 720px; width: 95%; max-height: 88vh; display: flex; flex-direction: column;">
+            <div class="flex justify-between items-center pb-3 border-b border-slate-300">
+                <h3 class="font-extrabold text-slate-900 text-base sm:text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-folder-open text-blue-800"></i> Job Directory (Report No.-Wise)
+                </h3>
+                <button type="button" id="close-directory-btn" class="text-slate-600 hover:text-slate-900 text-lg font-bold px-2"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-4 gap-2 my-3">
+                <input type="text" id="dir_search_input" placeholder="Search Report No, Client, Tag, Serial..." class="sm:col-span-2 border border-slate-400 rounded px-2.5 py-1.5 text-xs font-semibold text-slate-900 bg-white">
+                <select id="dir_sort_select" class="border border-slate-400 rounded px-2 py-1.5 text-xs font-bold text-slate-900 bg-white">
+                    <option value="report_desc">Report No. (Z → A)</option>
+                    <option value="report_asc">Report No. (A → Z)</option>
+                    <option value="date_desc">Date (Newest First)</option>
+                    <option value="date_asc">Date (Oldest First)</option>
+                    <option value="client_asc">Client (A → Z)</option>
+                </select>
+                <select id="dir_filter_status" class="border border-slate-400 rounded px-2 py-1.5 text-xs font-bold text-slate-900 bg-white">
+                    <option value="all">All Status</option>
+                    <option value="Healthy">Healthy Only</option>
+                    <option value="Unhealthy">Unhealthy Only</option>
+                </select>
+            </div>
+            <div id="dir_list_container" class="flex-1 overflow-y-auto space-y-2 pr-1" style="min-height: 220px;"></div>
+            <div class="pt-3 mt-3 border-t border-slate-300 flex justify-between items-center text-xs text-slate-700 font-semibold">
+                <span id="dir_count_label">0 saved reports</span>
+                <button type="button" id="dir_pull_cloud_btn" class="bg-blue-800 text-white px-3 py-1.5 rounded font-bold hover:bg-blue-900"><i class="fa-solid fa-cloud-arrow-down mr-1"></i> Pull Cloud Jobs</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Sync & PIN Modal -->
+    <div id="sync-config-modal" class="modal-overlay">
+        <div class="modal-content relative text-left" style="max-width: 440px;">
+            <div class="flex justify-between items-center pb-2 border-b border-slate-300 mb-3">
+                <h3 class="font-extrabold text-slate-900 text-base flex items-center gap-2"><i class="fa-solid fa-arrows-rotate text-teal-700"></i> Cloud Sync Settings (mg-quotation-pro)</h3>
+                <button type="button" id="close-sync-modal-btn" class="text-slate-600 hover:text-slate-900 text-lg font-bold"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Firebase Web API Key (Stored in Browser Only)</label>
+                    <input type="text" id="fb_api_key_input" placeholder="AIzaSy..." class="w-full border border-slate-400 rounded px-2.5 py-2 font-mono text-slate-900 bg-white">
+                </div>
+                <div>
+                    <label class="block font-bold text-slate-800 mb-1">Team Sync PIN (e.g., 4–8 digits)</label>
+                    <input type="text" id="fb_sync_pin_input" placeholder="Enter Sync PIN" class="w-full border border-slate-400 rounded px-2.5 py-2 font-mono text-slate-900 bg-white">
+                </div>
+                <p class="text-[11px] text-slate-600">Syncs with Firestore namespace <code>artifacts/mg-test-pro/users/custom_sync_&lt;PIN&gt;/reports</code>. Keys are never embedded in exported HTML files.</p>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" id="save-sync-config-btn" class="bg-teal-700 text-white px-4 py-2 rounded font-bold hover:bg-teal-800">Save &amp; Sync Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>
-```
