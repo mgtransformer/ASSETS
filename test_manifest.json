@@ -1,0 +1,26 @@
+{
+  "id": "/transformer_routine_test_pro.html",
+  "name": "MG Transformer Routine Test PRO",
+  "short_name": "MG TEST",
+  "description": "Transformer Routine Test Report Generator & Field Testing PWA by MG Transformer Services",
+  "start_url": "/transformer_routine_test_pro.html",
+  "scope": "/transformer_routine_test_pro.html",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#ffffff",
+  "theme_color": "#0f766e",
+  "icons": [
+    {
+      "src": "./icons/test-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "./icons/test-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
