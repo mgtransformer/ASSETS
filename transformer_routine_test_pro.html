@@ -476,12 +476,44 @@
                 grid-template-columns: 1fr 1fr;
             }
         }
-        body.mobile-field-mode #vr_ll_table_wrap,
-        body.mobile-field-mode #vr_ln_table_wrap {
-            display: none !important;
+        @media screen {
+            body.mobile-field-mode #vr_ll_table_wrap,
+            body.mobile-field-mode #vr_ln_table_wrap {
+                display: none !important;
+            }
         }
+        #vr_ll_table, #vr_ln_table {
+            table-layout: fixed;
+            width: 100%;
+        }
+        #vr_ll_table th, #vr_ll_table td,
+        #vr_ln_table th, #vr_ln_table td {
+            padding: 5px 3px;
+            font-size: 11.5px;
+            word-break: break-word;
+        }
+        #vr_ll_table input, #vr_ln_table input {
+            padding: 4px 2px;
+            font-size: 11.5px !important;
+            min-width: 0;
+        }
+        #vr_ll_table col.col-tap, #vr_ln_table col.col-tap { width: 6%; }
+        #vr_ll_table col.col-kv, #vr_ln_table col.col-kv { width: 10.5%; }
+        #vr_ll_table col.col-std, #vr_ln_table col.col-std { width: 9%; }
+        #vr_ll_table col.col-app, #vr_ln_table col.col-app { width: 10.5%; }
+        #vr_ll_table col.col-meas, #vr_ln_table col.col-meas { width: 11%; }
+        #vr_ll_table col.col-dev, #vr_ln_table col.col-dev { width: 10%; }
         @media print {
             #vr_mobile_cards { display: none !important; }
+            #vr_ll_table th, #vr_ll_table td,
+            #vr_ln_table th, #vr_ln_table td {
+                padding: 3px 2px !important;
+                font-size: 10.5px !important;
+            }
+            #vr_ll_table input, #vr_ln_table input {
+                padding: 2px 1px !important;
+                font-size: 10.5px !important;
+            }
         }
         .vr-tap-card {
             background: #f8fafc;
@@ -1252,6 +1284,18 @@
                                 <div class="vr-subtable-title font-extrabold text-[12px] text-blue-900 mb-1 px-2 border-l-4 border-blue-700 uppercase" id="vr_ll_table_title">MEASURED LINE-TO-LINE (L-L) VOLTAGES</div>
                                 <div class="table-responsive-wrapper">
                                     <table class="test-data-table w-full" id="vr_ll_table">
+                                                                                <colgroup>
+                                            <col class="col-tap">
+                                            <col class="col-kv">
+                                            <col class="col-std">
+                                            <col class="col-app">
+                                            <col class="col-app">
+                                            <col class="col-app">
+                                            <col class="col-meas">
+                                            <col class="col-meas">
+                                            <col class="col-meas">
+                                            <col class="col-dev dev-col">
+                                        </colgroup>
                                         <thead id="vr_ll_table_head"></thead>
                                         <tbody id="vr_ll_table_body"></tbody>
                                     </table>
@@ -1262,6 +1306,18 @@
                                 <div class="vr-subtable-title font-extrabold text-[12px] text-orange-800 mb-1 px-2 border-l-4 border-orange-600 uppercase" id="vr_ln_table_title">MEASURED LINE-TO-NEUTRAL (L-N) VOLTAGES</div>
                                 <div class="table-responsive-wrapper">
                                     <table class="test-data-table w-full" id="vr_ln_table">
+                                                                                <colgroup>
+                                            <col class="col-tap">
+                                            <col class="col-kv">
+                                            <col class="col-std">
+                                            <col class="col-app">
+                                            <col class="col-app">
+                                            <col class="col-app">
+                                            <col class="col-meas">
+                                            <col class="col-meas">
+                                            <col class="col-meas">
+                                            <col class="col-dev dev-col">
+                                        </colgroup>
                                         <thead id="vr_ln_table_head"></thead>
                                         <tbody id="vr_ln_table_body"></tbody>
                                     </table>
@@ -3788,6 +3844,10 @@ Instructions:
             }
 
             window.onbeforeprint = () => {
+                const llW = document.getElementById('vr_ll_table_wrap');
+                const lnW = document.getElementById('vr_ln_table_wrap');
+                if (llW) llW.style.display = vrMeasureLL.checked ? 'block' : 'none';
+                if (lnW) lnW.style.display = vrMeasureLN.checked ? 'block' : 'none';
                 const tapType = document.querySelector('input[name="tap_type"]:checked');
                 document.getElementById('tap_type_print').textContent = tapType ? tapType.parentElement.textContent.trim() : '';
                 document.getElementById('tx_tap_count_print').textContent = tapCountSelect.value;
