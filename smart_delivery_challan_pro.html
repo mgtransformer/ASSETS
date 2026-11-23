@@ -65,6 +65,10 @@
         }
         .navy-label { color: var(--erp-orange); font-weight: 700; }
         .field-label-inline { width: auto !important; flex-shrink: 0; display: inline-block; }
+        .item-sr-input::-webkit-outer-spin-button, .item-sr-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        .item-sr-input { -moz-appearance: textfield; appearance: textfield; }
+        tr.drag-row-dragging { opacity: 0.45; background-color: #fff7ed !important; }
+        tr.drag-row-over { outline: 2px solid #ea580c !important; background-color: #ffedd5 !important; }
         .auto-wrap-field { width: auto !important; flex: 1 1 0%; min-width: 0; word-break: break-word; overflow-wrap: anywhere; white-space: pre-wrap; }
 
         .editable-input, [contenteditable="true"] {
@@ -596,7 +600,7 @@
                     </div>
                     <div>
                         <label class="mobile-label">Ref / PO No.</label>
-                        <input type="text" id="mob-doc-ref" class="mobile-input" placeholder="PO No. or Verbal" oninput="syncFromMobileField('doc-ref', this.value)">
+                        <textarea id="mob-doc-ref" rows="2" class="mobile-input leading-snug" placeholder="PO No. or Verbal" oninput="syncFromMobileField('doc-ref', this.value)"></textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-2.5">
                         <div>
@@ -630,8 +634,8 @@
                             <input type="text" id="mob-contact-name" class="mobile-input" placeholder="Site Engineer / Receiver Name" oninput="syncMobileContentEditable('consignee-contact-name', this.value)">
                         </div>
                         <div>
-                            <label class="mobile-label">Contact Mobile Number(s)</label>
-                            <input type="tel" id="mob-contact-phone" class="mobile-input font-mono" placeholder="e.g. 9764438934" oninput="syncMobileContentEditable('consignee-contact-phone', this.value)">
+                            <label class="mobile-label">Contact Mobile Number(s) (Auto 10-Digit)</label>
+                            <input type="tel" id="mob-contact-phone" class="mobile-input font-mono" placeholder="e.g. 9764438934" oninput="syncMobileContentEditable('consignee-contact-phone', this.value)" onblur="normalizeContactPhoneInput(this, true)">
                         </div>
                     </div>
                 </div>
@@ -780,7 +784,7 @@
                     </tr>
                     <tr>
                         <th class="text-left"><div class="outline-none" contenteditable="true">REF / PO NO.</div></th>
-                        <td><input type="text" id="doc-ref" value="Verbal / As Discussed" class="editable-input font-semibold w-full" oninput="triggerDraftAutoSave()"></td>
+                        <td class="align-top"><textarea id="doc-ref" rows="1" class="editable-input font-semibold w-full resize-none overflow-hidden leading-snug whitespace-pre-wrap break-words block" oninput="autoGrowField(this); triggerDraftAutoSave();">Verbal / As Discussed</textarea></td>
                         <th class="text-left"><div class="outline-none" contenteditable="true">E-WAY BILL NO.</div></th>
                         <td><input type="text" id="eway-no" value="N/A" class="editable-input font-semibold w-full" oninput="triggerDraftAutoSave()"></td>
                     </tr>
@@ -841,7 +845,7 @@
                                         </div>
                                         <div class="flex items-start gap-1.5">
                                             <span class="field-label-inline whitespace-nowrap navy-label pt-0.5">CONTACT NO.:</span>
-                                            <div id="consignee-contact-phone" contenteditable="true" class="auto-wrap-field border-b border-slate-300 font-semibold text-[10.5px] pb-0.5 bg-transparent outline-none normal-case leading-snug" data-placeholder="Mobile / Phone number(s)..." oninput="triggerDraftAutoSave()"></div>
+                                            <div id="consignee-contact-phone" contenteditable="true" class="auto-wrap-field border-b border-slate-300 font-semibold text-[10.5px] pb-0.5 bg-transparent outline-none normal-case leading-snug" data-placeholder="Mobile / Phone number(s)..." oninput="triggerDraftAutoSave()" onblur="normalizeContactPhoneInput(this, false)"></div>
                                         </div>
                                     </div>
                                 </td>
@@ -886,9 +890,9 @@
                 <table class="erp-table mb-2" style="table-layout: fixed; width: 100%;">
                     <thead>
                         <tr>
-                            <th class="w-[32px] text-center">SR</th>
+                            <th class="w-[38px] text-center">SR</th>
                             <th class="text-left">DESCRIPTION OF GOODS &amp; SERIAL / ASSET NO.</th>
-                            <th class="w-[78px] text-center">HSN/SAC</th>
+                            <th class="w-[84px] text-center">HSN/SAC</th>
                             <th class="w-[54px] text-center">UOM</th>
                             <th class="w-[62px] text-center">QTY</th>
                             <th class="w-[105px] text-center remarks-col">CONDITION / REMARKS</th>
@@ -1069,24 +1073,41 @@
 
     <!-- ==================== AI REVIEW / STAGING MODAL ==================== -->
     <div id="ai-review-modal" class="fixed inset-0 bg-slate-900/80 hidden z-[160] flex items-center justify-center opacity-0 transition-opacity modal-backdrop">
-        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 flex flex-col overflow-hidden">
-            <div class="p-4 bg-indigo-700 text-white">
-                <h3 class="font-black text-base"><i class="fa-solid fa-list-check mr-2"></i>Review AI Dispatch Changes</h3>
-                <p class="text-xs text-indigo-100 mt-1">Nothing is applied until you click Apply to Draft.</p>
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full mx-4 flex flex-col overflow-hidden max-h-[90vh]">
+            <div class="p-4 bg-indigo-700 text-white flex items-start justify-between gap-2">
+                <div>
+                    <h3 class="font-black text-base"><i class="fa-solid fa-list-check mr-2"></i>Review AI Dispatch Changes &amp; Copilot Audit</h3>
+                    <p class="text-xs text-indigo-100 mt-0.5">Approve or revise individual suggestions instantly, rethink, or apply directly to your challan.</p>
+                </div>
+                <button type="button" onclick="closeAIReview()" class="text-indigo-200 hover:text-white text-sm px-1.5 py-0.5"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-4 max-h-[55vh] overflow-y-auto space-y-3">
+            <div class="p-4 overflow-y-auto space-y-3 flex-1">
                 <div>
                     <p id="ai-review-summary" class="text-sm font-bold text-slate-700 mb-2"></p>
                     <ul id="ai-review-list" class="text-xs text-slate-600 space-y-1 list-disc pl-5"></ul>
                 </div>
                 <div id="ai-review-suggestions-box" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-3">
-                    <p class="text-[11px] font-black uppercase tracking-wider text-amber-800 mb-1"><i class="fa-solid fa-lightbulb mr-1"></i>Copilot Audit &amp; Compliance Notes</p>
-                    <ul id="ai-review-suggestions-list" class="text-xs text-amber-900 space-y-1 list-disc pl-5"></ul>
+                    <div class="flex items-center justify-between mb-2">
+                        <p class="text-[11px] font-black uppercase tracking-wider text-amber-800"><i class="fa-solid fa-lightbulb mr-1"></i>Copilot Audit &amp; Compliance Notes</p>
+                        <span class="text-[10px] font-bold text-amber-700">Approve or Revise each point directly</span>
+                    </div>
+                    <div id="ai-review-suggestions-list" class="space-y-2"></div>
+                </div>
+                <div id="ai-revise-box" class="hidden bg-indigo-50 border border-indigo-200 rounded-lg p-3 space-y-2">
+                    <label class="text-[11px] font-black uppercase tracking-wider text-indigo-800 block"><i class="fa-solid fa-rotate mr-1"></i>Revise / Rethink Overall Proposal (Optional)</label>
+                    <textarea id="ai-revise-input" rows="2" class="w-full border border-indigo-300 rounded-lg p-2 text-xs font-medium bg-white outline-none focus:border-indigo-500" placeholder="Type what to change (e.g. 'Set Returnable 7 days', 'Add 2 boxes packing') — or leave blank to rethink automatically..."></textarea>
+                    <div class="flex justify-end gap-2">
+                        <button type="button" onclick="toggleAIReviseBox(false)" class="px-3 py-1.5 rounded text-xs font-bold text-slate-600 hover:bg-indigo-100">Close</button>
+                        <button type="button" id="ai-revise-submit-btn" onclick="executeAIRevision()" class="px-4 py-1.5 rounded text-xs font-black text-white bg-amber-600 hover:bg-amber-700 flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-wand-magic-sparkles"></i> Rethink &amp; Update Proposal</button>
+                    </div>
                 </div>
             </div>
-            <div class="p-3 border-t bg-slate-50 flex justify-end gap-2">
-                <button onclick="closeAIReview()" class="px-4 py-2 rounded text-xs font-bold text-slate-600 hover:bg-slate-200">Cancel</button>
-                <button onclick="applyPendingAIState()" class="px-5 py-2 rounded text-xs font-black text-white bg-indigo-600 hover:bg-indigo-700">Apply to Draft</button>
+            <div class="p-3 border-t bg-slate-50 flex flex-wrap items-center justify-between gap-2">
+                <button type="button" onclick="closeAIReview()" class="px-4 py-2 rounded-lg text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 transition"><i class="fa-solid fa-xmark mr-1"></i>Decline</button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="toggleAIReviseBox()" class="px-4 py-2 rounded-lg text-xs font-black text-amber-800 bg-amber-100 hover:bg-amber-200 border border-amber-300 transition"><i class="fa-solid fa-rotate mr-1"></i>Revise / Rethink</button>
+                    <button type="button" onclick="applyPendingAIState()" class="px-5 py-2 rounded-lg text-xs font-black text-white bg-indigo-600 hover:bg-indigo-700 shadow-sm transition"><i class="fa-solid fa-check mr-1"></i>Apply to Draft</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1930,26 +1951,100 @@
             generateQRCode();
         }
 
+        window.autoGrowField = function(el) {
+            if (!el) return;
+            el.style.height = 'auto';
+            el.style.height = Math.max(20, el.scrollHeight) + 'px';
+        };
+
+        let _draggedItemRow = null;
+        function attachRowDragHandlers(tr) {
+            tr.setAttribute('draggable', 'true');
+            tr.addEventListener('dragstart', (e) => {
+                if (e.target && e.target.closest('input, select, textarea, [contenteditable="true"], button')) {
+                    if (!e.target.closest('.drag-row-handle')) { e.preventDefault(); return; }
+                }
+                _draggedItemRow = tr;
+                tr.classList.add('drag-row-dragging');
+                e.dataTransfer.effectAllowed = 'move';
+                try { e.dataTransfer.setData('text/plain', 'row'); } catch(_) {}
+            });
+            tr.addEventListener('dragover', (e) => {
+                if (!_draggedItemRow || _draggedItemRow === tr) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                tr.classList.add('drag-row-over');
+            });
+            tr.addEventListener('dragleave', () => tr.classList.remove('drag-row-over'));
+            tr.addEventListener('drop', (e) => {
+                e.preventDefault();
+                tr.classList.remove('drag-row-over');
+                if (!_draggedItemRow || _draggedItemRow === tr) return;
+                const tbody = document.getElementById('items-body');
+                const rows = Array.from(tbody.children);
+                const fromIdx = rows.indexOf(_draggedItemRow);
+                const toIdx = rows.indexOf(tr);
+                if (fromIdx < 0 || toIdx < 0) return;
+                if (fromIdx < toIdx) tbody.insertBefore(_draggedItemRow, tr.nextSibling);
+                else tbody.insertBefore(_draggedItemRow, tr);
+                reindexRows(); updateDispatchTotals(); renderMobileItemsList(); recordDCHistory(); triggerDraftAutoSave();
+            });
+            tr.addEventListener('dragend', () => {
+                tr.classList.remove('drag-row-dragging');
+                document.querySelectorAll('#items-body tr.drag-row-over').forEach(r => r.classList.remove('drag-row-over'));
+                _draggedItemRow = null;
+            });
+        }
+
+        window.moveRowToPosition = function(tr, targetVal) {
+            const tbody = document.getElementById('items-body');
+            if (!tbody || !tr) return;
+            const rows = Array.from(tbody.children);
+            const curIdx = rows.indexOf(tr);
+            let targetPos = parseInt(targetVal, 10);
+            if (isNaN(targetPos) || curIdx < 0) { reindexRows(); return; }
+            targetPos = Math.max(1, Math.min(rows.length, targetPos));
+            const targetIdx = targetPos - 1;
+            if (targetIdx !== curIdx) {
+                if (targetIdx >= rows.length - 1) tbody.appendChild(tr);
+                else if (curIdx < targetIdx) tbody.insertBefore(tr, rows[targetIdx].nextSibling);
+                else tbody.insertBefore(tr, rows[targetIdx]);
+            }
+            reindexRows(); updateDispatchTotals(); renderMobileItemsList(); recordDCHistory(); triggerDraftAutoSave();
+        };
+
+        window.moveRowByIndex = function(fromIdx, targetPos) {
+            const rows = document.querySelectorAll('#items-body tr');
+            if (rows[fromIdx]) moveRowToPosition(rows[fromIdx], targetPos);
+        };
+
+        function buildSrCellHTML(num) {
+            return `
+                <div class="flex flex-col items-center justify-center gap-0.5">
+                    <span class="drag-row-handle no-print cursor-grab active:cursor-grabbing text-slate-300 hover:text-orange-500 text-[9px] leading-none" title="Drag to reorder row"><i class="fa-solid fa-grip-vertical"></i></span>
+                    <input type="number" min="1" value="${num}" class="item-sr-input w-7 text-center font-bold text-xs editable-input p-0 leading-tight" title="Edit SR. NO. to move row to another position" onchange="moveRowToPosition(this.closest('tr'), this.value)" onkeydown="if(event.key==='Enter'){event.preventDefault(); this.blur();}">
+                </div>
+                <button class="no-print absolute -left-6 top-1 text-red-500 hover:text-red-700 font-bold opacity-0 group-hover:opacity-100 transition px-1 bg-red-50 rounded" onclick="this.closest('tr').remove(); reindexRows(); updateDispatchTotals(); renderMobileItemsList(); triggerDraftAutoSave();" title="Remove Row">×</button>`;
+        }
+
         window.addRow = function(name = "ITEM NAME", desc = "Serial No / Make / Specifications...", hsn = "998717", uom = "NOS", qty = 1, remarks = "Good") {
             const tbody = document.getElementById('items-body');
             const rowCount = tbody.children.length + 1;
             const tr = document.createElement('tr');
             tr.className = "group relative";
             tr.innerHTML = `
-                <td class="text-center font-bold relative align-middle">
-                    ${rowCount}
-                    <button class="no-print absolute -left-6 top-1 text-red-500 hover:text-red-700 font-bold opacity-0 group-hover:opacity-100 transition px-1 bg-red-50 rounded" onclick="this.closest('tr').remove(); reindexRows(); updateDispatchTotals(); triggerDraftAutoSave();" title="Remove Row">×</button>
-                </td>
+                <td class="text-center font-bold relative align-middle px-0.5">${buildSrCellHTML(rowCount)}</td>
                 <td class="relative">
                     <div contenteditable="true" class="item-name font-bold outline-none editable-input p-0.5">${escapeHTML(name)}</div>
                     <div contenteditable="true" class="item-desc text-[10px] mt-0.5 text-gray-800 normal-case outline-none editable-input p-0.5">${formatItemDescHTML(desc)}</div>
                 </td>
-                <td class="text-center align-middle"><input type="text" value="${escapeHTML(hsn)}" class="item-hsn text-center font-bold text-xs w-full editable-input" oninput="triggerDraftAutoSave()"></td>
+                <td class="text-center align-middle px-0.5"><input type="text" value="${escapeHTML(hsn)}" class="item-hsn text-center font-bold text-[11px] tracking-tight w-full editable-input px-0" oninput="triggerDraftAutoSave()"></td>
                 <td class="text-center align-middle"><input type="text" value="${escapeHTML(uom)}" class="item-uom text-center font-bold text-xs w-full editable-input uppercase" oninput="updateDispatchTotals(); triggerDraftAutoSave()"></td>
                 <td class="align-middle"><input type="number" min="0" step="any" class="item-qty text-center font-bold w-full editable-input" value="${qty}" oninput="updateDispatchTotals(); triggerDraftAutoSave()"></td>
                 <td class="text-center align-middle remarks-col ${remarksVisible ? '' : 'hidden'}"><input type="text" value="${escapeHTML(remarks)}" class="item-remarks text-center font-semibold text-[10px] w-full editable-input normal-case" oninput="triggerDraftAutoSave()"></td>
             `;
             tbody.appendChild(tr);
+            attachRowDragHandlers(tr);
             setupItemAutoSuggest(tr.querySelector('.item-name'));
             updateDispatchTotals();
             triggerDraftAutoSave();
@@ -1958,7 +2053,9 @@
         window.reindexRows = function() {
             const tbody = document.getElementById('items-body');
             Array.from(tbody.children).forEach((row, idx) => {
-                row.children[0].innerHTML = `${idx + 1} <button class="no-print absolute -left-6 top-1 text-red-500 hover:text-red-700 font-bold opacity-0 group-hover:opacity-100 transition px-1 bg-red-50 rounded" onclick="this.closest('tr').remove(); reindexRows(); updateDispatchTotals(); triggerDraftAutoSave();" title="Remove Row">×</button>`;
+                const srInp = row.querySelector('.item-sr-input');
+                if (srInp) srInp.value = idx + 1;
+                else row.children[0].innerHTML = buildSrCellHTML(idx + 1);
             });
         };
 
@@ -2216,21 +2313,54 @@
         };
 
         // ==================== SMART WHATSAPP SHARE + NAMED PDF ENGINE ====================
+        function extractLast10Digits(raw) {
+            const digits = String(raw || '').replace(/\D/g, '');
+            if (digits.length >= 10) return digits.slice(-10);
+            return digits;
+        }
+
+        function cleanContactPhoneList(rawStr) {
+            const parts = String(rawStr || '').split(/[,\/;\n|]+/).map(s => s.trim()).filter(Boolean);
+            const cleaned = [], seen = new Set();
+            parts.forEach(p => {
+                const last10 = extractLast10Digits(p);
+                if (last10 && !seen.has(last10)) { seen.add(last10); cleaned.push(last10); }
+            });
+            return cleaned.join(' / ');
+        }
+
+        window.normalizeContactPhoneInput = function(el, isMobile) {
+            if (!el) return;
+            const raw = isMobile ? el.value : el.innerText;
+            const cleaned = cleanContactPhoneList(raw);
+            if (!cleaned) return;
+            if (isMobile) {
+                el.value = cleaned;
+                syncMobileContentEditable('consignee-contact-phone', cleaned);
+            } else {
+                el.innerText = cleaned;
+                const m = document.getElementById('mob-contact-phone');
+                if (m) m.value = cleaned;
+                triggerDraftAutoSave();
+            }
+        };
+
         function normalizeWhatsAppPhone(raw) {
-            const digits = String(raw || '').replace(/[^\d]/g, '');
-            if (digits.length === 10) return '91' + digits;
-            if (digits.length === 11 && digits.startsWith('0')) return '91' + digits.slice(1);
-            if (digits.length >= 11 && digits.length <= 15) return digits;
+            const digits = String(raw || '').replace(/\D/g, '');
+            if (digits.length >= 10) return '91' + digits.slice(-10);
             return '';
         }
 
         function extractPhoneNumbers(rawText) {
-            const matches = String(rawText || '').match(/(?:\+?91[\s-]?)?[6-9]\d{9}|\d{10,13}/g) || [];
+            const segments = String(rawText || '').split(/[,\/;\n|]+/).map(s => s.trim()).filter(Boolean);
             const seen = new Set();
             const out = [];
-            matches.forEach(m => {
-                const norm = normalizeWhatsAppPhone(m);
-                if (norm && !seen.has(norm)) { seen.add(norm); out.push({ raw: m.trim(), wa: norm }); }
+            segments.forEach(seg => {
+                const last10 = extractLast10Digits(seg);
+                if (last10.length === 10) {
+                    const wa = '91' + last10;
+                    if (!seen.has(wa)) { seen.add(wa); out.push({ raw: last10, wa }); }
+                }
             });
             return out;
         }
@@ -2463,35 +2593,40 @@
                 cloneQrBox.appendChild(qrImg);
             }
 
-            // Exact A4 width (794px) anchored at top:0 left:0 inside an invisible zero-shift host so html2canvas NEVER crops the left edge
-            clone.style.cssText = 'width:794px;max-width:794px;min-height:1080px;height:auto;margin:0;padding:22px 24px 18px 24px;box-shadow:none;border:none;background:#ffffff;box-sizing:border-box;display:flex;flex-direction:column;';
+            // Ultra-HD zero-clip capture stage (820px A4 width, 2.8x adaptive scale)
+            clone.id = 'dc-png-export-clone';
+            const BASE_W = 820;
+            clone.style.cssText = `width:${BASE_W}px;max-width:none;min-height:1080px;height:auto;margin:0;padding:22px 24px 20px 24px;box-shadow:none;border:none;background:#ffffff;box-sizing:border-box;display:flex;flex-direction:column;position:relative;overflow:visible;`;
 
             const host = document.createElement('div');
-            host.style.cssText = 'position:fixed;left:0;top:0;width:794px;height:1px;overflow:hidden;opacity:0.001;pointer-events:none;z-index:-9999;background:#ffffff;';
-            const innerStage = document.createElement('div');
-            innerStage.style.cssText = 'position:relative;width:794px;background:#ffffff;';
-            innerStage.appendChild(clone);
-            host.appendChild(innerStage);
+            host.style.cssText = 'position:fixed;left:0;top:0;width:1200px;height:1px;overflow:hidden;opacity:0.001;pointer-events:none;z-index:-9999;background:#ffffff;';
+            host.appendChild(clone);
             document.body.appendChild(host);
 
             try {
-                // Wait a frame for layout & images to settle
                 await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-                const captureHeight = Math.max(clone.scrollHeight, clone.offsetHeight);
+                const actualW = Math.ceil(Math.max(clone.scrollWidth, clone.offsetWidth, BASE_W));
+                if (actualW > BASE_W) {
+                    clone.style.width = actualW + 'px';
+                    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+                }
+                const captureHeight = Math.ceil(Math.max(clone.scrollHeight, clone.offsetHeight)) + 4;
+                const safeScale = Math.min(2.8, Math.max(1.5, Math.floor(14000 / Math.max(captureHeight, 1) * 10) / 10));
 
                 const opt = {
                     margin: 0,
+                    jsPDF: { unit: 'px', format: [actualW, captureHeight], hotfixes: ['px_scaling'] },
                     html2canvas: {
-                        scale: 2.5,
+                        scale: safeScale,
                         useCORS: true,
                         allowTaint: false,
                         logging: false,
                         backgroundColor: '#ffffff',
                         x: 0,
                         y: 0,
-                        width: 794,
+                        width: actualW,
                         height: captureHeight,
-                        windowWidth: 794,
+                        windowWidth: actualW,
                         windowHeight: captureHeight,
                         scrollX: 0,
                         scrollY: 0
@@ -2759,7 +2894,7 @@
             if (!state) return;
             document.getElementById('doc-seq-num').value = state.doc_seq_num || '001';
             document.getElementById('doc-date').value = state.doc_date || new Date().toISOString().split('T')[0];
-            document.getElementById('doc-ref').value = state.doc_ref || '';
+            document.getElementById('doc-ref').value = state.doc_ref || ''; autoGrowField(document.getElementById('doc-ref'));
             document.getElementById('eway-no').value = state.eway_no || 'N/A';
             document.getElementById('invoice-no').value = state.invoice_no || 'N/A';
             const modeSel = document.getElementById('mode-tr');
@@ -2859,7 +2994,7 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('doc-date').value = today;
             document.getElementById('doc-seq-num').value = nextDirectoryDCSequence(today);
-            document.getElementById('doc-ref').value = 'Verbal / As Discussed';
+            document.getElementById('doc-ref').value = 'Verbal / As Discussed'; autoGrowField(document.getElementById('doc-ref'));
             document.getElementById('eway-no').value = 'N/A';
             document.getElementById('invoice-no').value = 'N/A';
             document.getElementById('mode-tr').value = 'By Road';
@@ -3371,6 +3506,9 @@
             dispatch_notes_text: 'Dispatch Notes', notes_terms: 'Terms & Conditions', items: 'Line Items'
         };
         let pendingAIState = null;
+        let pendingAISuggestions = [];
+        let pendingAISummary = '';
+        window._lastAIPrompt = '';
 
         function stateDisplay(val) {
             if (val == null || val === '') return '(empty)';
@@ -3384,9 +3522,251 @@
 
         window.closeAIReview = () => {
             pendingAIState = null;
+            pendingAISuggestions = [];
+            toggleAIReviseBox(false);
             const m = document.getElementById('ai-review-modal');
             m.classList.add('opacity-0');
             setTimeout(() => m.classList.add('hidden'), 250);
+        };
+
+        window.toggleAIReviseBox = function(forceState) {
+            const box = document.getElementById('ai-revise-box');
+            if (!box) return;
+            const show = (typeof forceState === 'boolean') ? forceState : box.classList.contains('hidden');
+            box.classList.toggle('hidden', !show);
+            if (show) { const inp = document.getElementById('ai-revise-input'); if (inp) { inp.value = ''; inp.focus(); } }
+        };
+
+        function renderAIReviewDiffs() {
+            if (!pendingAIState) return;
+            const current = serializeState();
+            const changes = [];
+            Object.keys(AI_FIELD_LABELS).forEach(k => {
+                if (JSON.stringify(current[k] ?? null) !== JSON.stringify(pendingAIState[k] ?? null)) {
+                    changes.push([AI_FIELD_LABELS[k], stateDisplay(current[k]), stateDisplay(pendingAIState[k])]);
+                }
+            });
+            document.getElementById('ai-review-summary').textContent = pendingAISummary || `Review ${changes.length} proposed dispatch update(s).`;
+            const list = document.getElementById('ai-review-list');
+            list.replaceChildren();
+            if (!changes.length) {
+                const li = document.createElement('li');
+                li.className = 'italic text-slate-400';
+                li.textContent = 'No field diffs yet — approve or revise any Copilot note below to apply it directly.';
+                list.appendChild(li);
+            } else {
+                changes.forEach(([label, before, after]) => {
+                    const li = document.createElement('li');
+                    li.textContent = `${label}: ${before} → ${after}`;
+                    list.appendChild(li);
+                });
+            }
+        }
+
+        function renderAIReviewSuggestions() {
+            const sugBox = document.getElementById('ai-review-suggestions-box');
+            const sugList = document.getElementById('ai-review-suggestions-list');
+            if (!sugBox || !sugList) return;
+            sugList.replaceChildren();
+            if (!pendingAISuggestions.length) {
+                sugBox.classList.add('hidden');
+                return;
+            }
+            sugBox.classList.remove('hidden');
+            pendingAISuggestions.forEach((item, idx) => {
+                const wrap = document.createElement('div');
+                const baseCls = 'rounded-lg border text-xs transition p-2.5 space-y-2 ';
+                if (item.status === 'approved') wrap.className = baseCls + 'bg-emerald-50 border-emerald-200 text-emerald-900';
+                else if (item.status === 'denied') wrap.className = baseCls + 'bg-slate-50 border-slate-200 text-slate-400 opacity-70';
+                else wrap.className = baseCls + 'bg-white border-amber-200 text-amber-950 shadow-sm';
+
+                const topRow = document.createElement('div');
+                topRow.className = 'flex flex-col sm:flex-row sm:items-start justify-between gap-2';
+
+                const txt = document.createElement('div');
+                txt.className = 'flex-1 leading-snug font-medium' + (item.status === 'denied' ? ' line-through' : '');
+                txt.textContent = item.text;
+                if (item.status === 'approved' && item.appliedNote) {
+                    const noteDiv = document.createElement('div');
+                    noteDiv.className = 'text-[10.5px] font-bold text-emerald-700 mt-1';
+                    noteDiv.textContent = '✓ Revised instruction applied: ' + item.appliedNote;
+                    txt.appendChild(noteDiv);
+                }
+                topRow.appendChild(txt);
+
+                const acts = document.createElement('div');
+                acts.className = 'flex items-center gap-1 shrink-0 flex-wrap';
+                if (item.status === 'loading') {
+                    acts.innerHTML = `<span class="px-2 py-1 rounded bg-indigo-100 text-indigo-700 text-[10px] font-black"><i class="fa-solid fa-spinner fa-spin mr-1"></i>Processing...</span>`;
+                } else if (item.status === 'approved') {
+                    acts.innerHTML = `<span class="px-2 py-1 rounded bg-emerald-600 text-white text-[10px] font-black"><i class="fa-solid fa-check mr-1"></i>${item.appliedNote ? 'Revised & Applied' : 'Approved'}</span>`;
+                } else if (item.status === 'denied') {
+                    acts.innerHTML = `<span class="px-2 py-1 rounded bg-slate-200 text-slate-500 text-[10px] font-bold">Denied</span>`;
+                } else {
+                    const btnOk = document.createElement('button');
+                    btnOk.type = 'button';
+                    btnOk.className = 'px-2.5 py-1 rounded bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-black transition shadow-sm';
+                    btnOk.innerHTML = '<i class="fa-solid fa-check mr-1"></i>Approve';
+                    btnOk.onclick = () => approveAISuggestion(idx);
+
+                    const btnRev = document.createElement('button');
+                    btnRev.type = 'button';
+                    btnRev.className = 'px-2.5 py-1 rounded bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 text-[10px] font-black transition';
+                    btnRev.innerHTML = '<i class="fa-solid fa-rotate mr-1"></i>Revise / Rethink';
+                    btnRev.onclick = () => toggleSingleSuggestionRevise(idx);
+
+                    const btnNo = document.createElement('button');
+                    btnNo.type = 'button';
+                    btnNo.className = 'px-2 py-1 rounded bg-white hover:bg-red-50 text-red-600 border border-red-200 text-[10px] font-bold transition';
+                    btnNo.innerHTML = '<i class="fa-solid fa-xmark mr-0.5"></i>Deny';
+                    btnNo.onclick = () => denyAISuggestion(idx);
+
+                    acts.appendChild(btnOk);
+                    acts.appendChild(btnRev);
+                    acts.appendChild(btnNo);
+                }
+                topRow.appendChild(acts);
+                wrap.appendChild(topRow);
+
+                if (item.reviseOpen && item.status === 'pending') {
+                    const revBox = document.createElement('div');
+                    revBox.className = 'bg-amber-50/90 border border-amber-200 rounded-lg p-2 space-y-1.5';
+                    const ta = document.createElement('textarea');
+                    ta.id = 'sug-revise-input-' + idx;
+                    ta.rows = 2;
+                    ta.className = 'w-full border border-amber-300 rounded p-1.5 text-[11px] font-medium bg-white text-slate-800 outline-none focus:border-indigo-500';
+                    ta.placeholder = "Type your exact revision for this point (e.g. 'Keep returnable for 10 days', 'Add 2 Wooden Crates') — or leave blank to rethink...";
+                    ta.value = item.draftNote || '';
+                    ta.oninput = (e) => { item.draftNote = e.target.value; };
+                    revBox.appendChild(ta);
+
+                    const revActs = document.createElement('div');
+                    revActs.className = 'flex justify-end gap-1.5';
+                    const bCancel = document.createElement('button');
+                    bCancel.type = 'button';
+                    bCancel.className = 'px-2.5 py-1 rounded text-[10px] font-bold text-slate-600 hover:bg-amber-100';
+                    bCancel.textContent = 'Cancel';
+                    bCancel.onclick = () => toggleSingleSuggestionRevise(idx, false);
+
+                    const bRun = document.createElement('button');
+                    bRun.type = 'button';
+                    bRun.className = 'px-3 py-1 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black shadow-sm';
+                    bRun.innerHTML = '<i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Apply Revision to DC';
+                    bRun.onclick = () => reviseSingleAISuggestion(idx);
+
+                    revActs.appendChild(bCancel);
+                    revActs.appendChild(bRun);
+                    revBox.appendChild(revActs);
+                    wrap.appendChild(revBox);
+                }
+
+                sugList.appendChild(wrap);
+            });
+        }
+
+        window.toggleSingleSuggestionRevise = function(idx, forceState) {
+            const item = pendingAISuggestions[idx];
+            if (!item || item.status !== 'pending') return;
+            item.reviseOpen = (typeof forceState === 'boolean') ? forceState : !item.reviseOpen;
+            renderAIReviewSuggestions();
+            if (item.reviseOpen) {
+                setTimeout(() => { const el = document.getElementById('sug-revise-input-' + idx); if (el) el.focus(); }, 20);
+            }
+        };
+
+        window.denyAISuggestion = function(idx) {
+            if (!pendingAISuggestions[idx]) return;
+            pendingAISuggestions[idx].status = 'denied';
+            pendingAISuggestions[idx].reviseOpen = false;
+            renderAIReviewSuggestions();
+        };
+
+        async function applySuggestionOrRevision(idx, userRevisionText) {
+            const item = pendingAISuggestions[idx];
+            if (!item || item.status === 'loading' || !pendingAIState) return;
+            item.status = 'loading';
+            item.reviseOpen = false;
+            renderAIReviewSuggestions();
+            try {
+                const instructionBlock = userRevisionText
+                    ? `COPILOT ORIGINAL AUDIT NOTE:\n${item.text}\n\nUSER'S EXACT REVISION DIRECTION (FOLLOW THIS STRICTLY):\n${userRevisionText}`
+                    : `APPROVED SUGGESTION TO INCORPORATE:\n${item.text}`;
+                const prompt = `You are the Senior Logistics & Dispatch Coordinator for MG Transformer Services & Supplies.
+Incorporate the following directive cleanly and accurately into the provided DELIVERY CHALLAN STATE JSON (no prices/rates on DC; keep 8-digit HSN/SAC codes and GST Rule 55 compliance).
+Return ONLY the updated valid JSON state object (same schema as DELIVERY CHALLAN STATE JSON).
+${instructionBlock}
+
+DELIVERY CHALLAN STATE JSON:
+${JSON.stringify(pendingAIState)}`;
+                const raw = await fetchGeminiWithFallback({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.1 } });
+                const updated = JSON.parse(extractJSON(raw));
+                if (!updated || typeof updated !== 'object' || !Array.isArray(updated.items)) throw new Error('Invalid DC state returned by AI.');
+                delete updated.copilot_suggestions;
+                const keepSeq = pendingAIState.doc_seq_num;
+                pendingAIState = Object.assign({}, pendingAIState, updated);
+                pendingAIState.doc_seq_num = keepSeq;
+                item.status = 'approved';
+                item.appliedNote = userRevisionText || '';
+                deserializeState(pendingAIState);
+                syncMobileFormFromDOM();
+                recordDCHistory();
+                triggerDraftAutoSave();
+                renderAIReviewDiffs();
+                renderAIReviewSuggestions();
+                showToast(userRevisionText ? 'Revised instruction incorporated into Delivery Challan!' : 'Suggestion approved & applied to Delivery Challan!');
+            } catch (err) {
+                item.status = 'pending';
+                renderAIReviewSuggestions();
+                showToast('Could not apply update: ' + err.message, 'error');
+            }
+        }
+
+        window.approveAISuggestion = function(idx) {
+            return applySuggestionOrRevision(idx, '');
+        };
+
+        window.reviseSingleAISuggestion = function(idx) {
+            const item = pendingAISuggestions[idx];
+            if (!item) return;
+            const el = document.getElementById('sug-revise-input-' + idx);
+            const txt = (el ? el.value.trim() : (item.draftNote || '').trim()) || 'Rethink this compliance/dispatch point and apply the best GST Rule 55 standard practice directly to the Delivery Challan.';
+            return applySuggestionOrRevision(idx, txt);
+        };
+
+        window.executeAIRevision = async function() {
+            if (!pendingAIState) return;
+            const revInp = document.getElementById('ai-revise-input');
+            const feedback = (revInp ? revInp.value.trim() : '') || 'Critically rethink and improve this Delivery Challan proposal: verify 8-digit HSN/SAC codes, GST Rule 55 purpose, transport details, and crisp item descriptions.';
+            const btn = document.getElementById('ai-revise-submit-btn');
+            const origHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Rethinking...';
+            try {
+                const prompt = `You are the Senior Logistics & Dispatch Coordinator for MG Transformer Services & Supplies.
+Revise and rethink the PROPOSED DELIVERY CHALLAN STATE JSON based on the user's feedback. Never include prices/rates; keep 8-digit HSN/SAC codes; return ONLY valid JSON matching the state schema plus an optional "copilot_suggestions" array.
+ORIGINAL REQUEST: ${window._lastAIPrompt || 'Delivery Challan update'}
+USER REVISION / RETHINK COMMAND: ${feedback}
+PROPOSED DELIVERY CHALLAN STATE JSON:
+${JSON.stringify(pendingAIState)}`;
+                const raw = await fetchGeminiWithFallback({ contents: [{ role: 'user', parts: [{ text: prompt }] }], generationConfig: { responseMimeType: 'application/json', temperature: 0.2 } });
+                const revised = JSON.parse(extractJSON(raw));
+                const newSugs = Array.isArray(revised.copilot_suggestions) ? revised.copilot_suggestions : [];
+                delete revised.copilot_suggestions;
+                const keepSeq = pendingAIState.doc_seq_num;
+                pendingAIState = Object.assign({}, pendingAIState, revised);
+                pendingAIState.doc_seq_num = keepSeq;
+                pendingAISummary = 'Revised proposal: ' + (revInp && revInp.value.trim() ? revInp.value.trim() : 'AI rethought and refined the Delivery Challan.');
+                if (newSugs.length) pendingAISuggestions = newSugs.slice(0, 12).map(s => ({ text: String(s), status: 'pending' }));
+                toggleAIReviseBox(false);
+                renderAIReviewDiffs();
+                renderAIReviewSuggestions();
+                showToast('AI revised the DC proposal — review and click Apply!');
+            } catch (err) {
+                showToast('Revision failed: ' + err.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = origHtml;
+            }
         };
 
         window.stageAIState = function(proposed, summary, suggestions) {
@@ -3400,37 +3780,18 @@
             const merged = Object.assign({}, current, cleanProposed);
             merged.doc_seq_num = current.doc_seq_num;
 
-            const changes = [];
-            Object.keys(AI_FIELD_LABELS).forEach(k => {
-                if (JSON.stringify(current[k] ?? null) !== JSON.stringify(merged[k] ?? null)) {
-                    changes.push([AI_FIELD_LABELS[k], stateDisplay(current[k]), stateDisplay(merged[k])]);
-                }
-            });
-
-            if (!changes.length) {
-                if (extraNotes.length) { showAlert('Copilot Audit Notes', extraNotes.map(n => '• ' + n).join('\n'), 'info'); return; }
+            const hasDiff = Object.keys(AI_FIELD_LABELS).some(k => JSON.stringify(current[k] ?? null) !== JSON.stringify(merged[k] ?? null));
+            if (!hasDiff && !extraNotes.length) {
                 showAlert('No Changes', 'AI did not propose any changes to this Delivery Challan.', 'info');
                 return;
             }
 
             pendingAIState = merged;
-            document.getElementById('ai-review-summary').textContent = summary || `Review ${changes.length} proposed dispatch update(s).`;
-            const list = document.getElementById('ai-review-list');
-            list.replaceChildren();
-            changes.forEach(([label, before, after]) => {
-                const li = document.createElement('li');
-                li.textContent = `${label}: ${before} → ${after}`;
-                list.appendChild(li);
-            });
-            const sugBox = document.getElementById('ai-review-suggestions-box');
-            const sugList = document.getElementById('ai-review-suggestions-list');
-            sugList.replaceChildren();
-            if (extraNotes.length) {
-                extraNotes.forEach(n => { const li = document.createElement('li'); li.textContent = String(n); sugList.appendChild(li); });
-                sugBox.classList.remove('hidden');
-            } else {
-                sugBox.classList.add('hidden');
-            }
+            pendingAISummary = summary || 'Review proposed dispatch updates below.';
+            pendingAISuggestions = extraNotes.slice(0, 12).map(n => ({ text: String(n), status: 'pending' }));
+            toggleAIReviseBox(false);
+            renderAIReviewDiffs();
+            renderAIReviewSuggestions();
             const m = document.getElementById('ai-review-modal');
             m.classList.remove('hidden');
             setTimeout(() => m.classList.remove('opacity-0'), 10);
@@ -3441,6 +3802,7 @@
             const st = pendingAIState;
             pendingAIState = null;
             deserializeState(st);
+            syncMobileFormFromDOM();
             recordDCHistory();
             triggerDraftAutoSave();
             closeAIReview();
@@ -3758,7 +4120,7 @@ CURRENT DRAFT STATE: ${JSON.stringify(serializeState())}`
 
         window.syncFromMobileField = function(targetId, val, isDocNumField = false) {
             const el = document.getElementById(targetId);
-            if (el) el.value = val;
+            if (el) { el.value = val; if (el.tagName === 'TEXTAREA') autoGrowField(el); }
             if (isDocNumField) {
                 updateDocNumberDisplay();
                 const badge = document.getElementById('mob-dc-badge');
@@ -3806,8 +4168,13 @@ CURRENT DRAFT STATE: ${JSON.stringify(serializeState())}`
                 const card = document.createElement('div');
                 card.className = 'bg-slate-50 border border-slate-200 rounded-xl p-3 space-y-2 relative';
                 card.innerHTML = `
-                    <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-black uppercase text-orange-600">Item #${idx + 1}</span>
+                    <div class="flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5">
+                            <span class="text-[10px] font-black uppercase text-slate-500">SR</span>
+                            <input type="number" min="1" max="${rows.length}" value="${idx + 1}" class="item-sr-input w-10 text-center font-mono text-xs font-black text-orange-700 bg-white border border-orange-200 rounded px-1 py-0.5" onchange="moveRowByIndex(${idx}, this.value)" title="Change SR. NO. to reorder">
+                            <button type="button" onclick="moveRowByIndex(${idx}, ${Math.max(1, idx)})" class="w-6 h-6 rounded bg-white border border-slate-200 text-slate-600 text-[10px] font-black ${idx===0?'opacity-30 pointer-events-none':''}" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>
+                            <button type="button" onclick="moveRowByIndex(${idx}, ${Math.min(rows.length, idx+2)})" class="w-6 h-6 rounded bg-white border border-slate-200 text-slate-600 text-[10px] font-black ${idx===rows.length-1?'opacity-30 pointer-events-none':''}" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>
+                        </div>
                         <button type="button" onclick="removeMobileItemRow(${idx})" class="text-red-500 text-xs font-bold px-2 py-0.5 rounded bg-red-50"><i class="fa-solid fa-trash mr-1"></i>Remove</button>
                     </div>
                     <input type="text" value="${escapeHTML(name)}" placeholder="Item Name" class="mobile-input text-xs font-bold" oninput="updateItemRowFromMobile(${idx}, 'name', this.value)">
@@ -4030,7 +4397,7 @@ CURRENT DRAFT STATE: ${JSON.stringify(serializeState())}`
                 if (!picked || !picked.length) return;
                 const c = picked[0];
                 const name = Array.isArray(c.name) ? (c.name[0] || '').trim() : '';
-                const tels = Array.isArray(c.tel) ? Array.from(new Set(c.tel.map(t => String(t || '').trim()).filter(Boolean))) : [];
+                const tels = Array.isArray(c.tel) ? Array.from(new Set(c.tel.map(t => extractLast10Digits(t)).filter(d => d.length >= 10))) : [];
                 const phoneStr = tels.join(' / ');
                 if (name) document.getElementById('consignee-contact-name').innerText = name;
                 if (phoneStr) document.getElementById('consignee-contact-phone').innerText = phoneStr;
